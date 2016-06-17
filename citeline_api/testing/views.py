@@ -10,17 +10,18 @@ class ViewTestCase(unittest.TestCase):
     a context.
     """
 
-    def get_view(self, resource_class, view_class,
-                 name='test_context'):
+    RESOURCE_CLASS = NotImplemented
+    REQUEST_CLASS = testing.DummyRequest
+    VIEW_CLASS = NotImplemented
+
+    def get_view(self, name='test_context'):
         """Returns a qualified view object for testing.
 
-        :param resource_class: The resource class associated with the view under test
-        :param view_class: The view class under test (e.g. `BaseView`)
         :return: A qualified view object
         """
-        context = resource_class(None, name)
-        request = testing.DummyRequest()
-        view = view_class(context, request)
+        context = self.RESOURCE_CLASS(None, name)
+        request = self.REQUEST_CLASS()
+        view = self.VIEW_CLASS(context, request)
         return view
 
 
@@ -40,14 +41,14 @@ class DocumentViewTestCase(ViewTestCase):
     will randomly generate a new one.
     """
 
-    def get_view(self, collection_class, view_class,
-                 object_id=None, parent_name='parent_context'):
+    def get_view(self, object_id=None, parent_name='parent_context'):
         """
         Assembles a new view object with a designated :class:`.DocumentResource`
         context. If no `ObjectId` is provided, this method generates a new
         `ObjectId` for testing.
 
         :param object_id: The target `ObjectId` for the :class:`.DocumentResource`
+        :param parent_name: The parent resource name
         :return: A :class:`.DocumentResource` view object
         """
         # Generate a new ObjectId if one was not provided:
@@ -55,8 +56,8 @@ class DocumentViewTestCase(ViewTestCase):
             from bson import ObjectId
             object_id = ObjectId()
         # Assemble and return the view:
-        parent = collection_class(None, parent_name)
+        parent = self.RESOURCE_CLASS(None, parent_name)
         context = parent[object_id]
         request = testing.DummyRequest()
-        view = view_class(context, request)
+        view = self.VIEW_CLASS(context, request)
         return view

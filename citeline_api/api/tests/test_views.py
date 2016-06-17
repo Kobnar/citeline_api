@@ -2,13 +2,17 @@ from citeline_api import testing
 
 
 class APIIndexViewsTests(testing.views.ViewTestCase):
+
     layer = testing.layers.UnitTestLayer
 
-    def get_view(self):
-        from ..resources import APIIndex
-        from ..views import APIIndexViews
-        return super(APIIndexViewsTests, self).get_view(
-            APIIndex, APIIndexViews, 'api_v1')
+    # Define resource and view class under test
+    from ..resources import APIIndex
+    from ..views import APIIndexViews
+    RESOURCE_CLASS = APIIndex
+    VIEW_CLASS = APIIndexViews
+
+    def get_view(self, name='api_v1'):
+        return super().get_view(name)
 
     def test_returns_dict(self):
         """APIIndexViews.main() returns a dictionary
@@ -33,15 +37,14 @@ class APICollectionViewsTestCase(testing.views.CollectionViewTestCase):
         _collection = testing.mock.MockDocument
         _document_resource = _MockAPIDocumentResource
 
+    # Define resource and view class under test
+    from ..views import APICollectionViews
+    RESOURCE_CLASS = _MockAPICollectionResource
+    VIEW_CLASS = APICollectionViews
+
     def setUp(self):
         testing.mock.MockDocument.drop_collection()
-        super(APICollectionViewsTestCase, self).setUp()
-
-    def get_view(self):
-        from ..views import APICollectionViews
-        return super(APICollectionViewsTestCase, self).get_view(
-            self._MockAPICollectionResource,
-            APICollectionViews, 'api_v1')
+        super().setUp()
 
     def make_data(self, data_range=16, save=False):
         docs = []
@@ -246,16 +249,17 @@ class APIDocumentViewsTestCase(testing.views.DocumentViewTestCase):
         _collection = testing.mock.MockDocument
         _document_resource = _MockAPIDocumentResource
 
-    def setUp(self):
-        # Clear existing data:
-        testing.mock.MockDocument.drop_collection()
-        super(APIDocumentViewsTestCase, self).setUp()
+    # Define resource and view class under test
+    from ..views import APIDocumentViews
+    RESOURCE_CLASS = _MockAPICollectionResource
+    VIEW_CLASS = APIDocumentViews
 
-    def get_view(self, object_id=None):
-        from ..views import APIDocumentViews
-        return super(APIDocumentViewsTestCase, self).get_view(
-            self._MockAPICollectionResource,
-            APIDocumentViews, object_id, 'documents')
+    def setUp(self):
+        testing.mock.MockDocument.drop_collection()
+        super().setUp()
+
+    def get_view(self, object_id=None, name='documents'):
+        return super().get_view(object_id, name)
 
     def make_data(self, data_range=16, save=False):
         docs = []
