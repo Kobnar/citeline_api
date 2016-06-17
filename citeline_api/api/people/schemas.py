@@ -1,7 +1,5 @@
 from marshmallow import Schema, fields, validates_schema, ValidationError
 
-from citeline_api.api.schemas import fields as api_fields, forms as api_forms
-
 
 class UpdateName(Schema):
 
@@ -49,11 +47,3 @@ class UpdatePerson(Schema):
 
 class CreatePerson(UpdatePerson):
     name = fields.Nested(CreateName, required=True)
-
-
-class RetrievePeople(api_forms.Collection):
-    fields = api_fields.FieldsField()
-
-
-class RetrievePerson(Schema):
-    fields = api_fields.FieldsField()

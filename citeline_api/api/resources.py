@@ -1,4 +1,3 @@
-import typing
 from citeline_api import resources
 
 

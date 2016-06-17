@@ -1,7 +1,9 @@
-from marshmallow import Schema, fields, validates, ValidationError
+from marshmallow import Schema, fields as mm_fields, validates, ValidationError
+
+from . import fields as api_fields
 
 
-class Collection(Schema):
+class RetrieveCollection(Schema):
     """
     A default validation schema class to RETRIEVE documents from a MongoDB
     collection
@@ -10,8 +12,9 @@ class Collection(Schema):
     database dumps.
     """
 
-    limit = fields.Integer(missing=100)
-    skip = fields.Integer(missing=0)
+    fields = api_fields.FieldsField()
+    limit = mm_fields.Integer(missing=100)
+    skip = mm_fields.Integer(missing=0)
 
     @validates('limit')
     def validate_limit(self, value):
@@ -24,3 +27,7 @@ class Collection(Schema):
         if value < 0:
             msg = '"skip" must be >= 0 ({})'.format(value)
             raise ValidationError(msg)
+
+
+class RetrieveDocument(Schema):
+    fields = api_fields.FieldsField()
