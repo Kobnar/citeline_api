@@ -12,7 +12,8 @@ requires = [
     'pyramid',
     'pyramid_debugtoolbar',
     'waitress',
-    'mongoengine'
+    'bson',
+    'mongoengine',
     ]
 
 tests_require = [
