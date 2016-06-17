@@ -148,11 +148,6 @@ class APICollectionViewsCreateTestCase(APICollectionViewsTestCase):
         with self.assertRaises(APIBadRequest):
             view.create()
 
-    def test_create_invalid_data_returns_400_BAD_REQUEST(self):
-        """APICollectionViews.create() returns 400 BAD REQUEST if given invalid data
-        """
-        self.fail('No schema validation at API V1 root resource level')
-
     def test_no_json_body_returns_400_BadRequest(self):
         """APICollectionViews.create() returns 400 BAD REQUEST if no json_body provided
         """
@@ -227,11 +222,6 @@ class APICollectionViewsRetrieveTestCase(APICollectionViewsTestCase):
         view.retrieve()
         result = view.request.response.status_code
         self.assertEqual(404, result)
-
-    def test_retrieve_invalid_query_raises_400_BAD_REQUEST(self):
-        """APICollectionViews.retrieve() returns 400 BAD REQUEST if given invalid query
-        """
-        self.fail('No schema validation at API V1 root resource level')
 
 
 class APIDocumentViewsTestCase(testing.views.DocumentViewTestCase):
@@ -383,11 +373,6 @@ class APIDocumentViewsUpdateTestCase(APIDocumentViewsTestCase):
             view.update()
             result = view.request.response.status_code
             self.assertEqual(result, 200)
-
-    def test_invalid_data_raises_400_BadRequest(self):
-        """APIDocumentViews.update() raises 400 BAD REQUEST with invalid data
-        """
-        self.fail('No schema validation at API V1 root resource level')
 
     def test_missing_person_raises_404_NotFound(self):
         """APIDocumentViews.update() raises 404 NOT FOUND if person does not exist

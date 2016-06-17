@@ -23,6 +23,7 @@ def connect():
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
+    connect()
     config = Configurator(
         settings=settings,
         root_factory=root_traversal_factory)
