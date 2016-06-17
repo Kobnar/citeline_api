@@ -4,13 +4,13 @@ import mongoengine
 
 class UnitTestLayer(object):
     """
-    The base test layer for `meddler`.
+    The base test layer for `citeline`.
     """
 
 
 class MongoIntegrationTestLayer(UnitTestLayer):
     """
-    An integration test layer for working with the `meddler` database.
+    An integration test layer for working with the `citeline` database.
     """
 
     _IP = os.environ.get('MONGO_TEST_IP', 'http://127.0.0.1/')

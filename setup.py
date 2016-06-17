@@ -14,6 +14,7 @@ requires = [
     'waitress',
     'bson',
     'mongoengine',
+    'marshmallow'
     ]
 
 tests_require = [
