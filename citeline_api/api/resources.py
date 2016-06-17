@@ -13,17 +13,23 @@ class APIDocument(resources.DocumentResource):
     The API-level traversal resource.
     """
 
-    def retrieve(self, fields=None):
-        fields = fields or ()
+    _retrieve_schema = NotImplemented
+    _update_schema = NotImplemented
 
-        assert isinstance(fields, typing.Sequence)
-
+    def retrieve(self, query=None):
+        query = query or {}
+        if self._retrieve_schema is not NotImplemented:
+            schema = self._retrieve_schema(strict=True)
+            query = schema.load(query).data
+        fields = query.get('fields')
         result = super().retrieve(fields)
         return result.serialize(fields)
 
     def update(self, data):
-        assert isinstance(data, typing.Container)
-
+        data = data or {}
+        if self._update_schema is not NotImplemented:
+            schema = self._update_schema(strict=True)
+            data = schema.load(data).data
         result = super().update(data)
         return result.serialize()
 
@@ -37,21 +43,26 @@ class APICollection(resources.CollectionResource):
     The API-level traversal resource.
     """
 
-    def create(self, data):
-        assert isinstance(data, typing.Container)
+    _create_schema = NotImplemented
+    _retrieve_schema = NotImplemented
 
+    def create(self, data):
+        data = data or {}
+        if self._create_schema is not NotImplemented:
+            schema = self._create_schema(strict=True)
+            data = schema.load(data).data
         result = super().create(data)
         return result.serialize()
 
-    def retrieve(self, query=None, fields=None, limit=100, skip=0):
+    def retrieve(self, query=None):
         query = query or {}
-        fields = fields or ()
-
-        assert isinstance(query, typing.Container)
-        assert isinstance(limit, int)
-        assert isinstance(skip, int)
-
-        results = super().retrieve(query, fields, limit, skip)
+        if self._retrieve_schema is not NotImplemented:
+            schema = self._retrieve_schema(strict=True)
+            query = schema.load(query).data
+        fields, limit, skip = self.get_commons(query)
+        # TODO: Create hook to build a raw query in children of APICollection
+        raw_query = {}
+        results = super().retrieve(raw_query, fields, limit, skip)
 
         if results:
             return [doc.serialize(fields) for doc in results]

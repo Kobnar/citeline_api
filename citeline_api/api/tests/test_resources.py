@@ -123,8 +123,8 @@ class APICollectionTests(APIResourceTests):
         """APICollection.retrieve() filters explicitly named fields
         """
         docs = self.make_data(save=True)
-        fields = ('name', 'fact')
-        results = self.col_resource.retrieve(fields=fields)
+        query = {'fields': ['name', 'fact']}
+        results = self.col_resource.retrieve(query)
         for idx, doc in enumerate(docs):
             result = results[idx]
             expected = {
@@ -143,7 +143,7 @@ class APICollectionTests(APIResourceTests):
         """APICollection.retrieve() limits results to an explicit value
         """
         self.make_data(128, save=True)
-        results = self.col_resource.retrieve(limit=64)
+        results = self.col_resource.retrieve({'limit': 64})
         self.assertEqual(64, len(results))
 
     def test_retrieve_default_skip(self):
@@ -157,7 +157,7 @@ class APICollectionTests(APIResourceTests):
         """APICollection.retrieve() skips to an explicit value
         """
         self.make_data(save=True)
-        result = self.col_resource.retrieve(skip=4)[0]
+        result = self.col_resource.retrieve({'skip': 4})[0]
         self.assertEqual(4, result['number'])
 
     def test_get_commons_default_values(self):
@@ -251,11 +251,11 @@ class APIDocumentTests(APIResourceTests):
     def test_retrieve_filters_fields(self):
         """APIDocument.retrieve() filters explicitly named fields
         """
-        fields = ('name', 'fact')
+        query = {'fields': ('name', 'fact')}
         expected = {
             'name': self.doc.name,
             'fact': self.doc.fact}
-        result = self.doc_resource.retrieve(fields)
+        result = self.doc_resource.retrieve(query)
         self.assertEqual(expected, result)
 
     def test_update_returns_updated_data(self):

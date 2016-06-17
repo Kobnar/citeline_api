@@ -9,6 +9,7 @@ class Collection(Schema):
     By default, schema sets both `limit=100` and `skip=0` to avoid massive
     database dumps.
     """
+
     limit = fields.Integer(missing=100)
     skip = fields.Integer(missing=0)
 
