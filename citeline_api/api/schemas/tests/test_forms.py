@@ -8,8 +8,8 @@ class CollectionStrictTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
-        from ..forms import Collection
-        self.schema = Collection(strict=True)
+        from ..forms import RetrieveCollection
+        self.schema = RetrieveCollection(strict=True)
 
     def tearDown(self):
         pass
