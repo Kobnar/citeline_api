@@ -60,6 +60,44 @@ class PasswordField(fields.String):
             error=self.error_messages['invalid']))
 
 
+class ISBN10Field(fields.String):
+    """
+    An ISBN-10 field that automatically validates its content.
+
+    :param args: The same positional arguments that
+        :class:`marshmallow.fields.String` receives.
+    :param kwargs: The same keyword arguments that
+        :class:`marshmallow.fields.String` receives.
+    """
+    default_error_messages = {'invalid': 'Not a valid ISBN-10.'}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(self, *args, **kwargs)
+        # Insert validation into self.validators so that multiple errors can be
+        # stored.
+        self.validators.insert(0, validators.isbns.ISBN10Validator(
+            error=self.error_messages['invalid']))
+
+
+class ISBN13Field(fields.String):
+    """
+    An ISBN-13 field that automatically validates its content.
+
+    :param args: The same positional arguments that
+        :class:`marshmallow.fields.String` receives.
+    :param kwargs: The same keyword arguments that
+        :class:`marshmallow.fields.String` receives.
+    """
+    default_error_messages = {'invalid': 'Not a valid ISBN-13.'}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(self, *args, **kwargs)
+        # Insert validation into self.validators so that multiple errors can be
+        # stored.
+        self.validators.insert(0, validators.isbns.ISBN13Validator(
+            error=self.error_messages['invalid']))
+
+
 class ListField(fields.Field):
     """
     A list of values.
