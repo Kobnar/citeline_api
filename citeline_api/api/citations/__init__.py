@@ -1,9 +1,8 @@
 from . import resources, views, schemas
 
-from . import text
-
 
 def traversal_factory(parent, name):
-    txt_sources = resources.CitationCollection(parent, name)
-    txt_sources['text'] = text.traversal_factory(txt_sources, 'text')
-    return txt_sources
+    txt_srcs = resources.CitationCollection(parent, name)
+    txt_srcs['text'] = resources.TextCitationCollection(txt_srcs, 'text')
+    txt_srcs['text']['books'] = resources.BookCitationCollection(txt_srcs['text'], 'books')
+    return txt_srcs

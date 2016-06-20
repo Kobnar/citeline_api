@@ -1,9 +1,8 @@
 from . import resources, views, schemas
 
-from . import text
-
 
 def traversal_factory(parent, name):
     sources = resources.SourceCollection(parent, name)
-    sources['text'] = text.traversal_factory(sources, 'text')
+    sources['text'] = resources.TextSourceCollection(sources, 'text')
+    sources['text']['books'] = resources.TextSourceCollection(sources['text'], 'books')
     return sources
