@@ -2,7 +2,7 @@ from . import resources, views, schemas
 
 
 def traversal_factory(parent, name):
-    sources = resources.SourceCollection(parent, name)
-    sources['text'] = resources.TextSourceCollection(sources, 'text')
-    sources['text']['books'] = resources.TextSourceCollection(sources['text'], 'books')
-    return sources
+    parent[name] = resources.SourceCollection(parent, name)
+    parent[name]['text'] = resources.TextSourceCollection(parent[name], 'text')
+    parent[name]['text']['books'] = resources.BookSourceCollection(parent[name]['text'], 'books')
+    return parent
