@@ -7,7 +7,6 @@ from . import schemas
 
 class PersonDocument(api.resources.APIDocument):
 
-    _retrieve_schema = api.schemas.forms.RetrieveDocument
     _update_schema = schemas.UpdatePerson
 
 
@@ -17,4 +16,3 @@ class PersonCollection(api.resources.APICollection):
     _document_resource = PersonDocument
 
     _create_schema = schemas.CreatePerson
-    _retrieve_schema = api.schemas.forms.RetrieveCollection

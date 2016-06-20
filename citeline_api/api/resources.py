@@ -1,5 +1,7 @@
 from citeline_api import resources
 
+from . import schemas
+
 
 class APIIndex(resources.IndexResource):
     """
@@ -12,14 +14,13 @@ class APIDocument(resources.DocumentResource):
     The API-level traversal resource.
     """
 
-    _retrieve_schema = NotImplemented
+    _retrieve_schema = schemas.forms.RetrieveDocument
     _update_schema = NotImplemented
 
     def retrieve(self, query=None):
         query = query or {}
-        if self._retrieve_schema is not NotImplemented:
-            schema = self._retrieve_schema(strict=True)
-            query = schema.load(query).data
+        schema = self._retrieve_schema(strict=True)
+        query = schema.load(query).data
         fields = query.get('fields')
         result = super().retrieve(fields)
         return result.serialize(fields)
@@ -42,8 +43,8 @@ class APICollection(resources.CollectionResource):
     The API-level traversal resource.
     """
 
+    _retrieve_schema = schemas.forms.RetrieveCollection
     _create_schema = NotImplemented
-    _retrieve_schema = NotImplemented
 
     def create(self, data):
         data = data or {}
@@ -55,9 +56,8 @@ class APICollection(resources.CollectionResource):
 
     def retrieve(self, query=None):
         query = query or {}
-        if self._retrieve_schema is not NotImplemented:
-            schema = self._retrieve_schema(strict=True)
-            query = schema.load(query).data
+        schema = self._retrieve_schema(strict=True)
+        query = schema.load(query).data
         fields, limit, skip = self.get_commons(query)
         # TODO: Create hook to build a raw query in children of APICollection
         raw_query = {}

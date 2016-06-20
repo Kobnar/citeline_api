@@ -284,7 +284,7 @@ class APIDocumentViewsRetrieveTestCase(APIDocumentViewsTestCase):
         documents = self.make_data(save=True)
         for document in documents:
             view = self.get_view(document.id)
-            view.request.params = {'fields': ['id', 'number']}
+            view.request.params = {'fields': 'id,number'}
             result = view.retrieve()
             self.assertEqual(str(document.id), result['id'])
             self.assertNotIn('name', result.keys())

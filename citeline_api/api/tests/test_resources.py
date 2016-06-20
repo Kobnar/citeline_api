@@ -123,7 +123,7 @@ class APICollectionTests(APIResourceTests):
         """APICollection.retrieve() filters explicitly named fields
         """
         docs = self.make_data(save=True)
-        query = {'fields': ['name', 'fact']}
+        query = {'fields': 'name,fact'}
         results = self.col_resource.retrieve(query)
         for idx, doc in enumerate(docs):
             result = results[idx]
@@ -185,9 +185,9 @@ class APICollectionTests(APIResourceTests):
             'name': 'Document 0',
             'number': 12,
             'fact': True,
-            'fields': ['id' 'name']}
+            'fields': 'id,name'}
         result = self.col_resource.get_commons(source)
-        self.assertEqual(['id' 'name'], result[0])
+        self.assertEqual('id,name', result[0])
 
     def test_limit_set(self):
         """APICollection.get_commons() extracts a value for limit
@@ -251,7 +251,7 @@ class APIDocumentTests(APIResourceTests):
     def test_retrieve_filters_fields(self):
         """APIDocument.retrieve() filters explicitly named fields
         """
-        query = {'fields': ('name', 'fact')}
+        query = {'fields': 'name,fact'}
         expected = {
             'name': self.doc.name,
             'fact': self.doc.fact}
