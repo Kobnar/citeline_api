@@ -14,6 +14,23 @@ class CollectionStrictTests(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def test_ids_deserializes_list_of_objectids(self):
+        """APICollection.ids deserializes a list of valid ObjectId strings
+        """
+        import bson
+        expected = [str(bson.ObjectId()) for n in range(3)]
+        query = {'ids': ','.join(expected)}
+        result = self.schema.load(query).data['ids']
+        self.assertEqual(expected, result)
+
+    def test_ids_must_be_valid_ids(self):
+        """APICollection.ids must be a list of valid ObjectId strings
+        """
+        query = {'ids': 'badid,AnotherBadId,576a6d7530f1936f09e5'}
+        from marshmallow import ValidationError
+        with self.assertRaises(ValidationError):
+            self.schema.load(query)
+
     def test_default_limit(self):
         """APICollection.limit defaults to 100 without being set
         """

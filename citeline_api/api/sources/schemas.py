@@ -30,7 +30,7 @@ class CreateSource(Schema, _MediumChoices):
 class UpdateTextSource(Schema, _MediumChoices):
     title = fields.String()
     description = fields.String()
-    authors = api_fields.ListField()
+    authors = fields.List(api_fields.ObjectIdField())
     editors = fields.List(api_fields.ObjectIdField())
 
 
@@ -44,7 +44,7 @@ class CreateTextSource(Schema, _MediumChoices):
 class UpdateBookSource(Schema, _MediumChoices):
     title = fields.String()
     description = fields.String()
-    authors = api_fields.ListField()
+    authors = fields.List(api_fields.ObjectIdField())
     editors = fields.List(api_fields.ObjectIdField())
     edition = fields.String()
     publisher = api_fields.ObjectIdField()

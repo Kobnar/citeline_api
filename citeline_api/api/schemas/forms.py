@@ -12,6 +12,7 @@ class RetrieveCollection(Schema):
     database dumps.
     """
 
+    ids = api_fields.ListField(api_fields.ObjectIdField)
     fields = api_fields.FieldsField()
     limit = mm_fields.Integer(missing=100)
     skip = mm_fields.Integer(missing=0)

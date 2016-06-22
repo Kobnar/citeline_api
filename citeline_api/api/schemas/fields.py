@@ -98,15 +98,16 @@ class ISBN13Field(fields.String):
             error=self.error_messages['invalid']))
 
 
-class ListField(fields.Field):
+class ListField(fields.List):
     """
     A list of values.
     """
     def _deserialize(self, value, attr, data):
         if not value:
-            return []
+            value = []
         else:
-            return value.split(',')
+            value = value.split(',')
+        return super()._deserialize(value, attr, data)
 
 
 class FieldsField(fields.Field):

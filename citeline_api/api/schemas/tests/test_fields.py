@@ -34,7 +34,8 @@ class ListFieldTests(unittest.TestCase):
 
     def setUp(self):
         from ..fields import ListField
-        self.field = ListField()
+        from marshmallow import fields
+        self.field = ListField(fields.String)
 
     def test_deserialize_list_items(self):
         """ListSchema.deserialize() parses a list string into a python list
