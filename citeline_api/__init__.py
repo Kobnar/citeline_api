@@ -3,12 +3,21 @@ import mongoengine
 
 from pyramid.config import Configurator
 from pyramid.renderers import JSON
+from pyramid.httpexceptions import HTTPFound
 
 from citeline_api import api
 
+from . import resources, views
+
+
+def index(context, request):
+    return HTTPFound('/{}/'.format(api.VERSIONS[0]))
+
 
 def root_traversal_factory(request):
-    return api.traversal_factory(None, '')
+    root = resources.IndexResource(None, '')
+    api.traversal_factory(root, api.VERSIONS[0])
+    return root
 
 
 def connect():
@@ -27,6 +36,7 @@ def main(global_config, **settings):
     config = Configurator(
         settings=settings,
         root_factory=root_traversal_factory)
+    config.add_view(index, name='', context=resources.IndexResource)
     config.add_renderer('json', JSON())
     config.scan()
     return config.make_wsgi_app()

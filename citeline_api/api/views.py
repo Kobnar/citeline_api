@@ -1,5 +1,6 @@
 import marshmallow
 import mongoengine
+
 from pyramid.view import view_config, view_defaults
 
 from citeline_api.views import BaseView
@@ -9,11 +10,11 @@ from . import resources, exceptions
 
 @view_defaults(context=resources.APIIndex)
 class APIIndexViews(BaseView):
-    """``/api/v1/``"""
+    """``/v{#}/``"""
 
     @view_config(renderer='json')
-    def main(self):
-        """The main index view for v.1 of the CiteLine API
+    def index(self):
+        """The main index view for the current version of the CiteLine API
         """
         return {
             'title': 'CiteLine API',
