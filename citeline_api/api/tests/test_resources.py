@@ -160,6 +160,18 @@ class APICollectionTests(APIResourceTests):
         result = self.col_resource.retrieve({'skip': 4})[0]
         self.assertEqual(4, result['number'])
 
+    def test_retrieve_returns_matching_ids(self):
+        """APICollection.retrieve() returns documents listed in ids"""
+        from random import randint
+        docs = self.make_data(data_range=8, save=True)
+        expected = [str(d.id) for d in docs]
+        for n in range(3):
+            r_idx = randint(0, len(expected) - 1)
+            expected.pop(r_idx)
+        query = {'ids': ','.join(expected)}
+        results = [r['id'] for r in self.col_resource.retrieve(query)]
+        self.assertEqual(expected, results)
+
     def test_get_commons_default_values(self):
         """APICollection.get_commons() outputs default values
         """

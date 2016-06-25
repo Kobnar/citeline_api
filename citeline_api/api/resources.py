@@ -1,3 +1,4 @@
+import bson
 from citeline_api import resources
 
 from . import schemas
@@ -59,8 +60,7 @@ class APICollection(resources.CollectionResource):
         schema = self._retrieve_schema(strict=True)
         query = schema.load(query).data
         fields, limit, skip = self.get_commons(query)
-        # TODO: Create hook to build a raw query in children of APICollection
-        raw_query = {}
+        raw_query = self._raw_query(query)
         results = super().retrieve(raw_query, fields, limit, skip)
 
         if results:
@@ -88,3 +88,17 @@ class APICollection(resources.CollectionResource):
             skip = query.pop('skip')
 
         return fields, limit, skip
+
+    @staticmethod
+    def _raw_query(query):
+        """
+        A hook to build a raw pymongo query.
+        :param query: The output of `self._retrieve_schema`.
+        :return: A raw pymongo query
+        """
+        raw_query = {}
+        ids = query.get('ids')
+        if ids:
+            ids = [bson.ObjectId(id) for id in ids]
+            raw_query.update({'_id': {'$in': ids}})
+        return raw_query
