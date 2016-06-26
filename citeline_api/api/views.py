@@ -30,6 +30,7 @@ class APIExceptionViews(BaseView):
 
     @view_config(context=exceptions.APINotFound)
     @view_config(context=exceptions.APIBadRequest)
+    @view_config(context=exceptions.APIUnauthorized)
     def format_exception(self):
         self.request.response.status_code = self.context.code
         return {self.context.status: self.context.detail}

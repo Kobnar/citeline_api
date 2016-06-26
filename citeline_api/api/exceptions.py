@@ -29,3 +29,13 @@ class APINotFound(httpexceptions.HTTPNotFound):
 
     code: 404, title: Not Found
     """
+
+
+class APIUnauthorized(httpexceptions.HTTPUnauthorized):
+    """
+    Subclass of :class:`~HTTPUnauthorized` used to raise HTTP exceptions within
+    the API instead of forwarding the user to a front-end styled exception
+    page.
+
+    code: 401, title: Unauthorized
+    """

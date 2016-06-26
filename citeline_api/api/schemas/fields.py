@@ -3,6 +3,25 @@ from marshmallow import fields
 from . import validators
 
 
+class TokenKeyField(fields.String):
+    """
+    A Token key field that automatically validates its content.
+
+    :param args: The same positional arguments that
+        :class:`marshmallow.fields.String` receives.
+    :param kwargs: The same keyword arguments that
+        :class:`marshmallow.fields.String` receives.
+    """
+    default_error_messages = {'invalid': 'Not a valid API token key.'}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(self, *args, **kwargs)
+        # Insert validation into self.validators so that multiple errors can be
+        # stored.
+        self.validators.insert(0, validators.keys.TokenKeyValidator(
+            error=self.error_messages['invalid']))
+
+
 class ObjectIdField(fields.String):
     """
     An ObjectId field that automatically validates its content.
