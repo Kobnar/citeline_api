@@ -37,8 +37,7 @@ class AuthResource(api.resources.APIIndex):
         token = db.Token.objects.get(_key=key)
         token.save()
         return {
-            'user': str(token.user.id),
-            'token': str(token.key)
+            'touched': str(token.touched)
         }
 
     def log_out(self, token_data):
