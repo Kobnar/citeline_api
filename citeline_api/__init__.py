@@ -39,10 +39,11 @@ def main(global_config, **settings):
         root_factory=root_traversal_factory)
 
     # Custom request attributes
+    config.add_request_method(auth.get_token, 'token', reify=True)
     config.add_request_method(auth.get_user, 'user', reify=True)
 
     # Authentication
-    authentication_policy = auth.TokenAuthenticationPolicy(auth.get_user, True)
+    authentication_policy = auth.TokenAuthenticationPolicy(debug=True)
     authorization_policy = ACLAuthorizationPolicy()
     config.set_authentication_policy(authentication_policy)
     config.set_authorization_policy(authorization_policy)

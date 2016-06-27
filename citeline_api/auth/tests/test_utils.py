@@ -15,6 +15,45 @@ class AuthUtilsBaseIntegrationTestCase(unittest.TestCase):
         self.token = db.Token.new(self.user, save=True)
 
 
+class GetTokenIntegrationTestCase(AuthUtilsBaseIntegrationTestCase):
+
+    def test_get_token_returns_correct_token(self):
+        from pyramid.testing import DummyRequest
+        from ..utils import get_token
+        key = self.token.key
+        request = DummyRequest()
+        request.authorization = 'Key', key
+        result = get_token(request)
+        self.assertEqual(self.token, result)
+
+    def test_invalid_key_returns_none(self):
+        from pyramid.testing import DummyRequest
+        from ..utils import get_token
+        request = DummyRequest()
+        request.authorization = 'Key', 'invalid_key'
+        result = get_token(request)
+        self.assertIsNone(result)
+
+    def test_invalid_auth_type_returns_none(self):
+        from pyramid.testing import DummyRequest
+        from ..utils import get_token
+        key = self.token.key
+        request = DummyRequest()
+        request.authorization = 'Invalid', key
+        request.token = get_token(request)
+        result = get_token(request)
+        self.assertIsNone(result)
+
+    def test_basic_auth_type_returns_none(self):
+        from pyramid.testing import DummyRequest
+        from ..utils import get_token
+        key = self.token.key
+        request = DummyRequest()
+        request.authorization = 'Basic', key
+        result = get_token(request)
+        self.assertIsNone(result)
+
+
 class GetUserIntegrationTestCase(AuthUtilsBaseIntegrationTestCase):
 
     def test_get_user_returns_correct_user(self):
@@ -23,34 +62,9 @@ class GetUserIntegrationTestCase(AuthUtilsBaseIntegrationTestCase):
         key = self.token.key
         request = DummyRequest()
         request.authorization = 'Key', key
-        user = get_user(request)
-        self.assertEqual(self.user, user)
-
-    def test_invalid_key_returns_none(self):
-        from pyramid.testing import DummyRequest
-        from ..utils import get_user
-        request = DummyRequest()
-        request.authorization = 'Key', 'invalid_key'
-        user = get_user(request)
-        self.assertIsNone(user)
-
-    def test_invalid_auth_type_returns_none(self):
-        from pyramid.testing import DummyRequest
-        from ..utils import get_user
-        key = self.token.key
-        request = DummyRequest()
-        request.authorization = 'Invalid', key
-        user = get_user(request)
-        self.assertIsNone(user)
-
-    def test_basic_auth_type_returns_none(self):
-        from pyramid.testing import DummyRequest
-        from ..utils import get_user
-        key = self.token.key
-        request = DummyRequest()
-        request.authorization = 'Basic', key
-        user = get_user(request)
-        self.assertIsNone(user)
+        request.token = self.token
+        result = get_user(request)
+        self.assertEqual(self.user, result)
 
 
 class GetGroupsIntegrationTestCase(AuthUtilsBaseIntegrationTestCase):
@@ -60,9 +74,7 @@ class GetGroupsIntegrationTestCase(AuthUtilsBaseIntegrationTestCase):
         from ..utils import get_user, get_groups
         expected = self.user.groups
         user_id = self.user.id
-        key = self.token.key
         request = DummyRequest()
-        request.authorization = 'Key', key
-        request.user = get_user(request) # HACK!
+        request.user = self.user
         result = get_groups(user_id, request)
         self.assertEqual(expected, result)
