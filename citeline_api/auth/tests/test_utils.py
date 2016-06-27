@@ -3,14 +3,6 @@ import unittest
 from citeline_api import testing
 
 
-def _make_request(key):
-    from pyramid.testing import DummyRequest
-    api_header = {'API_KEY': key}
-    request = DummyRequest()
-    request.headers.update(api_header)
-    return request
-
-
 class AuthUtilsBaseIntegrationTestCase(unittest.TestCase):
 
     layer = testing.layers.MongoIntegrationTestLayer
@@ -26,21 +18,51 @@ class AuthUtilsBaseIntegrationTestCase(unittest.TestCase):
 class GetUserIntegrationTestCase(AuthUtilsBaseIntegrationTestCase):
 
     def test_get_user_returns_correct_user(self):
+        from pyramid.testing import DummyRequest
         from ..utils import get_user
         key = self.token.key
-        request = _make_request(key)
+        request = DummyRequest()
+        request.authorization = 'Key', key
         user = get_user(request)
         self.assertEqual(self.user, user)
+
+    def test_invalid_key_returns_none(self):
+        from pyramid.testing import DummyRequest
+        from ..utils import get_user
+        request = DummyRequest()
+        request.authorization = 'Key', 'invalid_key'
+        user = get_user(request)
+        self.assertIsNone(user)
+
+    def test_invalid_auth_type_returns_none(self):
+        from pyramid.testing import DummyRequest
+        from ..utils import get_user
+        key = self.token.key
+        request = DummyRequest()
+        request.authorization = 'Invalid', key
+        user = get_user(request)
+        self.assertIsNone(user)
+
+    def test_basic_auth_type_returns_none(self):
+        from pyramid.testing import DummyRequest
+        from ..utils import get_user
+        key = self.token.key
+        request = DummyRequest()
+        request.authorization = 'Basic', key
+        user = get_user(request)
+        self.assertIsNone(user)
 
 
 class GetGroupsIntegrationTestCase(AuthUtilsBaseIntegrationTestCase):
 
     def test_get_groups_returns_groups(self):
+        from pyramid.testing import DummyRequest
         from ..utils import get_user, get_groups
         expected = self.user.groups
         user_id = self.user.id
         key = self.token.key
-        request = _make_request(key)
+        request = DummyRequest()
+        request.authorization = 'Key', key
         request.user = get_user(request) # HACK!
         result = get_groups(user_id, request)
         self.assertEqual(expected, result)

@@ -3,6 +3,7 @@ import mongoengine
 from mongoengine import context_managers
 
 from citeline import data as db
+from citeline.data.validators import keys
 
 
 def get_user(request):
@@ -12,7 +13,7 @@ def get_user(request):
 
     try:
         auth_type, key = request.authorization
-        if auth_type.lower() == 'key':
+        if auth_type.lower() == 'key' and keys.validate_key(key):
             with context_managers.no_dereference(db.Token) as Token:
                 token = Token.objects.get(_key=key)
                 return token.user
