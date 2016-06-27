@@ -13,13 +13,9 @@ class TokenAuthenticationPolicy(CallbackAuthenticationPolicy):
     the request header against those saved in the database.
     """
 
-    def __init__(self, callback, debug=False):
-        # self.callback = callback
+    def __init__(self, callback=None, debug=False):
+        self.callback = callback or utils.get_groups
         self.debug = debug
-
-    # TODO: Working with Pyramid's callback pattern has proven nontrivial...
-    def callback(self, user_id, request):
-        return utils.get_groups(user_id, request)
 
     def unauthenticated_userid(self, request):
         """
