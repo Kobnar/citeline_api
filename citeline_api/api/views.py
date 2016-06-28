@@ -1,7 +1,7 @@
 import marshmallow
 import mongoengine
 
-from pyramid.view import view_config, view_defaults
+from pyramid.view import view_config, view_defaults, forbidden_view_config
 
 from citeline_api.views import BaseView
 
@@ -30,10 +30,16 @@ class APIExceptionViews(BaseView):
 
     @view_config(context=exceptions.APINotFound)
     @view_config(context=exceptions.APIBadRequest)
-    @view_config(context=exceptions.APIUnauthorized)
-    def format_exception(self):
+    def exception(self):
         self.request.response.status_code = self.context.code
         return {self.context.status: self.context.detail}
+
+    @forbidden_view_config()
+    def forbidden(self):
+        self.request.response.status_code = 403
+        status = '403 Forbidden'
+        detail = 'You do not have permission to view or edit this resource'
+        return {status: detail}
 
 
 class APICollectionViews(BaseView):

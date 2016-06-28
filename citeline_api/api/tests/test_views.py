@@ -18,14 +18,74 @@ class APIIndexViewsTests(testing.views.ViewTestCase):
         """APIIndexViews.main() returns a dictionary
         """
         view = self.get_view()
-        result = view.main()
+        result = view.index()
         self.assertIsInstance(result, dict)
 
 
+class APIExceptionViewsTestCase(testing.views.ExceptionViewTestCase):
+
+    layer = testing.layers.UnitTestLayer
+
+    from ..views import APIExceptionViews
+    VIEW_CLASS = APIExceptionViews
+
+
+class APINotFoundViewsTestCase(APIExceptionViewsTestCase):
+
+    from ..exceptions import APINotFound
+    EXCEPTION_CLASS = APINotFound
+
+    def test_status_code_matches_404_exception_code(self):
+        """APIExceptionViews.exception() sets status code to a 404 Not Found
+        """
+        expected = 404
+        view = self.get_view()
+        view.exception()
+        result = view.request.response.status_code
+        self.assertEqual(expected, result)
+
+    def test_body_status_message_matches_exc_status(self):
+        """APIExceptionViews.Exception() sets message status as '404 Not Found'
+        """
+        status = '404 Not Found'
+        view = self.get_view()
+        result = view.exception()
+        try:
+            result[status]
+        except KeyError as err:
+            msg = 'Unexpected exception raised: {}'
+            self.fail(msg.format(err))
+
+
+class APIUnauthorizedTestCase(APIExceptionViewsTestCase):
+
+    from ..exceptions import APIUnauthorized
+    EXCEPTION_CLASS = APIUnauthorized
+
+    def test_status_code_matches_403_exception_code(self):
+        """APIExceptionViews.forbidden() sets status code to a 403 Forbidden
+        """
+        expected = 403
+        view = self.get_view()
+        view.forbidden()
+        result = view.request.response.status_code
+        self.assertEqual(expected, result)
+
+    def test_body_status_message_matches_exc_status(self):
+        """APIExceptionViews.forbidden() sets message status as '403 Forbidden'
+        """
+        status = '403 Forbidden'
+        view = self.get_view()
+        result = view.forbidden()
+        try:
+            result[status]
+        except KeyError as err:
+            msg = 'Unexpected exception raised: {}'
+            self.fail(msg.format(err))
+
+
 class APICollectionViewsTestCase(testing.views.CollectionViewTestCase):
-    """
-    A base test case establishing tests for :class:`.APICollectionViews`
-    """
+
     layer = testing.layers.MongoIntegrationTestLayer
 
     # Define "mock" traversal resources:
