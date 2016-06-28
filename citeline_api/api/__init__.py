@@ -13,7 +13,8 @@ VERSION = VERSIONS[-1]
 
 def traversal_factory(parent, name):
     # Index
-    parent[name] = api_idx = resources.APIIndex(parent, name)
+    parent[name] = resources.APIIndex
+    api_idx = parent[name]
     # Collections
     auth.traversal_factory(api_idx, 'auth')
     people.traversal_factory(api_idx, 'people')
@@ -50,7 +51,10 @@ def view_factory(config):
     Configures API endpoint views for an explicitly defined collection of
     resources.
     """
-    config.add_view(views.APIIndexViews, context=resources.APIIndex, attr='index')
+
+    config.add_view(
+        views.APIIndexViews, context=resources.APIIndex, attr='index')
+
     _endpoint_factory(config, people.ENDPOINTS)
     _endpoint_factory(config, organizations.ENDPOINTS)
     _endpoint_factory(config, sources.ENDPOINTS)

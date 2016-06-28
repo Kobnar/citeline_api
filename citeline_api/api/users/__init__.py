@@ -11,5 +11,5 @@ ENDPOINTS = (
 
 
 def traversal_factory(parent, name):
-    parent[name] = resources.UserCollection(parent, name)
+    parent[name] = resources.UserCollection
     return parent
