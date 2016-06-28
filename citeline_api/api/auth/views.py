@@ -10,11 +10,17 @@ from citeline_api.api import exceptions
 from . import resources
 
 
-@view_defaults(context=resources.AuthResource, renderer='json')
+@view_defaults(renderer='json')
 class AuthViews(views.BaseView):
     """``../auth/``"""
 
-    @view_config(request_method='POST', permission='create')
+    METHODS = (
+        ('POST', 'create'),
+        ('GET', 'retrieve'),
+        ('PUT', 'update'),
+        ('DELETE', 'delete')
+    )
+
     def create(self):
         try:
             auth_data = self.request.json_body
@@ -32,17 +38,14 @@ class AuthViews(views.BaseView):
             msg = 'Authentication failed'
             raise exceptions.APIBadRequest(detail=msg)
 
-    @view_config(request_method='GET', permission='retrieve')
     def retrieve(self):
         token = self.request.token
         return self.context.retrieve(token)
 
-    @view_config(request_method='PUT', permission='update')
     def update(self):
         token = self.request.token
         return self.context.update(token)
 
-    @view_config(request_method='DELETE', permission='delete')
     def delete(self):
         token = self.request.token
         result = self.context.delete(token)

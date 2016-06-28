@@ -5,14 +5,15 @@ from citeline import data as db
 
 from citeline_api import api
 
-from . import schemas
+from . import schemas, views
 
 
 class AuthResource(api.resources.APIIndex):
 
+    VIEW_CLASS = views.AuthViews
+
     __acl__ = [
         (sec.Allow, sec.Everyone, 'create'),
-        # TODO: Only allow owners of a key to RUD that key!
         (sec.Allow, sec.Authenticated, ('retrieve', 'update', 'delete'))
     ]
 
