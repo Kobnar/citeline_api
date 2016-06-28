@@ -32,8 +32,8 @@ class APIExceptionViewsTestCase(testing.views.ExceptionViewTestCase):
 
 class APINotFoundViewsTestCase(APIExceptionViewsTestCase):
 
-    from ..exceptions import APINotFound
-    EXCEPTION_CLASS = APINotFound
+    from pyramid.exceptions import HTTPNotFound
+    EXCEPTION_CLASS = HTTPNotFound
 
     def test_status_code_matches_404_exception_code(self):
         """APIExceptionViews.exception() sets status code to a 404 Not Found
@@ -45,7 +45,7 @@ class APINotFoundViewsTestCase(APIExceptionViewsTestCase):
         self.assertEqual(expected, result)
 
     def test_body_status_message_matches_exc_status(self):
-        """APIExceptionViews.Exception() sets message status as '404 Not Found'
+        """APIExceptionViews.exception() sets message status as '404 Not Found'
         """
         status = '404 Not Found'
         view = self.get_view()
@@ -57,31 +57,28 @@ class APINotFoundViewsTestCase(APIExceptionViewsTestCase):
             self.fail(msg.format(err))
 
 
-class APIUnauthorizedTestCase(APIExceptionViewsTestCase):
+class APIForbiddenViewsTestCase(APIExceptionViewsTestCase):
 
-    from ..exceptions import APIUnauthorized
-    EXCEPTION_CLASS = APIUnauthorized
+    from pyramid.exceptions import HTTPForbidden
+    EXCEPTION_CLASS = HTTPForbidden
 
     def test_status_code_matches_403_exception_code(self):
-        """APIExceptionViews.forbidden() sets status code to a 403 Forbidden
+        """APIExceptionViews.exception() sets status code to a 403 Forbidden
         """
         expected = 403
         view = self.get_view()
-        view.forbidden()
+        view.exception()
         result = view.request.response.status_code
         self.assertEqual(expected, result)
 
-    def test_body_status_message_matches_exc_status(self):
-        """APIExceptionViews.forbidden() sets message status as '403 Forbidden'
+    def test_forbidden_detail_overrides_verbose_default(self):
+        """APIExceptionViews.forbidden() overrides the verbose 403 Forbidden default
         """
-        status = '403 Forbidden'
+        expected = 'You do not have permission to view or edit this resource'
         view = self.get_view()
-        result = view.forbidden()
-        try:
-            result[status]
-        except KeyError as err:
-            msg = 'Unexpected exception raised: {}'
-            self.fail(msg.format(err))
+        view.forbidden()
+        result = view.context.detail
+        self.assertEqual(expected, result)
 
 
 class APICollectionViewsTestCase(testing.views.CollectionViewTestCase):

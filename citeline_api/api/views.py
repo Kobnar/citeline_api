@@ -1,7 +1,14 @@
 import marshmallow
 import mongoengine
 
-from pyramid.view import view_config, view_defaults, forbidden_view_config
+from pyramid import exceptions as exc
+
+from pyramid.view import (
+    view_config,
+    view_defaults,
+    forbidden_view_config,
+    notfound_view_config
+)
 
 from citeline_api.views import BaseView
 
@@ -28,18 +35,17 @@ class APIExceptionViews(BaseView):
     A view class to provide JSON formatted exceptions.
     """
 
-    @view_config(context=exceptions.APINotFound)
-    @view_config(context=exceptions.APIBadRequest)
+    @notfound_view_config()
+    @view_config(context=exc.HTTPBadRequest)
     def exception(self):
         self.request.response.status_code = self.context.code
         return {self.context.status: self.context.detail}
 
     @forbidden_view_config()
     def forbidden(self):
-        self.request.response.status_code = 403
-        status = '403 Forbidden'
-        detail = 'You do not have permission to view or edit this resource'
-        return {status: detail}
+        msg = 'You do not have permission to view or edit this resource'
+        self.context.detail = msg
+        return self.exception()
 
 
 class APICollectionViews(BaseView):
