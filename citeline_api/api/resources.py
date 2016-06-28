@@ -1,7 +1,10 @@
 import bson
+
+from pyramid import security as sec
+
 from citeline_api import resources
 
-from . import schemas
+from . import schemas, views
 
 
 class APIIndex(resources.IndexResource):
@@ -9,11 +12,23 @@ class APIIndex(resources.IndexResource):
     The root index resource.
     """
 
+    VIEW_CLASS = views.APIIndexViews
+
+    __acl__ = [
+        (sec.Allow, sec.Everyone, 'retrieve')
+    ]
+
 
 class APIDocument(resources.DocumentResource):
     """
     The API-level traversal resource.
     """
+
+    VIEW_CLASS = views.APIDocumentViews
+
+    __acl__ = [
+        (sec.Allow, sec.Authenticated, ('update', 'delete'))
+    ]
 
     _retrieve_schema = schemas.forms.RetrieveDocument
     _update_schema = NotImplemented
@@ -43,6 +58,12 @@ class APICollection(resources.CollectionResource):
     """
     The API-level traversal resource.
     """
+
+    VIEW_CLASS = views.APICollectionViews
+
+    __acl__ = [
+        (sec.Allow, sec.Authenticated, 'create')
+    ]
 
     _retrieve_schema = schemas.forms.RetrieveCollection
     _create_schema = NotImplemented

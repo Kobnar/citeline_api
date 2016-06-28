@@ -12,14 +12,13 @@ from pyramid.view import (
 
 from citeline_api.views import BaseView
 
-from . import resources, exceptions
+from . import exceptions
 
 
-@view_defaults(context=resources.APIIndex)
+@view_defaults(renderer='json')
 class APIIndexViews(BaseView):
     """``/v{#}/``"""
 
-    @view_config(renderer='json')
     def index(self):
         """The main index view for the current version of the CiteLine API
         """
@@ -48,6 +47,7 @@ class APIExceptionViews(BaseView):
         return self.exception()
 
 
+@view_defaults(renderer='json')
 class APICollectionViews(BaseView):
     """
     A base view class to CREATE and RETRIEVE documents from a MongoDB
@@ -57,6 +57,11 @@ class APICollectionViews(BaseView):
     view object. By the time the object is handled by the view object, it has
     already been serialized into a nested dictionary representation of data.
     """
+
+    METHODS = (
+        ('POST', 'create'),
+        ('GET', 'retrieve')
+    )
 
     def create(self):
         """CREATE a new document using JSON data from the request body.
@@ -96,11 +101,18 @@ class APICollectionViews(BaseView):
             raise exceptions.APIBadRequest(detail=msg)
 
 
+@view_defaults(renderer='json')
 class APIDocumentViews(BaseView):
     """
     A base view class to RETRIEVE, UPDATE and DELETE documents from a MongoDB
     collection using v.1 of the CiteLine API
     """
+
+    METHODS = (
+        ('GET', 'retrieve'),
+        ('PUT', 'update'),
+        ('DELETE', 'delete')
+    )
 
     def retrieve(self):
         """RETRIEVE an individual document

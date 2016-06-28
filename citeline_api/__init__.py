@@ -49,8 +49,9 @@ def main(global_config, **settings):
     config.set_authorization_policy(authorization_policy)
 
     # Views
-    config.add_view(index, name='', context=resources.IndexResource)
     config.add_renderer('json', JSON())
+    config.add_view(index, context=resources.IndexResource)
+    api.view_factory(config)
 
     config.scan()
     return config.make_wsgi_app()

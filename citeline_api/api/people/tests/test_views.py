@@ -8,9 +8,9 @@ class PersonCollectionViewsIntegrationTestCase(
 
     # Define resource and view classes
     from ..resources import PersonCollection
-    from ..views import PersonCollectionViews
+    from citeline_api.api.views import APICollectionViews
     RESOURCE_CLASS = PersonCollection
-    VIEW_CLASS = PersonCollectionViews
+    VIEW_CLASS = APICollectionViews
 
     def get_view(self, name='people'):
         return super().get_view(name)
@@ -47,9 +47,9 @@ class PersonDocumentViewsIntegrationTestCase(
 
     # Define resource and view classes
     from ..resources import PersonCollection
-    from ..views import PersonDocumentViews
+    from citeline_api.api.views import APIDocumentViews
     RESOURCE_CLASS = PersonCollection
-    VIEW_CLASS = PersonDocumentViews
+    VIEW_CLASS = APIDocumentViews
 
     def setUp(self):
         from citeline.data import Person

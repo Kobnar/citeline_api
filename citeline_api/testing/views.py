@@ -25,6 +25,27 @@ class ViewTestCase(unittest.TestCase):
         return view
 
 
+class ExceptionViewTestCase(unittest.TestCase):
+    """
+    A :class:`BaseTestCase` designed for testing views with exception contexts.
+    Provides a view with a `DummyRequest` and exception as a context.
+    """
+
+    EXCEPTION_CLASS = NotImplemented
+    REQUEST_CLASS = testing.DummyRequest
+    VIEW_CLASS = NotImplemented
+
+    def get_view(self):
+        """Returns a qualified view object for testing.
+
+        :return: A qualified view object
+        """
+        context = self.EXCEPTION_CLASS()
+        request = self.REQUEST_CLASS()
+        view = self.VIEW_CLASS(context, request)
+        return view
+
+
 class CollectionViewTestCase(ViewTestCase):
     """
     An alias for :class:`.ViewTestCase` that communicates when the developer is

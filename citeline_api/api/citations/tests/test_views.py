@@ -8,9 +8,9 @@ class CitationCollectionViewsIntegrationTestCase(
 
     # Define resource and view classes
     from ..resources import CitationCollection
-    from ..views import CitationCollectionViews
+    from citeline_api.api.views import APICollectionViews
     RESOURCE_CLASS = CitationCollection
-    VIEW_CLASS = CitationCollectionViews
+    VIEW_CLASS = APICollectionViews
 
     def get_view(self, name='citation'):
         return super().get_view(name)
@@ -48,9 +48,9 @@ class CitationDocumentViewsIntegrationTestCase(
 
     # Define resource and view classes
     from ..resources import CitationCollection
-    from ..views import CitationDocumentViews
+    from citeline_api.api.views import APIDocumentViews
     RESOURCE_CLASS = CitationCollection
-    VIEW_CLASS = CitationDocumentViews
+    VIEW_CLASS = APIDocumentViews
 
     def setUp(self):
         from citeline import data

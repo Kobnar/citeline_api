@@ -1,5 +1,6 @@
 import mongoengine
 
+from pyramid import security as sec
 from citeline import data as db
 
 from citeline_api import api
@@ -9,10 +10,20 @@ from . import schemas
 
 class AuthResource(api.resources.APIIndex):
 
+    __acl__ = [
+        (sec.Allow, sec.Everyone, 'create'),
+        # TODO: Only allow owners of a key to RUD that key!
+        (sec.Allow, sec.Authenticated, ('retrieve', 'update', 'delete'))
+    ]
+
     _token_schema = schemas.Token
     _auth_schema = schemas.Authenticate
 
-    def log_in(self, auth_data):
+    def create(self, auth_data):
+        """
+        Creates or updates a :class:`~Token` based on valid user authentication
+        credentials.
+        """
         schema = self._auth_schema(strict=True)
         auth_data = schema.load(auth_data).data
         email = auth_data.get('email')
@@ -30,18 +41,21 @@ class AuthResource(api.resources.APIIndex):
             'token': str(token.key)
         }
 
-    def touch(self, token_data):
-        schema = self._token_schema(strict=True)
-        token_data = schema.load(token_data).data
-        key = token_data.get('token')
-        token = db.Token.objects.get(_key=key)
-        token.save()
-        return {
-            'touched': str(token.touched)
-        }
+    def retrieve(self, token):
+        """
+        Confirms the existence of a :class:`~Token`.
+        """
+        return token.serialize()
 
-    def log_out(self, token_data):
-        schema = self._token_schema(strict=True)
-        token_data = schema.load(token_data).data
-        key = token_data.get('token')
-        return db.Token.objects(_key=key).delete()
+    def update(self, token):
+        """
+        Updates an existing :class:`~Token`.
+        """
+        token.save()
+        return token.serialize()
+
+    def delete(self, token):
+        """
+        Deletes an existing :class:`~Token`.
+        """
+        return bool(token.delete())

@@ -38,7 +38,7 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         time.sleep(0.001)
         # Log in user
         auth_data = {'email': email, 'password': password}
-        self.collection.log_in(auth_data)
+        self.collection.create(auth_data)
         # Query updated user
         user = User.objects.get(email=email)
         last_login = user.last_login
@@ -55,7 +55,7 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         user.save()
         # Log in user
         auth_data = {'email': email, 'password': password}
-        result = self.collection.log_in(auth_data)
+        result = self.collection.create(auth_data)
         self.assertIn('user', result.keys())
 
     def test_login_returns_token(self):
@@ -68,5 +68,5 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         user.save()
         # Log in user
         auth_data = {'email': email, 'password': password}
-        result = self.collection.log_in(auth_data)
+        result = self.collection.create(auth_data)
         self.assertIn('token', result.keys())

@@ -14,11 +14,11 @@ from . import resources
 class AuthViews(views.BaseView):
     """``../auth/``"""
 
-    @view_config(request_method='POST')
-    def log_in(self):
+    @view_config(request_method='POST', permission='create')
+    def create(self):
         try:
             auth_data = self.request.json_body
-            return self.context.log_in(auth_data)
+            return self.context.create(auth_data)
 
         except ValueError:
             msg = 'Failed to decode JSON body'
@@ -32,37 +32,20 @@ class AuthViews(views.BaseView):
             msg = 'Authentication failed'
             raise exceptions.APIBadRequest(detail=msg)
 
-    @view_config(request_method='PUT')
-    def touch(self):
-        try:
-            token_data = self.request.json_body
-            return self.context.touch(token_data)
+    @view_config(request_method='GET', permission='retrieve')
+    def retrieve(self):
+        token = self.request.token
+        return self.context.retrieve(token)
 
-        except ValueError:
-            msg = 'Failed to decode JSON body'
-            raise api.exceptions.APIBadRequest(detail=msg)
+    @view_config(request_method='PUT', permission='update')
+    def update(self):
+        token = self.request.token
+        return self.context.update(token)
 
-        except marshmallow.ValidationError as err:
-            msg = err.messages
-            raise exceptions.APIBadRequest(detail=msg)
-
-        except mongoengine.DoesNotExist:
-            raise exceptions.APINotFound()
-
-    @view_config(request_method='DELETE')
-    def log_out(self):
-        try:
-            token_data = self.request.json_body
-            result = self.context.log_out(token_data)
-
-        except ValueError:
-            msg = 'Failed to decode JSON body'
-            raise api.exceptions.APIBadRequest(detail=msg)
-
-        except marshmallow.ValidationError as err:
-            msg = err.messages
-            raise exceptions.APIBadRequest(detail=msg)
-
+    @view_config(request_method='DELETE', permission='delete')
+    def delete(self):
+        token = self.request.token
+        result = self.context.delete(token)
         if result:
             raise exceptions.APINoContent()
         else:

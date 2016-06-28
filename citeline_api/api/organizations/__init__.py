@@ -1,4 +1,17 @@
-from . import resources, views, schemas
+from .resources import (
+    OrganizationCollection,
+    OrganizationDocument,
+    PublisherCollection,
+    PublisherDocument
+)
+
+
+ENDPOINTS = (
+    OrganizationCollection,
+    OrganizationDocument,
+    PublisherCollection,
+    PublisherDocument
+)
 
 
 def traversal_factory(parent, name):
