@@ -55,6 +55,7 @@ def view_factory(config):
     config.add_view(
         views.APIIndexViews, context=resources.APIIndex, attr='index')
 
+    _endpoint_factory(config, auth.ENDPOINTS)
     _endpoint_factory(config, people.ENDPOINTS)
     _endpoint_factory(config, organizations.ENDPOINTS)
     _endpoint_factory(config, sources.ENDPOINTS)

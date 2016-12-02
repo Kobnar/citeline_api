@@ -13,8 +13,9 @@ class AuthResource(api.resources.APIIndex):
     VIEW_CLASS = views.AuthViews
 
     __acl__ = [
+        (sec.Allow, sec.Authenticated, ('retrieve', 'update', 'delete')),
         (sec.Allow, sec.Everyone, 'create'),
-        (sec.Allow, sec.Authenticated, ('retrieve', 'update', 'delete'))
+        sec.DENY_ALL
     ]
 
     _token_schema = schemas.Token

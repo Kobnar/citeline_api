@@ -8,7 +8,10 @@ from citeline.data.validators import keys
 
 def get_token(request):
     """
-    Returns a token key from the request authorization header.
+    Returns a token key from the request authorization header. The header must
+    take the following form:
+
+    `Authentication: key [token]`
     """
 
     try:

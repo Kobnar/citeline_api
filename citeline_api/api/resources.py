@@ -15,7 +15,8 @@ class APIIndex(resources.IndexResource):
     VIEW_CLASS = views.APIIndexViews
 
     __acl__ = [
-        (sec.Allow, sec.Everyone, 'retrieve')
+        (sec.Allow, sec.Everyone, 'retrieve'),
+        sec.DENY_ALL
     ]
 
 
@@ -27,7 +28,9 @@ class APIDocument(resources.DocumentResource):
     VIEW_CLASS = views.APIDocumentViews
 
     __acl__ = [
-        (sec.Allow, sec.Authenticated, ('update', 'delete'))
+        (sec.Allow, sec.Authenticated, ('update', 'delete')),
+        (sec.Allow, sec.Everyone, 'retrieve'),
+        sec.DENY_ALL
     ]
 
     _retrieve_schema = schemas.forms.RetrieveDocument
@@ -62,7 +65,9 @@ class APICollection(resources.CollectionResource):
     VIEW_CLASS = views.APICollectionViews
 
     __acl__ = [
-        (sec.Allow, sec.Authenticated, 'create')
+        (sec.Allow, sec.Authenticated, 'create'),
+        (sec.Allow, sec.Everyone, 'retrieve'),
+        sec.DENY_ALL
     ]
 
     _retrieve_schema = schemas.forms.RetrieveCollection
