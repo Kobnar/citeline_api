@@ -20,9 +20,5 @@ class MongoIntegrationTestLayer(UnitTestLayer):
 
     @classmethod
     def setUp(cls):
-        db = mongoengine.connect(
-            cls._DB,
-            username=cls._USER,
-            password=cls._PASSWORD
-        )
+        db = mongoengine.connect(cls._DB)
         db.drop_database(cls._DB)
