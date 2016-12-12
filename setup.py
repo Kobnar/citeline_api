@@ -19,7 +19,8 @@ requires = [
 
 tests_require = [
     'WebTest >= 1.3.1',  # py3 compat
-    'nose2[coverage-plugin]'
+    'nose2',
+    'cov-core'
     ]
 
 setup(name='citeline_api',
