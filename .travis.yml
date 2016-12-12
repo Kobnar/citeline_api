@@ -3,5 +3,8 @@ language: python
 python:
   - "3.5"
 install:
+  - cd deps/stackcite_db
+  - python setup.py develop
+  - cd ../..
   - python setup.py develop
 script: nose2
