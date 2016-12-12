@@ -14,10 +14,7 @@ requires = [
     'waitress',
     'bson',
     'mongoengine',
-    'marshmallow'
-    ]
-
-tests_require = [
+    'marshmallow',
     'WebTest >= 1.3.1',  # py3 compat
     'nose2',
     'cov-core'
@@ -40,9 +37,6 @@ setup(name='citeline_api',
       packages=find_packages(),
       include_package_data=True,
       zip_safe=False,
-      extras_require={
-          'testing': tests_require,
-      },
       install_requires=requires,
       entry_points="""\
       [paste.app_factory]
