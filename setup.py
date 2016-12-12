@@ -13,6 +13,7 @@ requires = [
     'pyramid_debugtoolbar',
     'waitress',
     'bson',
+    'pymongo',
     'mongoengine',
     'marshmallow',
     'WebTest >= 1.3.1',  # py3 compat
