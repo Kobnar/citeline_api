@@ -1,3 +1,0 @@
-[submodule "deps/stackcite_db"]
-	path = deps/stackcite_db
-	url = https://github.com/Kobnar/stackcite_db.git

@@ -21,9 +21,9 @@ requires = [
     'cov-core'
     ]
 
-setup(name='citeline_api',
+setup(name='stackcite_api',
       version='0.0',
-      description='citeline_api',
+      description='stackcite_api',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
           "Programming Language :: Python",
@@ -41,6 +41,6 @@ setup(name='citeline_api',
       install_requires=requires,
       entry_points="""\
       [paste.app_factory]
-      main = citeline_api:main
+      main = stackcite_api:main
       """,
       )
