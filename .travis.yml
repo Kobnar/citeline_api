@@ -2,7 +2,11 @@ services: mongodb
 language: python
 python:
   - "3.5"
+git:
+  depth: 3
 install:
+  - mkdir deps
+  - git clone -b dev https://github.com/Kobnar/stackcite_db.git deps/stackcite_db
   - cd deps/stackcite_db
   - python setup.py develop
   - cd ../..
