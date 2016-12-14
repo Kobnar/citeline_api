@@ -4,6 +4,9 @@ python:
   - "3.5"
 git:
   depth: 3
+addons:
+  hosts:
+    - mongo
 install:
   - mkdir deps
   - git clone -b dev https://github.com/Kobnar/stackcite_db.git deps/stackcite_db
