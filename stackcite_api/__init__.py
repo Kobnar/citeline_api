@@ -21,19 +21,13 @@ def root_traversal_factory(request):
     return root
 
 
-def connect():
-    # TODO: Get key names from settings
-    host = os.environ.get('CITELINE_MONGO_HOST', 'mongodb://127.0.0.1/')
-    db = os.environ.get('CITELINE_MONGO_DB', 'stackcite_dev')
-    username = os.environ.get('CITELINE_MONGO_USER', 'stackcite_dev')
-    password = os.environ.get('CITELINE_MONGO_PASSWORD', 'stackcite_dev')
-    mongoengine.connect(host=host, db=db, username=username, password=password)
-
-
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
-    connect()
+    mongoengine.connect(
+        host=settings['mongo.host'],
+        db=settings['mongo.db']
+    )
     config = Configurator(
         settings=settings,
         root_factory=root_traversal_factory)
