@@ -123,7 +123,7 @@ class APICollection(resources.CollectionResource):
         :return: A raw pymongo query
         """
         raw_query = query or {}
-        ids = query.get('ids')
+        ids = query.pop('ids', None)
         if ids:
             ids = [bson.ObjectId(id) for id in ids]
             raw_query.update({'_id': {'$in': ids}})
