@@ -80,8 +80,13 @@ class APICollectionViews(BaseView):
             msg = err.messages
             raise exceptions.APIBadRequest(detail=msg)
 
-        except (mongoengine.NotUniqueError, mongoengine.ValidationError) as err:
-            raise exceptions.APIBadRequest(detail=str(err))
+        except mongoengine.NotUniqueError:
+            msg = 'Object with matching unique fields already exists'
+            raise exceptions.APIBadRequest(detail=msg)
+
+        except mongoengine.ValidationError:
+            msg = 'Object failed low-level validation'
+            raise exceptions.APIBadRequest(detail=msg)
 
     def retrieve(self):
         """
