@@ -125,16 +125,22 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         expected = token.key
         self.assertEqual(expected, result)
 
+    def test_delete_none_returns_false(self):
+        """AuthResource.delete() returns 'False' if given 'None'
+        """
+        result = self.collection.delete(None)
+        self.assertFalse(result)
+
     def test_delete_failure_returns_false(self):
-        """AuthResource.delete() returns 'false' if failed
+        """AuthResource.delete() returns 'False' if delete did nothing
         """
         from stackcite import data as db
         token = db.Token()
         result = self.collection.delete(token)
-        self.assertEqual(False, result)
+        self.assertFalse(result)
 
     def test_delete_success_returns_true(self):
-        """AuthResource.delete() returns 'true' if successful
+        """AuthResource.delete() returns 'True' if successful
         """
         from stackcite import data as db
         email = 'test@email.com'
@@ -146,4 +152,4 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         token = db.Token(_user=user)
         token.save()
         result = self.collection.delete(token)
-        self.assertEqual(True, result)
+        self.assertTrue(result)

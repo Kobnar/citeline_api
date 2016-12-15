@@ -49,8 +49,5 @@ class AuthViews(views.BaseView):
 
     def delete(self):
         token = self.request.token
-        result = self.context.delete(token)
-        if result:
-            raise exceptions.APINoContent()
-        else:
-            raise exceptions.APINotFound()
+        self.context.delete(token)
+        raise exceptions.APINoContent()

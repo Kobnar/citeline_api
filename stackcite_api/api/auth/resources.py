@@ -57,5 +57,8 @@ class AuthResource(api.resources.APIIndex):
         """
         Deletes an existing :class:`~Token`.
         """
-        result = db.Token.objects(_key=token.key).delete()
-        return bool(result)
+        if token:
+            result = db.Token.objects(_key=token.key).delete()
+            return bool(result)
+        else:
+            return False
