@@ -28,6 +28,60 @@ class ObjectIdFieldTests(unittest.TestCase):
             self.field.deserialize(bad_id)
 
 
+class PasswordFieldTests(unittest.TestCase):
+
+    layer = testing.layers.UnitTestLayer
+
+    def setUp(self):
+        from ..fields import PasswordField
+        self.field = PasswordField()
+
+    def test_deserialize_accepts_valid_string(self):
+        """PasswordField accepts a valid ObjectId string
+        """
+        valid_passwords = testing.data.valid_passwords()
+        for password in valid_passwords:
+            result = self.field.deserialize(password)
+            self.assertEqual(password, result)
+
+    def test_deserialize_raises_exception_for_invalid_string(self):
+        """PasswordField raises exception for an invalid string
+        """
+        invalid_passwords = testing.data.invalid_passwords()
+        from marshmallow import ValidationError
+        for password in invalid_passwords:
+            msg = 'Invalid password passed validation: {}'.format(password)
+            with self.assertRaises(ValidationError, msg=msg):
+                self.field.deserialize(password)
+
+
+class UsernameFieldTests(unittest.TestCase):
+
+    layer = testing.layers.UnitTestLayer
+
+    def setUp(self):
+        from ..fields import UsernameField
+        self.field = UsernameField()
+
+    def test_deserialize_accepts_valid_string(self):
+        """UsernameField accepts a valid ObjectId string
+        """
+        valid_usernames = testing.data.valid_usernames()
+        for username in valid_usernames:
+            result = self.field.deserialize(username)
+            self.assertEqual(username, result)
+
+    def test_deserialize_raises_exception_for_invalid_string(self):
+        """UsernameField raises exception for an invalid string
+        """
+        invalid_usernames = testing.data.invalid_usernames()
+        from marshmallow import ValidationError
+        for username in invalid_usernames:
+            msg = 'Invalid username passed validation: {}'.format(username)
+            with self.assertRaises(ValidationError, msg=msg):
+                self.field.deserialize(username)
+
+
 class ListFieldTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
