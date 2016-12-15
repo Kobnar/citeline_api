@@ -24,33 +24,62 @@ class AuthPolicyIntegrationTestCase(unittest.TestCase):
         self.user = db.User.new('test@email.com', 'T3stPa$$word', save=True)
         self.token = db.Token.new(self.user, save=True)
 
-    def test_authenticated_userid_works_with_static_callback(self):
-        from pyramid.testing import DummyRequest
-        request = DummyRequest()
-        request.user = self.user
-        expected = self.user.id
-        result = self.auth_pol.authenticated_userid(request)
-        self.assertEqual(expected, result)
-
-    def test_unauthenticated_userid_returns_user_id(self):
-        from pyramid.testing import DummyRequest
-        expected = self.user.id
-        request = DummyRequest()
-        request.user = self.user
-        result = self.auth_pol.unauthenticated_userid(request)
-        self.assertEqual(expected, result)
-
     def test_authenticated_userid_returns_user_id(self):
+        """TokenAuthenticationPolicy.authenticated_userid() returns an authenticated ObjectId
+        """
         from pyramid.testing import DummyRequest
-        expected = self.user.id
         request = DummyRequest()
+        expected = self.user.id
         request.user = self.user
         result = self.auth_pol.authenticated_userid(request)
         self.assertEqual(expected, result)
 
-    def test_effective_principals_includes_user_id(self):
+    def test_effective_principals_includes_authenticated_user_id(self):
+        """TokenAuthenticationPolicy.effective_principals() includes an authenticated ObjectId
+        """
+        from pyramid.testing import DummyRequest
+        request = DummyRequest()
+        request.user = self.user
+        expected = self.user.id
+        result = self.auth_pol.effective_principals(request)
+        self.assertIn(expected, result)
+
+    def test_effective_principals_includes_everyone_for_unauthenticated_user(self):
+        """TokenAuthenticationPolicy.effective_principals() includes Everyone for an authenticated user
+        """
+        from pyramid.testing import DummyRequest
+        from pyramid.authentication import Everyone
+        request = DummyRequest()
+        request.user = None
+        result = self.auth_pol.effective_principals(request)
+        self.assertIn(Everyone, result)
+
+    def test_effective_principals_exclude_authenticated_for_unauthenticated_user(self):
+        """TokenAuthenticationPolicy.effective_principals() excludes "Authenticated" for an authenticated user
+        """
+        from pyramid.testing import DummyRequest
+        from pyramid.authentication import Authenticated
+        request = DummyRequest()
+        request.user = None
+        result = self.auth_pol.effective_principals(request)
+        self.assertNotIn(Authenticated, result)
+
+    def test_effective_principals_include_authenticated_for_authenticated_user(self):
+        """TokenAuthenticationPolicy.effective_principals() excludes "Authenticated" for an authenticated user
+        """
+        from pyramid.testing import DummyRequest
+        from pyramid.authentication import Authenticated
+        request = DummyRequest()
+        request.user = self.user
+        result = self.auth_pol.effective_principals(request)
+        self.assertIn(Authenticated, result)
+
+    def test_effective_principals_include_assigned_groups_for_authenticated_user(self):
+        """TokenAuthenticationPolicy.effective_principals() includes assigned groups for an authenticated user
+        """
         from pyramid.testing import DummyRequest
         request = DummyRequest()
         request.user = self.user
         result = self.auth_pol.effective_principals(request)
-        self.assertIn(self.user.id, result)
+        for expected in self.user.groups:
+            self.assertIn(expected, result)

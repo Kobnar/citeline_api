@@ -1,7 +1,11 @@
 from zope.interface import implementer
 
 from pyramid.interfaces import IAuthenticationPolicy
-from pyramid.authentication import CallbackAuthenticationPolicy
+from pyramid.authentication import (
+    CallbackAuthenticationPolicy,
+    Everyone,
+    Authenticated
+)
 
 from . import utils
 
@@ -17,10 +21,23 @@ class TokenAuthenticationPolicy(CallbackAuthenticationPolicy):
         self.callback = callback or utils.get_groups
         self.debug = debug
 
-    def unauthenticated_userid(self, request):
+    def authenticated_userid(self, request):
         """
         Resolves a :class:`stackcite.Token` key to retrieve the
         :class:`bson.ObjectId` of a :class:`stackcite.User`. If the token
         does not exist, method returns `None`.
         """
-        return request.user.id if request.user else None
+        if request.user:
+            return request.user.id
+
+    def effective_principals(self, request):
+        """
+        Resolves the effective principles of a :class:`stackcite.User`.
+        """
+        principals = [Everyone]
+        user = request.user
+        if user is not None:
+            principals.append(Authenticated)
+            principals.append(user.id)
+            principals.extend(user.groups)
+        return principals
