@@ -45,8 +45,30 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         login_delta = last_login - prev_login
         self.assertGreater(login_delta.microseconds, 1000)
 
-    def test_create_returns_user(self):
-        """AuthResource.create() returns a dict containing a user
+    def test_create_raises_exception_for_unregistered_user(self):
+        """AuthResource.create() raises exception for unregistered user
+        """
+        from mongoengine import DoesNotExist
+        auth_data = {'email': 'test@email.com', 'password': 'T3stPa$$word'}
+        with(self.assertRaises(DoesNotExist)):
+            self.collection.create(auth_data)
+
+    def test_create_raises_exception_for_wrong_password(self):
+        """AuthResource.create() raises exception for wrong password
+        """
+        from stackcite import AuthenticationError
+        email = 'test@email.com'
+        password = 'T3stPa$$word'
+        # Create user
+        user = make_user(email, password)
+        user.save()
+        # Log in user
+        auth_data = {'email': email, 'password': 'B4dPa$$word'}
+        with(self.assertRaises(AuthenticationError)):
+            self.collection.create(auth_data)
+
+    def test_create_returns_user_field_on_success(self):
+        """AuthResource.create() returns a dict containing a user for successful login
         """
         email = 'test@email.com'
         password = 'T3stPa$$word'
@@ -58,8 +80,8 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         result = self.collection.create(auth_data)
         self.assertIn('user', result.keys())
 
-    def test_create_returns_token(self):
-        """AuthResource.create() returns a dict containing an API token key
+    def test_create_returns_token_on_success(self):
+        """AuthResource.create() returns a dict containing an API token key for successful login
         """
         email = 'test@email.com'
         password = 'T3stPa$$word'
@@ -71,7 +93,39 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         result = self.collection.create(auth_data)
         self.assertIn('key', result.keys())
 
-    def test_delete_success_returns_false(self):
+    def test_retrieve_returns_token_on_success(self):
+        """AuthResource.retrieve() returns a correct API token if it exists
+        """
+        from stackcite import data as db
+        email = 'test@email.com'
+        password = 'T3stPa$$word'
+        # Create user
+        user = make_user(email, password)
+        user.save()
+        # Make new token
+        token = db.Token(_user=user)
+        token.save()
+        result = self.collection.retrieve(token)['key']
+        expected = token.key
+        self.assertEqual(expected, result)
+
+    def test_update_returns_token_on_success(self):
+        """AuthResource.update() returns a correct API token if it exists
+        """
+        from stackcite import data as db
+        email = 'test@email.com'
+        password = 'T3stPa$$word'
+        # Create user
+        user = make_user(email, password)
+        user.save()
+        # Make new token
+        token = db.Token(_user=user)
+        token.save()
+        result = self.collection.update(token)['key']
+        expected = token.key
+        self.assertEqual(expected, result)
+
+    def test_delete_failure_returns_false(self):
         """AuthResource.delete() returns 'false' if failed
         """
         from stackcite import data as db
