@@ -28,7 +28,7 @@ class TokenAuthenticationPolicy(CallbackAuthenticationPolicy):
         does not exist, method returns `None`.
         """
         if request.user:
-            return request.user.id
+            return str(request.user.id)
 
     def effective_principals(self, request):
         """
@@ -38,6 +38,6 @@ class TokenAuthenticationPolicy(CallbackAuthenticationPolicy):
         user = request.user
         if user is not None:
             principals.append(Authenticated)
-            principals.append(user.id)
+            principals.append(str(user.id))
             principals.extend(user.groups)
         return principals

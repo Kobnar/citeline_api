@@ -29,7 +29,7 @@ class AuthPolicyIntegrationTestCase(unittest.TestCase):
         """
         from pyramid.testing import DummyRequest
         request = DummyRequest()
-        expected = self.user.id
+        expected = str(self.user.id)
         request.user = self.user
         result = self.auth_pol.authenticated_userid(request)
         self.assertEqual(expected, result)
@@ -40,7 +40,7 @@ class AuthPolicyIntegrationTestCase(unittest.TestCase):
         from pyramid.testing import DummyRequest
         request = DummyRequest()
         request.user = self.user
-        expected = self.user.id
+        expected = str(self.user.id)
         result = self.auth_pol.effective_principals(request)
         self.assertIn(expected, result)
 
