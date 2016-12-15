@@ -116,13 +116,13 @@ class APICollection(resources.CollectionResource):
         return fields, limit, skip
 
     @staticmethod
-    def _raw_query(query):
+    def _raw_query(query=None):
         """
         A hook to build a raw pymongo query.
         :param query: The output of `self._retrieve_schema`.
         :return: A raw pymongo query
         """
-        raw_query = {}
+        raw_query = query or {}
         ids = query.get('ids')
         if ids:
             ids = [bson.ObjectId(id) for id in ids]
