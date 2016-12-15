@@ -7,14 +7,21 @@ class APIResourceTests(unittest.TestCase):
 
     layer = testing.layers.MongoIntegrationTestLayer
 
-    # Define "mock" traversal resources:
+    # Define "mock" traversal resources and schemas:
     from ..resources import APICollection
     class _MockAPICollectionResource(APICollection):
+        from ..schemas import forms
+        class _MockAPIRetrieveCollectionSchema(forms.RetrieveCollection):
+            from marshmallow import fields
+            name = fields.String()
+            number = fields.Integer()
+            fact = fields.Bool()
         from ..resources import APIDocument
         class _MockAPIDocumentResource(APIDocument):
             pass
         _collection = testing.mock.MockDocument
         _document_resource = _MockAPIDocumentResource
+        _retrieve_schema = _MockAPIRetrieveCollectionSchema
 
     def setUp(self):
         # Drops existing.mock.MockDocument data:
