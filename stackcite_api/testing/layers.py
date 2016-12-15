@@ -22,3 +22,9 @@ class MongoIntegrationTestLayer(UnitTestLayer):
     def setUp(cls):
         db = mongoengine.connect(cls._DB)
         db.drop_database(cls._DB)
+
+
+class WSGIIntegrationTestLayer(MongoIntegrationTestLayer):
+    """
+    An integration test layer for working with a complete WSGI application.
+    """
