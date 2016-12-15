@@ -1,24 +1,12 @@
-import unittest
-
 from stackcite_api import testing
 
 
-class APIEndpointTests(unittest.TestCase):
-
-    layer = testing.layers.WSGIIntegrationTestLayer
+class UsersAPIEndpointTests(testing.endpoint.APIEndpointTestCase):
 
     def setUp(self):
         from stackcite.data import User
         User.drop_collection()
         self.test_app = self.make_app()
-
-    def make_app(self):
-        from pyramid import paster
-        import stackcite_api
-        import webtest
-        settings = paster.get_appsettings('development.ini')
-        app = stackcite_api.main(global_config=None, **settings)
-        return webtest.TestApp(app)
 
     def make_user(self, email, password, groups=(), save=False):
         from stackcite import data as db
@@ -44,7 +32,7 @@ class APIEndpointTests(unittest.TestCase):
         return response.json_body['token']['key']
 
 
-class UserCollectionAPIEndpointTests(APIEndpointTests):
+class UserCollectionAPIEndpointTests(UsersAPIEndpointTests):
 
     def test_create_invalid_json_body_returns_400(self):
         """CREATE with a malformed JSON body to `users/` returns 400 BAD REQUEST
@@ -187,7 +175,7 @@ class UserCollectionAPIEndpointTests(APIEndpointTests):
         self.assertEqual(200, response.status_code)
 
 
-class UserDocumentAPIEndpointTests(APIEndpointTests):
+class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
 
     def test_unauthenticated_retrieve_returns_403(self):
         """Unauthenticated GET to 'users/{id}/' returns 403 FORBIDDEN
