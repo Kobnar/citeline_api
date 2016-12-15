@@ -23,8 +23,8 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         from ..resources import AuthResource
         self.collection = AuthResource(None, 'auth')
 
-    def test_login_updates_last_login(self):
-        """AuthResource.login() updates User.last_login with a more recent time
+    def test_create_updates_last_login(self):
+        """AuthResource.create() updates User.last_login with a more recent time
         """
         from stackcite.data import User
         email = 'test@email.com'
@@ -45,8 +45,8 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         login_delta = last_login - prev_login
         self.assertGreater(login_delta.microseconds, 1000)
 
-    def test_login_returns_user(self):
-        """AuthResource.login() returns a dict containing a user
+    def test_create_returns_user(self):
+        """AuthResource.create() returns a dict containing a user
         """
         email = 'test@email.com'
         password = 'T3stPa$$word'
@@ -58,8 +58,8 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         result = self.collection.create(auth_data)
         self.assertIn('user', result.keys())
 
-    def test_login_returns_token(self):
-        """AuthResource.login() returns a dict containing an API token key
+    def test_create_returns_token(self):
+        """AuthResource.create() returns a dict containing an API token key
         """
         email = 'test@email.com'
         password = 'T3stPa$$word'
@@ -70,3 +70,26 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         auth_data = {'email': email, 'password': password}
         result = self.collection.create(auth_data)
         self.assertIn('key', result.keys())
+
+    def test_delete_success_returns_false(self):
+        """AuthResource.delete() returns 'false' if failed
+        """
+        from stackcite import data as db
+        token = db.Token()
+        result = self.collection.delete(token)
+        self.assertEqual(False, result)
+
+    def test_delete_success_returns_true(self):
+        """AuthResource.delete() returns 'true' if successful
+        """
+        from stackcite import data as db
+        email = 'test@email.com'
+        password = 'T3stPa$$word'
+        # Create user
+        user = make_user(email, password)
+        user.save()
+        # Create auth token
+        token = db.Token(_user=user)
+        token.save()
+        result = self.collection.delete(token)
+        self.assertEqual(True, result)
