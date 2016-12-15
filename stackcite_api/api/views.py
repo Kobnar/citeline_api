@@ -154,6 +154,10 @@ class APIDocumentViews(BaseView):
         except mongoengine.DoesNotExist:
             raise exceptions.APINotFound()
 
+        except mongoengine.ValidationError:
+            msg = 'Object failed low-level validation'
+            raise exceptions.APIBadRequest(detail=msg)
+
     def delete(self):
         """
         DELETE an individual document.
