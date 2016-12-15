@@ -29,7 +29,7 @@ class UsersAPIEndpointTests(testing.endpoint.APIEndpointTestCase):
             content_type='applicaiton/json',
             params=json.dumps(auth_data),
             expect_errors=True)
-        return response.json_body['token']['key']
+        return response.json_body['key']
 
 
 class UserCollectionAPIEndpointTests(UsersAPIEndpointTests):

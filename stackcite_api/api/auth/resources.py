@@ -38,47 +38,20 @@ class AuthResource(api.resources.APIIndex):
         token.save()
         user.touch_login()
         user.save()
-        return {
-            'user': {
-                'id': str(user.id)
-            },
-            'token': {
-                'key': str(token.key),
-                'issued': str(token.issued),
-                'touched': str(token.touched)
-            }
-        }
+        return token.serialize()
 
     def retrieve(self, token):
         """
         Confirms the existence of a :class:`~Token`.
         """
-        return {
-            'user': {
-                'id': str(token.user.id)
-            },
-            'token': {
-                'key': str(token.key),
-                'issued': str(token.issued),
-                'touched': str(token.touched)
-            }
-        }
+        return token.serialize()
 
     def update(self, token):
         """
         Updates an existing :class:`~Token`.
         """
         token.save()
-        return {
-            'user': {
-                'id': str(token.user.id)
-            },
-            'token': {
-                'key': str(token.key),
-                'issued': str(token.issued),
-                'touched': str(token.touched)
-            }
-        }
+        return token.serialize()
 
     def delete(self, token):
         """

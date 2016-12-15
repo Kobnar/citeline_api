@@ -59,7 +59,7 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         self.assertIn('user', result.keys())
 
     def test_login_returns_token(self):
-        """AuthResource.login() returns a dict containing an API token
+        """AuthResource.login() returns a dict containing an API token key
         """
         email = 'test@email.com'
         password = 'T3stPa$$word'
@@ -69,4 +69,4 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         # Log in user
         auth_data = {'email': email, 'password': password}
         result = self.collection.create(auth_data)
-        self.assertIn('token', result.keys())
+        self.assertIn('key', result.keys())
