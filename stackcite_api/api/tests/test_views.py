@@ -88,11 +88,23 @@ class APICollectionViewsTestCase(testing.views.CollectionViewTestCase):
     # Define "mock" traversal resources:
     from ..resources import APICollection
     class _MockAPICollectionResource(APICollection):
+        from marshmallow import Schema
+        class _MockAPICreateDocumentSchema(Schema):
+            from marshmallow import fields
+            name = fields.String()
+            number = fields.Integer()
+            fact = fields.Bool()
+        from ..schemas import forms
+        class _MockAPIRetrieveCollectionSchema(
+            forms.RetrieveCollection, _MockAPICreateDocumentSchema):
+            pass
         from ..resources import APIDocument
         class _MockAPIDocumentResource(APIDocument):
             pass
         _collection = testing.mock.MockDocument
         _document_resource = _MockAPIDocumentResource
+        _create_schema = _MockAPICreateDocumentSchema
+        _retrieve_schema = _MockAPIRetrieveCollectionSchema
 
     # Define resource and view class under test
     from ..views import APICollectionViews
@@ -141,7 +153,7 @@ class APICollectionViewsCreateTestCase(APICollectionViewsTestCase):
                 self.fail('APICollectionViews returned something other than '
                           'an ObjectId')
                 
-    def test_create_returns_person(self):
+    def test_create_returns_document(self):
         """APICollectionViews.create() returns a valid document dictionary
         """
         docs = self.make_data()
@@ -157,7 +169,7 @@ class APICollectionViewsCreateTestCase(APICollectionViewsTestCase):
             expected['id'] = result['id']
             self.assertEqual(expected, result)
 
-    def test_create_creates_new_person(self):
+    def test_create_creates_new_document(self):
         """APICollectionViews.create() saves a new MockDocument to the database
         """
         docs = self.make_data()
@@ -201,6 +213,19 @@ class APICollectionViewsCreateTestCase(APICollectionViewsTestCase):
         # Create the same person:
         duplicate_doc = {'name': 'Mock Document'}
         view.request.json_body = duplicate_doc
+        from ..exceptions import APIBadRequest
+        with self.assertRaises(APIBadRequest):
+            view.create()
+
+    def test_create_invalid_data_raises_400_BAD_REQUEST(self):
+        """APICollectionViews.create() raises 400 BAD REQUEST if data fails validation
+        """
+        view = self.get_view()
+        invalid_data = {
+            'name': 123,
+            'number': 'cats',
+            'fact': 'dogs'}
+        view.request.json_body = invalid_data
         from ..exceptions import APIBadRequest
         with self.assertRaises(APIBadRequest):
             view.create()
@@ -266,6 +291,19 @@ class APICollectionViewsRetrieveTestCase(APICollectionViewsTestCase):
         result = view.retrieve()
         self.assertEqual(expected, result)
 
+    def test_retrieve_schema_invalidation_raises_400_BAD_REQUEST(self):
+        """APICollectionViews.retrieve() raises 400 BAD REQUEST if data fails schema validation
+        """
+        view = self.get_view()
+        invalid_query = {
+            'name': 'Document',
+            'number': 'some_string',
+            'fact': True}
+        view.request.params = invalid_query
+        from ..exceptions import APIBadRequest
+        with self.assertRaises(APIBadRequest):
+            view.retrieve()
+
 
 class APIDocumentViewsTestCase(testing.views.DocumentViewTestCase):
     """
@@ -278,7 +316,13 @@ class APIDocumentViewsTestCase(testing.views.DocumentViewTestCase):
     class _MockAPICollectionResource(APICollection):
         from ..resources import APIDocument
         class _MockAPIDocumentResource(APIDocument):
-            pass
+            from marshmallow import Schema
+            class _MockAPIUpdateDocumentSchema(Schema):
+                from marshmallow import fields
+                name = fields.String()
+                number = fields.Integer()
+                fact = fields.Bool()
+            _update_schema = _MockAPIUpdateDocumentSchema
         _collection = testing.mock.MockDocument
         _document_resource = _MockAPIDocumentResource
 
@@ -426,6 +470,16 @@ class APIDocumentViewsUpdateTestCase(APIDocumentViewsTestCase):
         view.request.json_body = {'fact': True}
         from ..exceptions import APINotFound
         with self.assertRaises(APINotFound):
+            view.update()
+
+    def test_update_invalid_data_raises_400_BAD_REQUEST(self):
+        """APIDocumentViews.update() raises 400 BAD REQUEST if data fails validation
+        """
+        doc = self.make_data(1, save=True)[0]
+        view = self.get_view(doc.id)
+        view.request.json_body = {'number': 'cats'}
+        from ..exceptions import APIBadRequest
+        with self.assertRaises(APIBadRequest):
             view.update()
 
 
