@@ -7,7 +7,7 @@ class AuthAPIEndpointTests(testing.endpoint.APIEndpointTestCase):
         from stackcite.data import Token, User
         Token.drop_collection()
         User.drop_collection()
-        self.test_app = self.make_app()
+        super().setUp()
 
     @staticmethod
     def make_user(email, password, groups=(), save=False):

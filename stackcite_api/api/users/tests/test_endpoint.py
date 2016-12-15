@@ -6,7 +6,7 @@ class UsersAPIEndpointTests(testing.endpoint.APIEndpointTestCase):
     def setUp(self):
         from stackcite.data import User
         User.drop_collection()
-        self.test_app = self.make_app()
+        super().setUp()
 
     def make_user(self, email, password, groups=(), save=False):
         from stackcite import data as db
