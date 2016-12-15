@@ -1,5 +1,3 @@
-import typing
-
 from bson import ObjectId
 from bson.errors import InvalidId
 
@@ -58,7 +56,7 @@ class DocumentResource(IndexResource):
         """
         fields = fields or ()
 
-        assert isinstance(fields, typing.Sequence)
+        assert not isinstance(fields, str)
 
         results = self.collection.objects
         if fields:
@@ -76,7 +74,7 @@ class DocumentResource(IndexResource):
         :param data: A nested dictionary of data
         :return: An updated :class:`mongoengine.Document`
         """
-        assert isinstance(data, typing.Container)
+        assert isinstance(data, dict)
 
         document = DocumentResource.retrieve(self)
         document.deserialize(data)
@@ -156,7 +154,7 @@ class CollectionResource(IndexResource):
         :param data: A dictionary of new object data
         :return: A newly created MongoEngine document object
         """
-        assert isinstance(data, typing.Container)
+        assert isinstance(data, dict)
 
         document = self.collection()
         document.deserialize(data)
@@ -179,8 +177,8 @@ class CollectionResource(IndexResource):
         query = query or {}
         fields = fields or ()
 
-        assert isinstance(query, typing.Container)
-        assert isinstance(fields, typing.Sequence)
+        assert isinstance(query, dict)
+        assert not isinstance(fields, str)
         assert isinstance(limit, int)
         assert isinstance(skip, int)
 
