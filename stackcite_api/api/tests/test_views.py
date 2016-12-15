@@ -205,11 +205,6 @@ class APICollectionViewsCreateTestCase(APICollectionViewsTestCase):
         with self.assertRaises(APIBadRequest):
             view.create()
 
-    def test_no_json_body_returns_400_BadRequest(self):
-        """APICollectionViews.create() returns 400 BAD REQUEST if no json_body provided
-        """
-        self.fail('Need integration tests for JSON errors')
-
 
 class APICollectionViewsRetrieveTestCase(APICollectionViewsTestCase):
 
