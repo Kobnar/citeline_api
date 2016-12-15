@@ -90,10 +90,31 @@ class CreateTokenAPIEndpointTests(AuthAPIEndpointTests):
         result = response.status_code
         self.assertEqual(201, result)
 
+    def test_retrieve_token_returns_403_with_no_key(self):
+        """GET 'auth/' returns 403 FORBIDDEN with no key
+        """
+        response = self.test_app.get(
+            '/v0/auth/',
+            expect_errors=True)
+        result = response.status_code
+        self.assertEqual(403, result)
+
     def test_retrieve_token_returns_403_with_invalid_key(self):
         """GET 'auth/' returns 403 FORBIDDEN with invalid key
         """
         key = 'invalid_key'
+        response = self.test_app.get(
+            '/v0/auth/',
+            headers={'Authorization': 'key {}'.format(key)},
+            expect_errors=True)
+        result = response.status_code
+        self.assertEqual(403, result)
+
+    def test_retrieve_token_returns_403_with_unknown_key(self):
+        """GET 'auth/' returns 403 FORBIDDEN with unknown key
+        """
+        from stackcite import data as db
+        key = db.Token.gen_key()
         response = self.test_app.get(
             '/v0/auth/',
             headers={'Authorization': 'key {}'.format(key)},
