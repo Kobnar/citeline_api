@@ -51,10 +51,10 @@ class CollectionStrictTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             self.schema.load(query)
 
-    def test_limit_must_be_greater_than_negative_one(self):
-        """APICollection.offset must be greater than -1
+    def test_skip_must_be_greater_than_negative_one(self):
+        """APICollection.skip must be greater than -1
         """
-        query = {'limit': -1}
+        query = {'skip': -1}
         from marshmallow import ValidationError
         with self.assertRaises(ValidationError):
             self.schema.load(query)
