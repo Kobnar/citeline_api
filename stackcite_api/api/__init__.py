@@ -1,3 +1,5 @@
+from pyramid import httpexceptions as _http_exc
+
 from . import resources, schemas, views
 from . import auth
 from . import citations
@@ -9,6 +11,10 @@ from . import users
 
 VERSIONS = ('v0',)
 VERSION = VERSIONS[-1]
+
+
+def root_redirect(context, request):
+    return _http_exc.HTTPFound('/{}/'.format(VERSION))
 
 
 def traversal_factory(parent, name):

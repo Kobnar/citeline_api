@@ -1,18 +1,12 @@
-import os
 import mongoengine
 
 from pyramid.config import Configurator
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.renderers import JSON
-from pyramid.httpexceptions import HTTPFound
 
 from stackcite_api import api, auth
 
-from . import resources, views
-
-
-def index(context, request):
-    return HTTPFound('/{}/'.format(api.VERSIONS[0]))
+from . import resources, views, api
 
 
 def root_traversal_factory(request):
@@ -44,7 +38,7 @@ def main(global_config, **settings):
 
     # Views
     config.add_renderer('json', JSON())
-    config.add_view(index, context=resources.IndexResource)
+    config.add_view(api.root_redirect, context=resources.IndexResource)
     api.view_factory(config)
 
     config.scan()
