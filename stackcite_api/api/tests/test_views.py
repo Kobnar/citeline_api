@@ -266,15 +266,6 @@ class APICollectionViewsRetrieveTestCase(APICollectionViewsTestCase):
         result = view.retrieve()
         self.assertEqual(expected, result)
 
-    def test_retrieve_returns_404_NOT_FOUND_if_no_results(self):
-        """APICollectionViews.retrieve() returns 404 NOT FOUND if there are no results
-        """
-        view = self.get_view()
-        view.request.params = {'name': 'John'}
-        view.retrieve()
-        result = view.request.response.status_code
-        self.assertEqual(404, result)
-
 
 class APIDocumentViewsTestCase(testing.views.DocumentViewTestCase):
     """

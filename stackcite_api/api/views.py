@@ -96,10 +96,7 @@ class APICollectionViews(BaseView):
         """
         query = self.request.params
         try:
-            result = self.context.retrieve(query)
-            if not result:
-                self.request.response.status_code = exceptions.APINotFound.code
-            return result
+            return self.context.retrieve(query)
 
         except marshmallow.ValidationError as err:
             msg = err.messages
