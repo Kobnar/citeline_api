@@ -20,4 +20,4 @@ RUN cd /stackcite_api && python3 setup.py develop
 
 # Serve Stackcite API
 WORKDIR /stackcite_api
-CMD pserve development.ini
+CMD pserve production.ini
