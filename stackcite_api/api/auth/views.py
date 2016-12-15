@@ -24,6 +24,7 @@ class AuthViews(views.BaseView):
     def create(self):
         try:
             auth_data = self.request.json_body
+            self.request.response.status_code = 201
             return self.context.create(auth_data)
 
         except ValueError:
