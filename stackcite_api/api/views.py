@@ -70,6 +70,7 @@ class APICollectionViews(BaseView):
         """
         try:
             data = self.request.json_body
+            self.request.response.status = 201
             return self.context.create(data)
 
         except ValueError:

@@ -176,7 +176,7 @@ class APICollectionViewsCreateTestCase(APICollectionViewsTestCase):
                 self.fail(err)
 
     def test_create_returns_200_OK(self):
-        """APICollectionViews.create() returns 200 OK if successful
+        """APICollectionViews.create() returns 201 CREATED if successful
         """
         docs = self.make_data()
         view = self.get_view()
@@ -188,7 +188,7 @@ class APICollectionViewsCreateTestCase(APICollectionViewsTestCase):
             view.request.json_body = data
             view.create()
             result = view.request.response.status_code
-            self.assertEqual(result, 200)
+            self.assertEqual(result, 201)
 
     def test_create_existing_raises_400_BAD_REQUEST(self):
         """APICollectionViews.create() raises 400 BAD REQUEST if the document exists
