@@ -131,14 +131,6 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         result = self.collection.delete(None)
         self.assertFalse(result)
 
-    def test_delete_failure_returns_false(self):
-        """AuthResource.delete() returns 'False' if delete did nothing
-        """
-        from stackcite import data as db
-        token = db.Token()
-        result = self.collection.delete(token)
-        self.assertFalse(result)
-
     def test_delete_success_returns_true(self):
         """AuthResource.delete() returns 'True' if successful
         """
