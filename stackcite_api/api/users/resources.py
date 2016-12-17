@@ -4,7 +4,7 @@ from stackcite import data as db
 
 from stackcite_api import api, auth
 
-from . import schemas
+from . import schema
 
 
 class UserDocument(api.resources.APIDocument):
@@ -16,7 +16,7 @@ class UserDocument(api.resources.APIDocument):
             sec.DENY_ALL
         ]
 
-    _update_schema = schemas.UpdateUser
+    _update_schema = schema.UpdateUser
 
 
 class UserCollection(api.resources.APICollection):
@@ -30,4 +30,4 @@ class UserCollection(api.resources.APICollection):
     _collection = db.User
     _document_resource = UserDocument
 
-    _create_schema = schemas.CreateUser
+    _create_schema = schema.CreateUser

@@ -5,7 +5,7 @@ from stackcite import data as db
 
 from stackcite_api import api
 
-from . import schemas, views
+from . import schema, views
 
 
 class AuthResource(api.resources.APIIndex):
@@ -18,8 +18,8 @@ class AuthResource(api.resources.APIIndex):
         sec.DENY_ALL
     ]
 
-    _token_schema = schemas.Token
-    _auth_schema = schemas.Authenticate
+    _token_schema = schema.Token
+    _auth_schema = schema.Authenticate
 
     def create(self, auth_data):
         """

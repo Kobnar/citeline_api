@@ -2,7 +2,7 @@ from marshmallow import Schema, fields, validates, ValidationError
 
 from stackcite import data as db
 
-from stackcite_api.api.schemas import fields as api_fields
+from stackcite_api.api.schema import fields as api_fields
 
 
 class _MediumChoices(object):

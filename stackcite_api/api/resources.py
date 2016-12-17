@@ -4,7 +4,7 @@ from pyramid import security as sec
 
 from stackcite_api import resources
 
-from . import schemas, views
+from . import schema, views
 
 
 class APIIndex(resources.IndexResource):
@@ -33,7 +33,7 @@ class APIDocument(resources.DocumentResource):
         sec.DENY_ALL
     ]
 
-    _retrieve_schema = schemas.forms.RetrieveDocument
+    _retrieve_schema = schema.forms.RetrieveDocument
     _update_schema = NotImplemented
 
     def retrieve(self, query=None):
@@ -70,7 +70,7 @@ class APICollection(resources.CollectionResource):
         sec.DENY_ALL
     ]
 
-    _retrieve_schema = schemas.forms.RetrieveCollection
+    _retrieve_schema = schema.forms.RetrieveCollection
     _create_schema = NotImplemented
 
     def create(self, data):

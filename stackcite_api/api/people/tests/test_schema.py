@@ -8,7 +8,7 @@ class UpdateNameUnitTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
-        from ..schemas import UpdateName
+        from ..schema import UpdateName
         self.schema = UpdateName(strict=True)
 
     def test_validate_names_raises_exception_if_full_name_and_sub_names_set(self):
@@ -37,7 +37,7 @@ class CreateNameUnitTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
-        from ..schemas import CreateName
+        from ..schema import CreateName
         self.schema = CreateName(strict=True)
 
     def test_validate_names_raises_exception_if_full_name_and_sub_names_set(self):
@@ -76,7 +76,7 @@ class UpdatePersonUnitTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
-        from ..schemas import UpdatePerson
+        from ..schema import UpdatePerson
         self.schema = UpdatePerson(strict=True)
 
     def test_nested_update_name_schema_validates(self):
@@ -96,7 +96,7 @@ class CreatePersonUnitTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
-        from ..schemas import CreatePerson
+        from ..schema import CreatePerson
         self.schema = CreatePerson(strict=True)
 
     def test_name_required(self):

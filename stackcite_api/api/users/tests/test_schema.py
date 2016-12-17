@@ -8,7 +8,7 @@ class UpdateUserTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
-        from ..schemas import UpdateUser
+        from ..schema import UpdateUser
         self.schema = UpdateUser()
 
     def test_invalid_group_fails_validation(self):
@@ -47,7 +47,7 @@ class CreateUserTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
-        from ..schemas import CreateUser
+        from ..schema import CreateUser
         self.schema = CreateUser()
 
     def test_email_required(self):

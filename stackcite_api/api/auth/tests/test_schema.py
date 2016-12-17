@@ -8,7 +8,7 @@ class AuthenticateTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
-        from ..schemas import Authenticate
+        from ..schema import Authenticate
         self.schema = Authenticate()
 
     def test_email_field_required(self):
@@ -25,7 +25,7 @@ class TokenTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
-        from ..schemas import Token
+        from ..schema import Token
         self.schema = Token()
 
     def test_token_field_required(self):

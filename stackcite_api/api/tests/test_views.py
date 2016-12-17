@@ -94,7 +94,7 @@ class APICollectionViewsTestCase(testing.views.CollectionViewTestCase):
             name = fields.String()
             number = fields.Integer()
             fact = fields.Bool()
-        from ..schemas import forms
+        from ..schema import forms
         class _MockAPIRetrieveCollectionSchema(
             forms.RetrieveCollection, _MockAPICreateDocumentSchema):
             pass
