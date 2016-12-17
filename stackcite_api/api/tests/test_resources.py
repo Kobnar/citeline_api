@@ -3,6 +3,25 @@ import unittest
 from stackcite_api import testing
 
 
+class ValidatedResourceTests(unittest.TestCase):
+
+    layer = testing.layers.UnitTestLayer
+
+    from ..resources import ValidatedResource
+    class _MockValidatedResource(ValidatedResource):
+        from marshmallow import Schema
+        class _MockSchema(Schema):
+            from marshmallow import fields
+            required = fields.String(required=True)
+        _schema = {'TEST': _MockSchema}
+
+    def test_schema_validation_default_is_strict(self):
+        from marshmallow import ValidationError
+        resource = self._MockValidatedResource()
+        with self.assertRaises(ValidationError):
+            resource.validate('TEST', {})
+
+
 class APIResourceTests(unittest.TestCase):
 
     layer = testing.layers.MongoIntegrationTestLayer

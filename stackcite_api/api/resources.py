@@ -40,12 +40,13 @@ class ValidatedResource(object):
 
         :param method: An HTTP request method name (e.g. `GET`)
         :param data: A nested dictionary of request data
+        :param strict: If true, raises exception for validation errors
         :return: A tuple in the form of (``data``, ``errors``)
         """
         errors = None
         schema = self._schema.get(method)
         if schema:
-            schema = schema(strict)
+            schema = schema(strict=strict)
             data, errors = schema.load(data)
         return data, errors
 
