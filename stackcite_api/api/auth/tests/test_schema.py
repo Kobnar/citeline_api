@@ -17,7 +17,7 @@ class AuthenticateTests(unittest.TestCase):
 
     def test_password_field_required(self):
         result = self.schema.load({}).errors.keys()
-        self.assertIn('email', result)
+        self.assertIn('password', result)
 
 
 class TokenTests(unittest.TestCase):
