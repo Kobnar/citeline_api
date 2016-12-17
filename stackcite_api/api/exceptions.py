@@ -39,3 +39,12 @@ class APIUnauthorized(httpexceptions.HTTPUnauthorized):
 
     code: 401, title: Unauthorized
     """
+
+class APIForbidden(httpexceptions.HTTPForbidden):
+    """
+    Subclass of :class:`~HTTPUnauthorized` used to raise HTTP exceptions within
+    the API instead of forwarding the user to a front-end styled exception
+    page.
+
+    code: 403, title: Forbidden
+    """

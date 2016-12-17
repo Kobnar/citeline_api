@@ -34,17 +34,16 @@ class APIExceptionViews(BaseView):
     A view class to provide JSON formatted exceptions.
     """
 
+    @forbidden_view_config()
     @notfound_view_config()
     @view_config(context=exc.HTTPBadRequest)
     def exception(self):
         self.request.response.status_code = self.context.code
-        return {self.context.status: self.context.detail}
-
-    @forbidden_view_config()
-    def forbidden(self):
-        msg = 'You do not have permission to view or edit this resource'
-        self.context.detail = msg
-        return self.exception()
+        return {
+            'code': self.context.status,
+            'title': self.context.title,
+            'detail': self.context.detail
+        }
 
 
 @view_defaults(renderer='json')
