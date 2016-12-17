@@ -98,6 +98,25 @@ class ISBN10Field(fields.String):
             error=self.error_messages['invalid']))
 
 
+class GroupField(fields.String):
+    """
+    A user group name.
+
+    :param args: The same positional arguments that
+        :class:`marshmallow.fields.String` receives.
+    :param kwargs: The same keyword arguments that
+        :class:`marshmallow.fields.String` receives.
+    """
+    default_error_messages = {'invalid': 'Not a valid group'}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(self, *args, **kwargs)
+        # Insert validation into self.validators so that multiple errors can be
+        # stored.
+        self.validators.insert(0, validators.groups.GroupValidator(
+            error=self.error_messages['invalid']))
+
+
 class ISBN13Field(fields.String):
     """
     An ISBN-13 field that automatically validates its content.

@@ -55,6 +55,32 @@ class PasswordFieldTests(unittest.TestCase):
                 self.field.deserialize(password)
 
 
+class GroupFieldTests(unittest.TestCase):
+
+    layer = testing.layers.UnitTestLayer
+
+    def setUp(self):
+        from ..fields import GroupField
+        self.field = GroupField()
+
+    def test_deserialize_accepts_valid_groups(self):
+        """GroupField accepts all valid groups
+        """
+        from stackcite_api import auth
+        for group in auth.GROUPS:
+            result = self.field.deserialize(group)
+            self.assertEqual(group, result)
+
+    def test_deserialize_raises_exception_for_invalid_group(self):
+        """GroupField raises exception for invalid group name
+        """
+        invalid_group = 'gods'
+        msg = 'Invalid group passed validation: {}'.format(invalid_group)
+        from marshmallow import ValidationError
+        with self.assertRaises(ValidationError, msg=msg):
+            self.field.deserialize(invalid_group)
+
+
 class UsernameFieldTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
