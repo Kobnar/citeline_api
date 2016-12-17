@@ -1,5 +1,3 @@
-import mongoengine
-
 from pyramid import security as sec
 from stackcite import data as db
 
@@ -8,7 +6,7 @@ from stackcite_api import api
 from . import schema, views
 
 
-class AuthResource(api.resources.APIIndex):
+class AuthResource(api.resources.APIIndex, api.resources.ValidatedResource):
 
     VIEW_CLASS = views.AuthViews
 
@@ -18,23 +16,20 @@ class AuthResource(api.resources.APIIndex):
         sec.DENY_ALL
     ]
 
-    _token_schema = schema.Token
-    _auth_schema = schema.Authenticate
+    _schema = {
+        'CREATE': schema.Authenticate
+    }
 
-    def create(self, auth_data):
+    def create(self, data):
         """
         Creates or updates a :class:`~Token` based on valid user authentication
         credentials.
         """
-        schema = self._auth_schema(strict=True)
-        auth_data = schema.load(auth_data).data
-        email = auth_data.get('email')
-        password = auth_data.get('password')
+        data, errors = self.validate('CREATE', data)
+        email = data['email']
+        password = data['password']
         user = db.User.authenticate(email, password)
-        try:
-            token = db.Token.objects.get(_user=user)
-        except mongoengine.DoesNotExist:
-            token = db.Token(_user=user)
+        token = db.Token(_user=user)
         token.save()
         user.touch_login()
         user.save()
