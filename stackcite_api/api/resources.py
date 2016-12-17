@@ -117,9 +117,14 @@ class APICollection(resources.CollectionResource, ValidatedResource):
         results = super().retrieve(raw_query, fields, limit, skip)
 
         if results:
-            return [doc.serialize(fields) for doc in results]
+            return {
+                'count': results.count(),
+                'limit': limit,
+                'skip': skip,
+                'items': [doc.serialize(fields) for doc in results]
+            }
         else:
-            return []
+            return {}
 
     @staticmethod
     def get_commons(query):
