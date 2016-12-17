@@ -63,7 +63,7 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         user = make_user(email, password)
         user.save()
         # Log in user
-        auth_data = {'email': email, 'password': 'B4dPa$$word'}
+        auth_data = {'email': email, 'password': 'Wr0ngPa$$word'}
         with(self.assertRaises(AuthenticationError)):
             self.collection.create(auth_data)
 
