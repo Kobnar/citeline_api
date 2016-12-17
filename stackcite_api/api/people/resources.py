@@ -7,12 +7,16 @@ from . import schema
 
 class PersonDocument(api.resources.APIDocument):
 
-    _update_schema = schema.UpdatePerson
+    _schema = {
+        'PUT': schema.UpdatePerson
+    }
 
 
 class PersonCollection(api.resources.APICollection):
 
+    _schema = {
+        'POST': schema.CreatePerson
+    }
+
     _collection = db.Person
     _document_resource = PersonDocument
-
-    _create_schema = schema.CreatePerson
