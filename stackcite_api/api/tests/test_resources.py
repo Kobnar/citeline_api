@@ -99,28 +99,43 @@ class APICollectionTests(APIResourceTests):
             self.fail(err)
 
     def test_retrieve_returns_list(self):
-        """APICollection.retrieve() returns a list if documents exist
+        """APICollection.retrieve() returns a list of items if documents exist
         """
         self.make_data(save=True)
-        results = self.col_resource.retrieve()
+        results = self.col_resource.retrieve()['items']
         msg = 'No data was returned'
         self.assertNotEqual(results, [], msg=msg)
         self.assertIsInstance(results, list)
 
+    def test_retrieve_returns_accurate_count_if_documents_exist(self):
+        """APICollection.retrieve() returns an accurate count of items if documents exist
+        """
+        count = 16
+        self.make_data(count, save=True)
+        result = self.col_resource.retrieve()['count']
+        self.assertEqual(count, result)
+
     def test_retrieve_returns_empty_list_if_nothing_exists(self):
-        """APICollection.retrieve() returns an empty list if nothing is found
+        """APICollection.retrieve() returns an empty list of items if nothing is found
         """
         expected = []
-        result = self.col_resource.retrieve()
+        result = self.col_resource.retrieve()['items']
+        self.assertEqual(expected, result)
+
+    def test_retrieve_returns_zero_count_if_nothing_exists(self):
+        """APICollection.retrieve() returns a count of zero if nothing is found
+        """
+        expected = 0
+        result = self.col_resource.retrieve()['count']
         self.assertEqual(expected, result)
 
     def test_retrieve_returns_serialized_data(self):
-        """APICollection.retrieve() returns accurately serialized documents
+        """APICollection.retrieve() returns a list of accurately serialized documents
         """
         docs = self.make_data(save=True)
         results = self.col_resource.retrieve()
         for idx, doc in enumerate(docs):
-            result = results[idx]
+            result = results['items'][idx]
             expected = {
                 'id': str(doc.id),
                 'name': doc.name,
@@ -129,19 +144,19 @@ class APICollectionTests(APIResourceTests):
             self.assertEqual(expected, result)
 
     def test_retrieve_with_query_returns_data(self):
-        """APICollection.retrieve() returns data with a valid query
+        """APICollection.retrieve() returns a list of items data with a valid query
         """
         self.make_data(save=True)
         raw_query = {'fact': True}
         results = self.col_resource.retrieve(raw_query)
-        self.assertNotEqual([], results)
+        self.assertGreater(len(results), 0)
 
     def test_retrieve_with_query_returns_correct_results(self):
-        """APICollection.retrieve() returns accurate data with a valid query
+        """APICollection.retrieve() returns a list of accurate data with a valid query
         """
         self.make_data(save=True)
         raw_query = {'fact': True}
-        results = self.col_resource.retrieve(raw_query)
+        results = self.col_resource.retrieve(raw_query)['items']
         for doc in results:
             self.assertTrue(doc['fact'])
 
@@ -152,38 +167,38 @@ class APICollectionTests(APIResourceTests):
         query = {'fields': 'name,fact'}
         results = self.col_resource.retrieve(query)
         for idx, doc in enumerate(docs):
-            result = results[idx]
+            result = results['items'][idx]
             expected = {
                 'name': doc.name,
                 'fact': doc.fact}
             self.assertEqual(expected, result)
 
     def test_retrieve_default_limit(self):
-        """APICollection.retrieve() limits results to a default value
+        """APICollection.retrieve() limits results to a default number of items
         """
         self.make_data(128, save=True)
-        results = self.col_resource.retrieve()
+        results = self.col_resource.retrieve()['items']
         self.assertEqual(100, len(results))
 
     def test_retrieve_override_limit(self):
-        """APICollection.retrieve() limits results to an explicit value
+        """APICollection.retrieve() limits results to an explicit number of items
         """
         self.make_data(128, save=True)
-        results = self.col_resource.retrieve({'limit': 64})
+        results = self.col_resource.retrieve({'limit': 64})['items']
         self.assertEqual(64, len(results))
 
     def test_retrieve_default_skip(self):
         """APICollection.retrieve() skips nothing by default
         """
         self.make_data(save=True)
-        result = self.col_resource.retrieve()[0]
+        result = self.col_resource.retrieve()['items'][0]
         self.assertEqual(0, result['number'])
 
     def test_retrieve_override_skip(self):
         """APICollection.retrieve() skips to an explicit value
         """
         self.make_data(save=True)
-        result = self.col_resource.retrieve({'skip': 4})[0]
+        result = self.col_resource.retrieve({'skip': 4})['items'][0]
         self.assertEqual(4, result['number'])
 
     def test_retrieve_returns_matching_ids(self):
@@ -195,7 +210,7 @@ class APICollectionTests(APIResourceTests):
             r_idx = randint(0, len(expected) - 1)
             expected.pop(r_idx)
         query = {'ids': ','.join(expected)}
-        results = [r['id'] for r in self.col_resource.retrieve(query)]
+        results = [r['id'] for r in self.col_resource.retrieve(query)['items']]
         self.assertEqual(expected, results)
 
     def test_get_commons_default_values(self):
