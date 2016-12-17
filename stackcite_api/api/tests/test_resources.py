@@ -21,7 +21,7 @@ class APIResourceTests(unittest.TestCase):
             pass
         _collection = testing.mock.MockDocument
         _document_resource = _MockAPIDocumentResource
-        _retrieve_schema = _MockAPIRetrieveCollectionSchema
+        _schema = {'GET': _MockAPIRetrieveCollectionSchema}
 
     def setUp(self):
         # Drops existing.mock.MockDocument data:

@@ -4,7 +4,10 @@ from pyramid import security as sec
 
 from stackcite_api import resources
 
-from . import schema, views
+from . import (
+    schema as api_schema,
+    views as api_views
+)
 
 
 class APIIndex(resources.IndexResource):
@@ -12,7 +15,7 @@ class APIIndex(resources.IndexResource):
     The root index resource.
     """
 
-    VIEW_CLASS = views.APIIndexViews
+    VIEW_CLASS = api_views.APIIndexViews
 
     __acl__ = [
         (sec.Allow, sec.Everyone, 'retrieve'),
@@ -20,12 +23,39 @@ class APIIndex(resources.IndexResource):
     ]
 
 
-class APIDocument(resources.DocumentResource):
+class ValidatedResource(object):
+    """
+    An abstract class providing a basic schema loading and validation
+    :class:`Resource`.
+    """
+
+    _schema = NotImplemented
+
+    def validate(self, method, data, strict=True):
+        """
+        If the `method` provided has an associated data validation schema
+        defined in `_schema`, this method will instantiate the associated
+        schema and validate the provided data. Otherwise, it will return the
+        original data without performing any data validation.
+
+        :param method: An HTTP request method name (e.g. `GET`)
+        :param data: A nested dictionary of request data
+        :return: A tuple in the form of (``data``, ``errors``)
+        """
+        errors = None
+        schema = self._schema.get(method)
+        if schema:
+            schema = schema(strict)
+            data, errors = schema.load(data)
+        return data, errors
+
+
+class APIDocument(resources.DocumentResource, ValidatedResource):
     """
     The API-level traversal resource.
     """
 
-    VIEW_CLASS = views.APIDocumentViews
+    VIEW_CLASS = api_views.APIDocumentViews
 
     __acl__ = [
         (sec.Allow, sec.Authenticated, ('update', 'delete')),
@@ -33,22 +63,20 @@ class APIDocument(resources.DocumentResource):
         sec.DENY_ALL
     ]
 
-    _retrieve_schema = schema.forms.RetrieveDocument
-    _update_schema = NotImplemented
+    _schema = {
+        'GET': api_schema.forms.RetrieveDocument
+    }
 
     def retrieve(self, query=None):
         query = query or {}
-        schema = self._retrieve_schema(strict=True)
-        query = schema.load(query).data
+        query, errors = self.validate('GET', query)
         fields = query.get('fields')
         result = super().retrieve(fields)
         return result.serialize(fields)
 
     def update(self, data):
         data = data or {}
-        if self._update_schema is not NotImplemented:
-            schema = self._update_schema(strict=True)
-            data = schema.load(data).data
+        data, errors = self.validate('PUT', data)
         result = super().update(data)
         return result.serialize()
 
@@ -57,12 +85,12 @@ class APIDocument(resources.DocumentResource):
         return bool(result)
 
 
-class APICollection(resources.CollectionResource):
+class APICollection(resources.CollectionResource, ValidatedResource):
     """
     The API-level traversal resource.
     """
 
-    VIEW_CLASS = views.APICollectionViews
+    VIEW_CLASS = api_views.APICollectionViews
 
     __acl__ = [
         (sec.Allow, sec.Authenticated, 'create'),
@@ -70,21 +98,19 @@ class APICollection(resources.CollectionResource):
         sec.DENY_ALL
     ]
 
-    _retrieve_schema = schema.forms.RetrieveCollection
-    _create_schema = NotImplemented
+    _schema = {
+        'GET': api_schema.forms.RetrieveCollection
+    }
 
     def create(self, data):
         data = data or {}
-        if self._create_schema is not NotImplemented:
-            schema = self._create_schema(strict=True)
-            data = schema.load(data).data
+        data, errors = self.validate('POST', data)
         result = super().create(data)
         return result.serialize()
 
     def retrieve(self, query=None):
         query = query or {}
-        schema = self._retrieve_schema(strict=True)
-        query = schema.load(query).data
+        query, errors = self.validate('GET', query)
         fields, limit, skip = self.get_commons(query)
         raw_query = self._raw_query(query)
         results = super().retrieve(raw_query, fields, limit, skip)
