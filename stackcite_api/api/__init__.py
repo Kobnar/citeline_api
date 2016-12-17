@@ -13,10 +13,6 @@ VERSIONS = ('v0',)
 VERSION = VERSIONS[-1]
 
 
-def root_redirect(context, request):
-    return _http_exc.HTTPFound('/{}/'.format(VERSION))
-
-
 def traversal_factory(parent, name):
     # Index
     parent[name] = resources.APIIndex

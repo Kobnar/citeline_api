@@ -3,6 +3,7 @@ import mongoengine
 from pyramid.config import Configurator
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.renderers import JSON
+from pyramid.httpexceptions import HTTPFound
 
 from stackcite_api import api, auth
 
@@ -36,9 +37,15 @@ def main(global_config, **settings):
     config.set_authentication_policy(authentication_policy)
     config.set_authorization_policy(authorization_policy)
 
-    # Views
+    # JSON response rendering
     config.add_renderer('json', JSON())
-    config.add_view(api.root_redirect, context=resources.IndexResource)
+
+    # Root index redirect
+    config.add_view(
+        lambda c, r: HTTPFound('/{}/'.format(api.VERSION)),
+        context=resources.IndexResource)
+
+    # API view registration
     api.view_factory(config)
 
     config.scan()
