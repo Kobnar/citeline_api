@@ -53,35 +53,66 @@ class APINotFoundViewsTestCase(APIExceptionViewsTestCase):
         self.assertEqual(expected, result)
 
 
-class APICollectionViewsTestCase(testing.views.CollectionViewTestCase):
+class APIViewTestCase(object):
+    """
+    A base test case for API views providing a custom view/schema for the
+    :class:`~MockDocument` class.
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    NOTE: This class must be defined before any other testing view classes in
+    cases of multiple inheritance.
+    """
 
-    # Define "mock" traversal resources:
     from ..resources import APICollection
     class _MockAPICollectionResource(APICollection):
+
         from marshmallow import Schema
         class _MockAPICreateDocumentSchema(Schema):
             from marshmallow import fields
             name = fields.String()
             number = fields.Integer()
             fact = fields.Bool()
+
         from ..schema import forms
         class _MockAPIRetrieveCollectionSchema(
-            forms.RetrieveCollection, _MockAPICreateDocumentSchema):
-            pass
+            forms.RetrieveCollection):
+            from marshmallow import fields
+            name = fields.String()
+            number = fields.Integer()
+            fact = fields.Bool()
+
         from ..resources import APIDocument
         class _MockAPIDocumentResource(APIDocument):
-            pass
+
+            from marshmallow import Schema
+            class _MockAPIUpdateDocumentSchema(Schema):
+                from marshmallow import fields
+                name = fields.String()
+                number = fields.Integer()
+                fact = fields.Bool()
+
+            _schema = {
+                'PUT': _MockAPIUpdateDocumentSchema
+            }
+
         _collection = testing.mock.MockDocument
         _document_resource = _MockAPIDocumentResource
+
         _schema = {
             'POST': _MockAPICreateDocumentSchema,
-            'GET': _MockAPIRetrieveCollectionSchema}
+            'GET': _MockAPIRetrieveCollectionSchema
+        }
+
+    RESOURCE_CLASS = _MockAPICollectionResource
+
+
+class APICollectionViewsTestCase(
+        APIViewTestCase,
+        testing.views.CollectionViewTestCase):
+
+    layer = testing.layers.MongoIntegrationTestLayer
 
     # Define resource and view class under test
     from ..views import APICollectionViews
-    RESOURCE_CLASS = _MockAPICollectionResource
     VIEW_CLASS = APICollectionViews
 
     def setUp(self):
@@ -278,30 +309,16 @@ class APICollectionViewsRetrieveTestCase(APICollectionViewsTestCase):
             view.retrieve()
 
 
-class APIDocumentViewsTestCase(testing.views.DocumentViewTestCase):
+class APIDocumentViewsTestCase(
+        APIViewTestCase,
+        testing.views.DocumentViewTestCase):
     """
     A test case for :class:`.APIDocumentViews`.
     """
     layer = testing.layers.MongoIntegrationTestLayer
 
-    # Define "mock" traversal resources:
-    from ..resources import APICollection
-    class _MockAPICollectionResource(APICollection):
-        from ..resources import APIDocument
-        class _MockAPIDocumentResource(APIDocument):
-            from marshmallow import Schema
-            class _MockAPIUpdateDocumentSchema(Schema):
-                from marshmallow import fields
-                name = fields.String()
-                number = fields.Integer()
-                fact = fields.Bool()
-            _update_schema = _MockAPIUpdateDocumentSchema
-        _collection = testing.mock.MockDocument
-        _document_resource = _MockAPIDocumentResource
-
     # Define resource and view class under test
     from ..views import APIDocumentViews
-    RESOURCE_CLASS = _MockAPICollectionResource
     VIEW_CLASS = APIDocumentViews
 
     def setUp(self):
