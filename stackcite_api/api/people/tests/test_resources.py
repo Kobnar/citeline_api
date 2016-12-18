@@ -33,7 +33,7 @@ class PersonCollectionCreateTestCase(PersonCollectionIntegrationTestCase):
         self.assertIsNotNone(result['id'])
 
     def test_create_invalid_person_raises_exception(self):
-        """PersonCollection.create() raises ValidationError for invalid data
+        """PersonCollection.create() raises exception for invalid data
         """
         from marshmallow import ValidationError
         data = {'name': {'first': 'John', 'full': 'John Nobody Doe'}}
@@ -42,6 +42,18 @@ class PersonCollectionCreateTestCase(PersonCollectionIntegrationTestCase):
 
 
 class PersonCollectionRetrieveTestCase(PersonCollectionIntegrationTestCase):
+
+    def test_get_schema_defined(self):
+        """PersonCollection has 'GET' schema defined
+        """
+        # Without a schema, 'fields' is passed back to mongo.DocumentResource
+        # as a string, which raises an AssertionError
+        query = {'fields': 'id,name'}
+        try:
+            self.collection.retrieve(query)
+        except AssertionError:
+            msg = 'PersonCollection has no GET schema'
+            self.fail(msg)
 
     def test_retrieve_people_returns_all_people(self):
         """PersonCollection.retrieve() returns ObjectIds for everybody in the database
@@ -68,6 +80,19 @@ class PersonDocumentIntegrationTestCase(PersonCollectionIntegrationTestCase):
 
 
 class PersonDocumentRetrieveTestCase(PersonDocumentIntegrationTestCase):
+
+    def test_get_schema_defined(self):
+        """PersonDocment has 'GET' schema defined
+        """
+        # Without a schema, 'fields' is passed back to mongo.DocumentResource
+        # as a string, which raises an AssertionError
+        query = {'fields': 'id,name'}
+        try:
+            self.collection.retrieve(query)
+        except AssertionError:
+            msg = 'PersonCollection has no GET schema defined'
+            self.fail(msg)
+
 
     def test_retrieve_returns_person(self):
         """PersonDocument.retrieve() returns data with the correct ObjectId
