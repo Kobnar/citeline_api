@@ -48,7 +48,8 @@ class PersonCollectionRetrieveTestCase(PersonCollectionIntegrationTestCase):
         """
         from stackcite.testing.data import people as ppl
         people = [make_person(p, save=True) for p in ppl()]
-        results = [r['id'] for r in self.collection.retrieve()]
+        results = self.collection.retrieve()['items']
+        results = [r['id'] for r in results]
         for pid in people:
             expected = str(pid.id)
             self.assertIn(expected, results)
