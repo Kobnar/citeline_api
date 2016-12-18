@@ -36,7 +36,7 @@ class APINotFoundViewsTestCase(APIExceptionViewsTestCase):
     EXCEPTION_CLASS = HTTPNotFound
 
     def test_status_code_matches_404_exception_code(self):
-        """APIExceptionViews.exception() sets status code to a 404 Not Found
+        """APIExceptionViews.exception() sets status code to 404 (Not Found)
         """
         expected = 404
         view = self.get_view()
@@ -44,40 +44,12 @@ class APINotFoundViewsTestCase(APIExceptionViewsTestCase):
         result = view.request.response.status_code
         self.assertEqual(expected, result)
 
-    def test_body_status_message_matches_exc_status(self):
-        """APIExceptionViews.exception() sets message status as '404 Not Found'
+    def test_code_is_not_none(self):
+        """APIExceptionViews.exception() sets code field
         """
-        status = '404 Not Found'
+        expected = 404
         view = self.get_view()
-        result = view.exception()
-        try:
-            result[status]
-        except KeyError as err:
-            msg = 'Unexpected exception raised: {}'
-            self.fail(msg.format(err))
-
-
-class APIForbiddenViewsTestCase(APIExceptionViewsTestCase):
-
-    from pyramid.exceptions import HTTPForbidden
-    EXCEPTION_CLASS = HTTPForbidden
-
-    def test_status_code_matches_403_exception_code(self):
-        """APIExceptionViews.exception() sets status code to a 403 Forbidden
-        """
-        expected = 403
-        view = self.get_view()
-        view.exception()
-        result = view.request.response.status_code
-        self.assertEqual(expected, result)
-
-    def test_forbidden_detail_overrides_verbose_default(self):
-        """APIExceptionViews.forbidden() overrides the verbose 403 Forbidden default
-        """
-        expected = 'You do not have permission to view or edit this resource'
-        view = self.get_view()
-        view.forbidden()
-        result = view.context.detail
+        result = view.exception()['code']
         self.assertEqual(expected, result)
 
 
@@ -103,8 +75,9 @@ class APICollectionViewsTestCase(testing.views.CollectionViewTestCase):
             pass
         _collection = testing.mock.MockDocument
         _document_resource = _MockAPIDocumentResource
-        _create_schema = _MockAPICreateDocumentSchema
-        _retrieve_schema = _MockAPIRetrieveCollectionSchema
+        _schema = {
+            'POST': _MockAPICreateDocumentSchema,
+            'GET': _MockAPIRetrieveCollectionSchema}
 
     # Define resource and view class under test
     from ..views import APICollectionViews
@@ -239,25 +212,25 @@ class APICollectionViewsRetrieveTestCase(APICollectionViewsTestCase):
         docs = self.make_data(save=True)
         view = self.get_view()
         view.request.params = {}
-        results = view.retrieve()
+        results = view.retrieve()['items']
         results = [d['name'] for d in results]
         expected = [d.name for d in docs]
         for doc in results:
             self.assertIn(doc, expected)
 
     def test_retrieve_includes_properly_serialized_id(self):
-        """APICollectionViews.retrieve() returned an id
+        """APICollectionViews.retrieve() returned an id for each result
         """
         self.make_data(save=True)
         view = self.get_view()
         view.request.params = {}
-        results = view.retrieve()
+        results = view.retrieve()['items']
         from bson import ObjectId
-        for person in results:
+        for doc in results:
             try:
-                ObjectId(person['id'])
+                ObjectId(doc['id'])
             except TypeError:
-                self.fail('APICollectionViews.retrieve() return an invalid id')
+                self.fail('APICollectionViews.retrieve() return a invalid id')
             except KeyError:
                 self.fail('APICollectionViews.retrieve() did not return an id')
 
@@ -267,7 +240,7 @@ class APICollectionViewsRetrieveTestCase(APICollectionViewsTestCase):
         docs = self.make_data(save=True)
         view = self.get_view()
         view.request.params = {}
-        results = view.retrieve()
+        results = view.retrieve()['items']
         for idx, result in enumerate(results):
             expected = docs[idx].serialize()
             expected['id'] = result['id']
@@ -288,7 +261,7 @@ class APICollectionViewsRetrieveTestCase(APICollectionViewsTestCase):
         view = self.get_view()
         view.request.params = {'name': 'John'}
         expected = []
-        result = view.retrieve()
+        result = view.retrieve()['items']
         self.assertEqual(expected, result)
 
     def test_retrieve_schema_invalidation_raises_400_BAD_REQUEST(self):
