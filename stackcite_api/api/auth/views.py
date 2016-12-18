@@ -1,13 +1,8 @@
-import mongoengine
 import marshmallow
+import mongoengine
 import stackcite
-
-from pyramid.view import view_defaults, view_config
-
-from stackcite_api import api, views
-from stackcite_api.api import exceptions
-
-from . import resources
+from pyramid.view import view_defaults
+from stackcite_api import views, exceptions
 
 
 @view_defaults(renderer='json')
@@ -29,7 +24,7 @@ class AuthViews(views.BaseView):
 
         except ValueError:
             msg = 'Failed to decode JSON body'
-            raise api.exceptions.APIBadRequest(detail=msg)
+            raise exceptions.APIBadRequest(detail=msg)
 
         except marshmallow.ValidationError as err:
             msg = err.messages

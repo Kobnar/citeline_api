@@ -1,6 +1,4 @@
-from pyramid import httpexceptions as _http_exc
-
-from . import resources, schema, views
+from . import resources, views
 from . import auth
 from . import citations
 from . import organizations

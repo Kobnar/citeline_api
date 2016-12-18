@@ -1,18 +1,18 @@
 from stackcite import data as db
 
-from stackcite_api import api
+from stackcite_api import resources
 
 from . import schema
 
 
-class OrganizationDocument(api.resources.APIDocument):
+class OrganizationDocument(resources.APIDocument):
 
     _SCHEMA = {
         'PUT': schema.UpdateOrganization
     }
 
 
-class OrganizationCollection(api.resources.APICollection):
+class OrganizationCollection(resources.APICollection):
 
     _SCHEMA = {
         'POST': schema.CreateOrganization
@@ -22,14 +22,14 @@ class OrganizationCollection(api.resources.APICollection):
     _DOCUMENT_RESOURCE = OrganizationDocument
 
 
-class PublisherDocument(api.resources.APIDocument):
+class PublisherDocument(resources.APIDocument):
 
     _SCHEMA = {
         'PUT': schema.UpdatePublisher
     }
 
 
-class PublisherCollection(api.resources.APICollection):
+class PublisherCollection(resources.APICollection):
 
     _SCHEMA = {
         'POST': schema.CreatePublisher

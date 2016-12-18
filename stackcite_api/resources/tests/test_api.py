@@ -7,7 +7,7 @@ class ValidatedResourceTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
-    from ..resources import ValidatedResource
+    from stackcite_api.resources import ValidatedResource
     class _MockBaseValidatedResource(ValidatedResource):
         from marshmallow import Schema
         class _MockBaseSchema(Schema):
@@ -44,15 +44,15 @@ class APIResourceTests(unittest.TestCase):
     layer = testing.layers.MongoIntegrationTestLayer
 
     # Define "mock" traversal resources and schema:
-    from ..resources import APICollection
+    from stackcite_api.resources import APICollection
     class _MockAPICollectionResource(APICollection):
-        from ..schema import forms
+        from stackcite_api.schema import forms
         class _MockAPIRetrieveCollectionSchema(forms.RetrieveCollection):
             from marshmallow import fields
             name = fields.String()
             number = fields.Integer()
             fact = fields.Bool()
-        from ..resources import APIDocument
+        from stackcite_api.resources import APIDocument
         class _MockAPIDocumentResource(APIDocument):
             pass
         _COLLECTION = testing.mock.MockDocument

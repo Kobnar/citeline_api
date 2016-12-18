@@ -8,7 +8,7 @@ class CitationCollectionViewsIntegrationTestCase(
 
     # Define resource and view classes
     from ..resources import CitationCollection
-    from stackcite_api.api.views import APICollectionViews
+    from stackcite_api.views import APICollectionViews
     RESOURCE_CLASS = CitationCollection
     VIEW_CLASS = APICollectionViews
 
@@ -24,7 +24,7 @@ class CitationCollectionViewsIntegrationTestCase(
         """CitationCollectionViews.create() accepts a string-formatted ObjectId as a source
         """
         from stackcite import data
-        from stackcite_api.api.exceptions import APIBadRequest
+        from stackcite_api.exceptions import APIBadRequest
 
         source = data.Source(title='Test Source')
         source.save()
@@ -48,7 +48,7 @@ class CitationDocumentViewsIntegrationTestCase(
 
     # Define resource and view classes
     from ..resources import CitationCollection
-    from stackcite_api.api.views import APIDocumentViews
+    from stackcite_api.views import APIDocumentViews
     RESOURCE_CLASS = CitationCollection
     VIEW_CLASS = APIDocumentViews
 

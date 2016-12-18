@@ -51,7 +51,7 @@ class AuthViewsCreateTests(AuthViewsTests):
     def test_create_invalid_data_returns_400(self):
         """AuthViews.create() with invalid data raises 400 BAD REQUEST
         """
-        from stackcite_api.api import exceptions as exc
+        from stackcite_api import exceptions as exc
         data = {
             'cats': 'Are evil.',
             'dogs': 'Are lovely.'}
@@ -64,7 +64,7 @@ class AuthViewsCreateTests(AuthViewsTests):
     def test_create_no_user_returns_400(self):
         """AuthViews.create() with unregistered user raises 400 BAD REQUEST
         """
-        from stackcite_api.api import exceptions as exc
+        from stackcite_api import exceptions as exc
         data = {
             'email': 'wrong@email.com',
             'password': 'T3stPa$$word'}
@@ -77,7 +77,7 @@ class AuthViewsCreateTests(AuthViewsTests):
     def test_create_wrong_password_returns_400(self):
         """AuthViews.create() with wrong password raises 400 BAD REQUEST
         """
-        from stackcite_api.api import exceptions as exc
+        from stackcite_api import exceptions as exc
         data = {
             'email': 'test@email.com',
             'password': 'T3stPa$$word'}

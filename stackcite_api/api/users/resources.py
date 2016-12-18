@@ -2,12 +2,12 @@ from pyramid import security as sec
 
 from stackcite import data as db
 
-from stackcite_api import api, auth
+from stackcite_api import resources, auth
 
 from . import schema
 
 
-class UserDocument(api.resources.APIDocument):
+class UserDocument(resources.APIDocument):
 
     def __acl__(self):
         return [
@@ -21,7 +21,7 @@ class UserDocument(api.resources.APIDocument):
     }
 
 
-class UserCollection(api.resources.APICollection):
+class UserCollection(resources.APICollection):
 
     __acl__ = [
         (sec.Allow, auth.ADMIN, 'retrieve'),

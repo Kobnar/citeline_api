@@ -2,7 +2,7 @@ from marshmallow import Schema, fields, validates, ValidationError
 
 from stackcite.data import User
 
-from stackcite_api.api.schema import fields as api_fields
+from stackcite_api.schema import fields as api_fields
 
 
 def _validate_default_groups(value):

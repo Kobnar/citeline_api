@@ -1,16 +1,16 @@
 from stackcite import data as db
 
-from stackcite_api import api
+from stackcite_api import resources
 
 from . import schema
 
 
-class CitationDocument(api.resources.APIDocument):
+class CitationDocument(resources.APIDocument):
 
     _update_schema = schema.UpdateCitation
 
 
-class CitationCollection(api.resources.APICollection):
+class CitationCollection(resources.APICollection):
 
     _COLLECTION = db.Citation
     _DOCUMENT_RESOURCE = CitationDocument
@@ -18,12 +18,12 @@ class CitationCollection(api.resources.APICollection):
     _create_schema = schema.CreateCitation
 
 
-class TextCitationDocument(api.resources.APIDocument):
+class TextCitationDocument(resources.APIDocument):
 
     _update_schema = schema.UpdateTextCitation
 
 
-class TextCitationCollection(api.resources.APICollection):
+class TextCitationCollection(resources.APICollection):
 
     _COLLECTION = db.TextCitation
     _DOCUMENT_RESOURCE = TextCitationDocument
@@ -31,12 +31,12 @@ class TextCitationCollection(api.resources.APICollection):
     _create_schema = schema.CreateTextCitation
 
 
-class BookCitationDocument(api.resources.APIDocument):
+class BookCitationDocument(resources.APIDocument):
 
     _update_schema = schema.UpdateBookCitation
 
 
-class BookCitationCollection(api.resources.APICollection):
+class BookCitationCollection(resources.APICollection):
 
     _COLLECTION = db.BookCitation
     _DOCUMENT_RESOURCE = BookCitationDocument

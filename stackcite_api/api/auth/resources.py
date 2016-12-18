@@ -1,12 +1,12 @@
 from pyramid import security as sec
 from stackcite import data as db
 
-from stackcite_api import api
+from stackcite_api import api, resources
 
 from . import schema, views
 
 
-class AuthResource(api.resources.APIIndex, api.resources.ValidatedResource):
+class AuthResource(api.resources.APIIndex, resources.ValidatedResource):
 
     VIEW_CLASS = views.AuthViews
 

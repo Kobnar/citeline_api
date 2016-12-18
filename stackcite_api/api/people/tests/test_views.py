@@ -8,7 +8,7 @@ class PersonCollectionViewsIntegrationTestCase(
 
     # Define resource and view classes
     from ..resources import PersonCollection
-    from stackcite_api.api.views import APICollectionViews
+    from stackcite_api.views import APICollectionViews
     RESOURCE_CLASS = PersonCollection
     VIEW_CLASS = APICollectionViews
 
@@ -22,7 +22,7 @@ class PersonCollectionViewsIntegrationTestCase(
     def test_create_raises_exception_for_invalid_data(self):
         """PersonCollectionViews.create() raises APIBadRequest with invalid data
         """
-        from stackcite_api.api.exceptions import APIBadRequest
+        from stackcite_api.exceptions import APIBadRequest
         data = {'name': {'first': 'John', 'full': 'John Nobody Doe'}}
         view = self.get_view()
         view.request.json_body = data
@@ -32,7 +32,7 @@ class PersonCollectionViewsIntegrationTestCase(
     def test_retrieve_raises_exception_for_invalid_data(self):
         """PersonCollectionViews.retrieve() raises APIBadRequest with invalid query
         """
-        from stackcite_api.api.exceptions import APIBadRequest
+        from stackcite_api.exceptions import APIBadRequest
         data = {'limit': -1}
         view = self.get_view()
         view.request.params = data
@@ -47,7 +47,7 @@ class PersonDocumentViewsIntegrationTestCase(
 
     # Define resource and view classes
     from ..resources import PersonCollection
-    from stackcite_api.api.views import APIDocumentViews
+    from stackcite_api.views import APIDocumentViews
     RESOURCE_CLASS = PersonCollection
     VIEW_CLASS = APIDocumentViews
 
@@ -70,7 +70,7 @@ class PersonDocumentViewsIntegrationTestCase(
     def test_retrieve_raises_exception_for_missing_person(self):
         """PersonDocumentViews.retrieve() raises APINotFound for missing person
         """
-        from stackcite_api.api.exceptions import APINotFound
+        from stackcite_api.exceptions import APINotFound
         view = self.get_view()
         with self.assertRaises(APINotFound):
             view.retrieve()
@@ -78,7 +78,7 @@ class PersonDocumentViewsIntegrationTestCase(
     def test_update_raises_exception_for_invalid_data(self):
         """PersonDocumentViews.update() raises APIBadRequest with invalid data
         """
-        from stackcite_api.api.exceptions import APIBadRequest
+        from stackcite_api.exceptions import APIBadRequest
         data = {'name': {'first': 'John', 'full': 'John Nobody Doe'}}
         person = self.make_person(save=True)
         view = self.get_view(person.id)
@@ -89,7 +89,7 @@ class PersonDocumentViewsIntegrationTestCase(
     def test_delete_raises_204_exception_for_deleted_person(self):
         """PersonDocumentViews.delete() raises APINoContent for deleted person
         """
-        from stackcite_api.api.exceptions import APINoContent
+        from stackcite_api.exceptions import APINoContent
         person = self.make_person(save=True)
         view = self.get_view(person.id)
         with self.assertRaises(APINoContent):
@@ -98,7 +98,7 @@ class PersonDocumentViewsIntegrationTestCase(
     def test_delete_raises_404_exception_for_missing_person(self):
         """PersonDocumentViews.delete() raises APINotFound for missing person
         """
-        from stackcite_api.api.exceptions import APINotFound
+        from stackcite_api.exceptions import APINotFound
         view = self.get_view()
         with self.assertRaises(APINotFound):
             view.delete()

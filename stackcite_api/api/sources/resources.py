@@ -1,18 +1,18 @@
 from stackcite import data as db
 
-from stackcite_api import api
+from stackcite_api import resources
 
 from . import schema
 
 
-class SourceDocument(api.resources.APIDocument):
+class SourceDocument(resources.APIDocument):
 
     _SCHEMA = {
         'PUT': schema.UpdateSource
     }
 
 
-class SourceCollection(api.resources.APICollection):
+class SourceCollection(resources.APICollection):
 
     _SCHEMA = {
         'POST': schema.CreateSource
@@ -22,14 +22,14 @@ class SourceCollection(api.resources.APICollection):
     _DOCUMENT_RESOURCE = SourceDocument
 
 
-class TextSourceDocument(api.resources.APIDocument):
+class TextSourceDocument(resources.APIDocument):
 
     _SCHEMA = {
         'PUT': schema.UpdateTextSource
     }
 
 
-class TextSourceCollection(api.resources.APICollection):
+class TextSourceCollection(resources.APICollection):
 
     _SCHEMA = {
         'POST': schema.CreateTextSource
@@ -39,14 +39,14 @@ class TextSourceCollection(api.resources.APICollection):
     _DOCUMENT_RESOURCE = TextSourceDocument
 
 
-class BookSourceDocument(api.resources.APIDocument):
+class BookSourceDocument(resources.APIDocument):
 
     _SCHEMA = {
         'PUT': schema.UpdateBookSource
     }
 
 
-class BookSourceCollection(api.resources.APICollection):
+class BookSourceCollection(resources.APICollection):
 
     _SCHEMA = {
         'POST': schema.CreateBookSource

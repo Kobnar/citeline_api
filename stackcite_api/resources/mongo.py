@@ -1,10 +1,10 @@
 from bson import ObjectId
 from bson.errors import InvalidId
 
-from . import IndexResource
+from . import index
 
 
-class DocumentResource(IndexResource):
+class DocumentResource(index.IndexResource):
     """
     A modified version of :class:`.IndexResource` providing generalized
     RETRIEVE, UPDATE and DELETE operations for individual documents in MongoDB.
@@ -91,7 +91,7 @@ class DocumentResource(IndexResource):
         return self.collection.objects(id=self.id).delete()
 
 
-class CollectionResource(IndexResource):
+class CollectionResource(index.IndexResource):
     """
     A modified version of :class:`.IndexResource` that provides CREATE and
     RETRIEVE operations for collections of documents in MongoDB.
