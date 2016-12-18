@@ -13,8 +13,8 @@ class MockResourceTestCase(unittest.TestCase):
         from ..mongo import DocumentResource
         class _MockDocumentResource(DocumentResource):
             pass
-        _collection = testing.mock.MockDocument
-        _document_resource = _MockDocumentResource
+        _COLLECTION = testing.mock.MockDocument
+        _DOCUMENT_RESOURCE = _MockDocumentResource
 
     def setUp(self):
         testing.mock.MockDocument.drop_collection()

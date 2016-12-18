@@ -7,33 +7,33 @@ from . import schema
 
 class OrganizationDocument(api.resources.APIDocument):
 
-    _schema = {
+    _SCHEMA = {
         'PUT': schema.UpdateOrganization
     }
 
 
 class OrganizationCollection(api.resources.APICollection):
 
-    _schema = {
+    _SCHEMA = {
         'POST': schema.CreateOrganization
     }
 
-    _collection = db.Organization
-    _document_resource = OrganizationDocument
+    _COLLECTION = db.Organization
+    _DOCUMENT_RESOURCE = OrganizationDocument
 
 
 class PublisherDocument(api.resources.APIDocument):
 
-    _schema = {
+    _SCHEMA = {
         'PUT': schema.UpdatePublisher
     }
 
 
 class PublisherCollection(api.resources.APICollection):
 
-    _schema = {
+    _SCHEMA = {
         'POST': schema.CreatePublisher
     }
 
-    _collection = db.Publisher
-    _document_resource = PublisherDocument
+    _COLLECTION = db.Publisher
+    _DOCUMENT_RESOURCE = PublisherDocument

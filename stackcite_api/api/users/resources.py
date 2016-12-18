@@ -16,7 +16,7 @@ class UserDocument(api.resources.APIDocument):
             sec.DENY_ALL
         ]
 
-    _schema = {
+    _SCHEMA = {
         'PUT': schema.UpdateUser
     }
 
@@ -29,9 +29,9 @@ class UserCollection(api.resources.APICollection):
         sec.DENY_ALL
     ]
 
-    _schema = {
+    _SCHEMA = {
         'POST': schema.CreateUser
     }
 
-    _collection = db.User
-    _document_resource = UserDocument
+    _COLLECTION = db.User
+    _DOCUMENT_RESOURCE = UserDocument

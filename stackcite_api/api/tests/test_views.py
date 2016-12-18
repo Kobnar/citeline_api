@@ -90,14 +90,14 @@ class APIViewTestCase(object):
                 number = fields.Integer()
                 fact = fields.Bool()
 
-            _schema = {
+            _SCHEMA = {
                 'PUT': _MockAPIUpdateDocumentSchema
             }
 
-        _collection = testing.mock.MockDocument
-        _document_resource = _MockAPIDocumentResource
+        _COLLECTION = testing.mock.MockDocument
+        _DOCUMENT_RESOURCE = _MockAPIDocumentResource
 
-        _schema = {
+        _SCHEMA = {
             'POST': _MockAPICreateDocumentSchema,
             'GET': _MockAPIRetrieveCollectionSchema
         }

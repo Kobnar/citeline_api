@@ -7,50 +7,50 @@ from . import schema
 
 class SourceDocument(api.resources.APIDocument):
 
-    _schema = {
+    _SCHEMA = {
         'PUT': schema.UpdateSource
     }
 
 
 class SourceCollection(api.resources.APICollection):
 
-    _schema = {
+    _SCHEMA = {
         'POST': schema.CreateSource
     }
 
-    _collection = db.Source
-    _document_resource = SourceDocument
+    _COLLECTION = db.Source
+    _DOCUMENT_RESOURCE = SourceDocument
 
 
 class TextSourceDocument(api.resources.APIDocument):
 
-    _schema = {
+    _SCHEMA = {
         'PUT': schema.UpdateTextSource
     }
 
 
 class TextSourceCollection(api.resources.APICollection):
 
-    _schema = {
+    _SCHEMA = {
         'POST': schema.CreateTextSource
     }
 
-    _collection = db.TextSource
-    _document_resource = TextSourceDocument
+    _COLLECTION = db.TextSource
+    _DOCUMENT_RESOURCE = TextSourceDocument
 
 
 class BookSourceDocument(api.resources.APIDocument):
 
-    _schema = {
+    _SCHEMA = {
         'PUT': schema.UpdateBookSource
     }
 
 
 class BookSourceCollection(api.resources.APICollection):
 
-    _schema = {
+    _SCHEMA = {
         'POST': schema.CreateBookSource
     }
 
-    _collection = db.BookSource
-    _document_resource = BookSourceDocument
+    _COLLECTION = db.BookSource
+    _DOCUMENT_RESOURCE = BookSourceDocument

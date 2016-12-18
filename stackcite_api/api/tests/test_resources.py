@@ -13,14 +13,14 @@ class ValidatedResourceTests(unittest.TestCase):
         class _MockBaseSchema(Schema):
             from marshmallow import fields
             required = fields.Bool()
-        _default_schema = {'TEST': _MockBaseSchema}
+        _DEFAULT_SCHEMA = {'TEST': _MockBaseSchema}
 
     class _MockValidatedResource(ValidatedResource):
         from marshmallow import Schema
         class _MockSchema(Schema):
             from marshmallow import fields
             required = fields.String(required=True)
-        _schema = {'TEST': _MockSchema}
+        _SCHEMA = {'TEST': _MockSchema}
 
     def test_schema_validation_default_is_strict(self):
         """ValidatedResource.validate() defaults to strict validation
@@ -55,9 +55,9 @@ class APIResourceTests(unittest.TestCase):
         from ..resources import APIDocument
         class _MockAPIDocumentResource(APIDocument):
             pass
-        _collection = testing.mock.MockDocument
-        _document_resource = _MockAPIDocumentResource
-        _schema = {'GET': _MockAPIRetrieveCollectionSchema}
+        _COLLECTION = testing.mock.MockDocument
+        _DOCUMENT_RESOURCE = _MockAPIDocumentResource
+        _SCHEMA = {'GET': _MockAPIRetrieveCollectionSchema}
 
     def setUp(self):
         # Drops existing.mock.MockDocument data:

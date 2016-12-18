@@ -16,7 +16,7 @@ class AuthResource(api.resources.APIIndex, api.resources.ValidatedResource):
         sec.DENY_ALL
     ]
 
-    _schema = {
+    _SCHEMA = {
         'CREATE': schema.Authenticate
     }
 

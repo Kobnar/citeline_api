@@ -12,8 +12,8 @@ class CitationDocument(api.resources.APIDocument):
 
 class CitationCollection(api.resources.APICollection):
 
-    _collection = db.Citation
-    _document_resource = CitationDocument
+    _COLLECTION = db.Citation
+    _DOCUMENT_RESOURCE = CitationDocument
 
     _create_schema = schema.CreateCitation
 
@@ -25,8 +25,8 @@ class TextCitationDocument(api.resources.APIDocument):
 
 class TextCitationCollection(api.resources.APICollection):
 
-    _collection = db.TextCitation
-    _document_resource = TextCitationDocument
+    _COLLECTION = db.TextCitation
+    _DOCUMENT_RESOURCE = TextCitationDocument
 
     _create_schema = schema.CreateTextCitation
 
@@ -38,7 +38,7 @@ class BookCitationDocument(api.resources.APIDocument):
 
 class BookCitationCollection(api.resources.APICollection):
 
-    _collection = db.BookCitation
-    _document_resource = BookCitationDocument
+    _COLLECTION = db.BookCitation
+    _DOCUMENT_RESOURCE = BookCitationDocument
 
     _create_schema = schema.CreateBookCitation

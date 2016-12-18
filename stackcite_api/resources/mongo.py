@@ -99,7 +99,7 @@ class CollectionResource(IndexResource):
     This class is designed to operate as an abstract class and should not
     be instantiated by itself. In order to perform CRUD operations on a
     collection, a child of :class:`~CollectionResource` should be defined
-    with an explicit ``_collection`` set.
+    with an explicit ``_COLLECTION`` set.
 
     :class:`~CollectionResource` is essentially a wrapper for interacting with
     a `mongoengine` back-end. As such, it does not attempt to serialize or
@@ -118,10 +118,10 @@ class CollectionResource(IndexResource):
     """
 
     # This resource's designated MongoDB collection:
-    _collection = NotImplemented
+    _COLLECTION = NotImplemented
 
     # The designated child resource:
-    _document_resource = DocumentResource
+    _DOCUMENT_RESOURCE = DocumentResource
 
     def __getitem__(self, key):
         """
@@ -135,14 +135,14 @@ class CollectionResource(IndexResource):
         except InvalidId:
             return super(CollectionResource, self).__getitem__(key)
 
-        return self._document_resource(self, str(key))
+        return self._DOCUMENT_RESOURCE(self, str(key))
 
     @property
     def collection(self):
         """
         A read-only reference to this resource's MongoDB collection.
         """
-        return self._collection
+        return self._COLLECTION
 
     def create(self, data):
         """

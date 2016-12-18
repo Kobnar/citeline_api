@@ -29,8 +29,8 @@ class ValidatedResource(object):
     :class:`Resource`.
     """
 
-    _default_schema = NotImplemented
-    _schema = {}
+    _DEFAULT_SCHEMA = NotImplemented
+    _SCHEMA = {}
 
     def validate(self, method, data, strict=True):
         """
@@ -45,7 +45,7 @@ class ValidatedResource(object):
         :return: A tuple in the form of (``data``, ``errors``)
         """
         errors = None
-        schema = self._schema.get(method) or self._default_schema.get(method)
+        schema = self._SCHEMA.get(method) or self._DEFAULT_SCHEMA.get(method)
         if schema:
             schema = schema(strict=strict)
             data, errors = schema.load(data)
@@ -65,7 +65,7 @@ class APIDocument(resources.DocumentResource, ValidatedResource):
         sec.DENY_ALL
     ]
 
-    _default_schema = {
+    _DEFAULT_SCHEMA = {
         'GET': api_schema.forms.RetrieveDocument
     }
 
@@ -100,7 +100,7 @@ class APICollection(resources.CollectionResource, ValidatedResource):
         sec.DENY_ALL
     ]
 
-    _default_schema = {
+    _DEFAULT_SCHEMA = {
         'GET': api_schema.forms.RetrieveCollection
     }
 
