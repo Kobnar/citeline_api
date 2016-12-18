@@ -40,7 +40,7 @@ class APIExceptionViews(BaseView):
     def exception(self):
         self.request.response.status_code = self.context.code
         return {
-            'code': self.context.status,
+            'code': self.context.status_code,
             'title': self.context.title,
             'detail': self.context.detail
         }
