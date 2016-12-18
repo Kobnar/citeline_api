@@ -8,6 +8,13 @@ class ValidatedResourceTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     from ..resources import ValidatedResource
+    class _MockBaseValidatedResource(ValidatedResource):
+        from marshmallow import Schema
+        class _MockBaseSchema(Schema):
+            from marshmallow import fields
+            required = fields.Bool()
+        _default_schema = {'TEST': _MockBaseSchema}
+
     class _MockValidatedResource(ValidatedResource):
         from marshmallow import Schema
         class _MockSchema(Schema):
@@ -16,10 +23,20 @@ class ValidatedResourceTests(unittest.TestCase):
         _schema = {'TEST': _MockSchema}
 
     def test_schema_validation_default_is_strict(self):
+        """ValidatedResource.validate() defaults to strict validation
+        """
         from marshmallow import ValidationError
         resource = self._MockValidatedResource()
         with self.assertRaises(ValidationError):
             resource.validate('TEST', {})
+
+    def test_overidden_schema_used(self):
+        """ValidatedResource.validate() uses an overridden resource if defined
+        """
+        from marshmallow import ValidationError
+        resource = self._MockValidatedResource()
+        with self.assertRaises(ValidationError):
+            resource.validate('TEST', {'required': True})
 
 
 class APIResourceTests(unittest.TestCase):
