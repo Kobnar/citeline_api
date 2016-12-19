@@ -15,8 +15,8 @@ class APIIndexViewsTests(testing.views.ViewTestCase):
         return super().get_view(name)
 
     def test_returns_dict(self):
-        """APIIndexViews.main() returns a dictionary
+        """APIIndexViews.retrieve() returns a dictionary
         """
         view = self.get_view()
-        result = view.index()
+        result = view.retrieve()
         self.assertIsInstance(result, dict)

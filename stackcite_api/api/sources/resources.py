@@ -5,21 +5,21 @@ from stackcite_api import resources
 from . import schema
 
 
-class SourceDocument(resources.APIDocument):
+class BookSourceDocument(resources.APIDocument):
 
     _SCHEMA = {
-        'PUT': schema.UpdateSource
+        'PUT': schema.UpdateBookSource
     }
 
 
-class SourceCollection(resources.APICollection):
+class BookSourceCollection(resources.APICollection):
+
+    _COLLECTION = db.BookSource
+    _DOCUMENT_RESOURCE = BookSourceDocument
 
     _SCHEMA = {
-        'POST': schema.CreateSource
+        'POST': schema.CreateBookSource
     }
-
-    _COLLECTION = db.Source
-    _DOCUMENT_RESOURCE = SourceDocument
 
 
 class TextSourceDocument(resources.APIDocument):
@@ -31,26 +31,34 @@ class TextSourceDocument(resources.APIDocument):
 
 class TextSourceCollection(resources.APICollection):
 
+    _COLLECTION = db.TextSource
+    _DOCUMENT_RESOURCE = TextSourceDocument
+
+    _OFFSPRING = {
+        'books': BookSourceCollection
+    }
+
     _SCHEMA = {
         'POST': schema.CreateTextSource
     }
 
-    _COLLECTION = db.TextSource
-    _DOCUMENT_RESOURCE = TextSourceDocument
 
-
-class BookSourceDocument(resources.APIDocument):
+class SourceDocument(resources.APIDocument):
 
     _SCHEMA = {
-        'PUT': schema.UpdateBookSource
+        'PUT': schema.UpdateSource
     }
 
 
-class BookSourceCollection(resources.APICollection):
+class SourceCollection(resources.APICollection):
 
-    _SCHEMA = {
-        'POST': schema.CreateBookSource
+    _COLLECTION = db.Source
+    _DOCUMENT_RESOURCE = SourceDocument
+
+    _OFFSPRING = {
+        'text': TextSourceCollection
     }
 
-    _COLLECTION = db.BookSource
-    _DOCUMENT_RESOURCE = BookSourceDocument
+    _SCHEMA = {
+        'POST': schema.CreateSource
+    }

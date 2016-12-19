@@ -29,9 +29,9 @@ class UserCollection(resources.APICollection):
         sec.DENY_ALL
     ]
 
+    _COLLECTION = db.User
+    _DOCUMENT_RESOURCE = UserDocument
+
     _SCHEMA = {
         'POST': schema.CreateUser
     }
-
-    _COLLECTION = db.User
-    _DOCUMENT_RESOURCE = UserDocument

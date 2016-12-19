@@ -1,14 +1,14 @@
 from pyramid import security as sec
 from stackcite import data as db
 
-from stackcite_api import api, resources
+from stackcite_api import resources
 
 from . import schema, views
 
 
-class AuthResource(api.resources.APIIndex, resources.ValidatedResource):
+class AuthResource(resources.APIIndexResource, resources.ValidatedResource):
 
-    VIEW_CLASS = views.AuthViews
+    _VIEW_CLASS = views.AuthViews
 
     __acl__ = [
         (sec.Allow, sec.Authenticated, ('retrieve', 'update', 'delete')),

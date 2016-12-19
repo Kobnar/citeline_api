@@ -1,15 +1,10 @@
-from pyramid.view import view_defaults
-
-from stackcite_api.views import BaseView
+from stackcite_api import views
 
 
-@view_defaults(renderer='json')
-class APIIndexViews(BaseView):
+class APIIndexViews(views.APIIndexViews):
     """``/v{#}/``"""
 
-    def index(self):
-        """The main index view for the current version of the Stackcite API
-        """
+    def retrieve(self):
         return {
             'title': 'Stackcite API',
             'version': '0.0'

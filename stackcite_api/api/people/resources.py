@@ -14,9 +14,9 @@ class PersonDocument(resources.APIDocument):
 
 class PersonCollection(resources.APICollection):
 
+    _COLLECTION = db.Person
+    _DOCUMENT_RESOURCE = PersonDocument
+
     _SCHEMA = {
         'POST': schema.CreatePerson
     }
-
-    _COLLECTION = db.Person
-    _DOCUMENT_RESOURCE = PersonDocument

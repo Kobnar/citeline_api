@@ -5,20 +5,20 @@ from stackcite_api import resources
 from . import schema
 
 
-class CitationDocument(resources.APIDocument):
+class BookCitationDocument(resources.APIDocument):
 
     _SCHEMA = {
-        'PUT': schema.UpdateCitation
+        'PUT': schema.UpdateBookCitation
     }
 
 
-class CitationCollection(resources.APICollection):
+class BookCitationCollection(resources.APICollection):
 
-    _COLLECTION = db.Citation
-    _DOCUMENT_RESOURCE = CitationDocument
+    _COLLECTION = db.BookCitation
+    _DOCUMENT_RESOURCE = BookCitationDocument
 
     _SCHEMA = {
-        'POST': schema.CreateCitation
+        'POST': schema.CreateBookCitation
     }
 
 
@@ -34,23 +34,31 @@ class TextCitationCollection(resources.APICollection):
     _COLLECTION = db.TextCitation
     _DOCUMENT_RESOURCE = TextCitationDocument
 
+    _OFFSPRING = {
+        'books': BookCitationCollection
+    }
+
     _SCHEMA = {
         'POST': schema.CreateTextCitation
     }
 
 
-class BookCitationDocument(resources.APIDocument):
+class CitationDocument(resources.APIDocument):
 
     _SCHEMA = {
-        'PUT': schema.UpdateBookCitation
+        'PUT': schema.UpdateCitation
     }
 
 
-class BookCitationCollection(resources.APICollection):
+class CitationCollection(resources.APICollection):
 
-    _COLLECTION = db.BookCitation
-    _DOCUMENT_RESOURCE = BookCitationDocument
+    _COLLECTION = db.Citation
+    _DOCUMENT_RESOURCE = CitationDocument
+
+    _OFFSPRING = {
+        'text': TextCitationCollection
+    }
 
     _SCHEMA = {
-        'POST': schema.CreateBookCitation
+        'POST': schema.CreateCitation
     }
