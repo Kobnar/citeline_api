@@ -3,11 +3,64 @@ import unittest
 from stackcite_api import testing
 
 
+# TODO: Clean this mess up.
+
+
+class EndpointResourceTests(unittest.TestCase):
+
+    layer = testing.layers.UnitTestLayer
+
+    class _MockConfig(object):
+        def __init__(self):
+            self.views = []
+
+        def add_view(self, view_class, context, **kwargs):
+            self.views.append({
+                'view_class': view_class,
+                'context': context})
+
+    from ..api import EndpointResource
+    class _MockEndpointResource(EndpointResource):
+
+        class _MockViewClass(object):
+            METHODS = (('TEST', 'test'),)
+
+        class _MockOffspring(object):
+            @classmethod
+            def add_views(cls, config):
+                config.add_view('OFFSPRING_VIEW', context='OFFSPRING')
+
+        _VIEW_CLASS = _MockViewClass
+        _OFFSPRING = {
+            'offspring_0': _MockOffspring,
+            'offspring_1': _MockOffspring
+        }
+
+    def test_add_views_adds_own_view(self):
+        """APIIndexResource.add_views() adds own view class to configuration object
+        """
+        config = self._MockConfig()
+        resource = self._MockEndpointResource()
+        resource.add_views(config)
+        results = [v['context'] for v in config.views]
+        self.assertIn(self._MockEndpointResource, results)
+
+    def test_add_views_adds_offspring_views(self):
+        """APIIndexResource.add_views() adds offspring view classes to configuration object
+        """
+        config = self._MockConfig()
+        resource = self._MockEndpointResource()
+        resource.add_views(config)
+        results = [v['view_class'] for v in config.views
+                   if v['view_class'] is 'OFFSPRING_VIEW']
+        self.assertEqual(2, len(results))
+
+
 class ValidatedResourceTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
-    from stackcite_api.resources import ValidatedResource
+    from ..api import ValidatedResource
     class _MockBaseValidatedResource(ValidatedResource):
         from marshmallow import Schema
         class _MockBaseSchema(Schema):

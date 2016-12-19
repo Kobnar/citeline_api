@@ -4,7 +4,44 @@ from pyramid import security as psec
 
 from stackcite_api import views, schema
 
-from . import mongo
+from . import index, mongo
+
+
+class EndpointResource(object):
+    """
+    An abstract class providing API endpoint resources with self-contained
+    view configuration methods.
+    """
+
+    _VIEW_CLASS = NotImplemented
+    _OFFSPRING = NotImplemented
+
+    @classmethod
+    def add_views(cls, config):
+        """
+        Recursively adds the ``_VIEW_CLASS`` associated with this class and any
+        traversal routes defined in ``_OFFSPRING``.
+
+        :param config: A Pyramid WSGI configuration object
+        """
+        cls._add_cls_view(config)
+        for offspring in cls._OFFSPRING.values():
+            offspring.add_views(config)
+
+    @classmethod
+    def _add_cls_view(cls, config):
+        """
+        Adds this class' ``_VIEW_CLASS`` to a Pyramid WSGI configuration object.
+
+        :param config: A Pyramid WSGI configuration object
+        """
+        for method, attr in cls._VIEW_CLASS.METHODS:
+            config.add_view(
+                cls._VIEW_CLASS,
+                context=cls,
+                request_method=method,
+                attr=attr,
+                permission=attr)
 
 
 class ValidatedResource(object):
@@ -36,12 +73,20 @@ class ValidatedResource(object):
         return data, errors
 
 
-class APIDocument(mongo.DocumentResource, ValidatedResource):
+class APIIndexResource(index.IndexResource, EndpointResource):
+    """
+    A base traversal resource used to define API indexes for Pyramid's
+    traversal system.
+    """
+
+
+class APIDocument(
+        mongo.DocumentResource, ValidatedResource, EndpointResource):
     """
     The API-level traversal resource.
     """
 
-    VIEW_CLASS = views.APIDocumentViews
+    _VIEW_CLASS = views.APIDocumentViews
 
     __acl__ = [
         (psec.Allow, psec.Authenticated, ('update', 'delete')),
@@ -71,12 +116,13 @@ class APIDocument(mongo.DocumentResource, ValidatedResource):
         return bool(result)
 
 
-class APICollection(mongo.CollectionResource, ValidatedResource):
+class APICollection(
+        mongo.CollectionResource, ValidatedResource, EndpointResource):
     """
     The API-level traversal resource.
     """
 
-    VIEW_CLASS = views.APICollectionViews
+    _VIEW_CLASS = views.APICollectionViews
 
     __acl__ = [
         (psec.Allow, psec.Authenticated, 'create'),
@@ -133,6 +179,7 @@ class APICollection(mongo.CollectionResource, ValidatedResource):
     def _raw_query(query=None):
         """
         A hook to build a raw pymongo query.
+
         :param query: The output of `self._retrieve_schema`.
         :return: A raw pymongo query
         """
@@ -142,3 +189,15 @@ class APICollection(mongo.CollectionResource, ValidatedResource):
             ids = [bson.ObjectId(id) for id in ids]
             raw_query.update({'_id': {'$in': ids}})
         return raw_query
+
+    @classmethod
+    def add_views(cls, config):
+        """
+        A wrapper for ``add_views()`` in :class:`~EndpointResource` that adds
+        the views associated with ``_DOCUMENT_RESOURCE``, which is not located
+        in the traversal tree.
+
+        :param config: A Pyramid WSGI configuration object
+        """
+        super().add_views(config)
+        cls._DOCUMENT_RESOURCE.add_views(config)
