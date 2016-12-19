@@ -7,7 +7,9 @@ from . import schema
 
 class CitationDocument(resources.APIDocument):
 
-    _update_schema = schema.UpdateCitation
+    _SCHEMA = {
+        'PUT': schema.UpdateCitation
+    }
 
 
 class CitationCollection(resources.APICollection):
@@ -15,12 +17,16 @@ class CitationCollection(resources.APICollection):
     _COLLECTION = db.Citation
     _DOCUMENT_RESOURCE = CitationDocument
 
-    _create_schema = schema.CreateCitation
+    _SCHEMA = {
+        'POST': schema.CreateCitation
+    }
 
 
 class TextCitationDocument(resources.APIDocument):
 
-    _update_schema = schema.UpdateTextCitation
+    _SCHEMA = {
+        'PUT': schema.UpdateTextCitation
+    }
 
 
 class TextCitationCollection(resources.APICollection):
@@ -28,12 +34,16 @@ class TextCitationCollection(resources.APICollection):
     _COLLECTION = db.TextCitation
     _DOCUMENT_RESOURCE = TextCitationDocument
 
-    _create_schema = schema.CreateTextCitation
+    _SCHEMA = {
+        'POST': schema.CreateTextCitation
+    }
 
 
 class BookCitationDocument(resources.APIDocument):
 
-    _update_schema = schema.UpdateBookCitation
+    _SCHEMA = {
+        'PUT': schema.UpdateBookCitation
+    }
 
 
 class BookCitationCollection(resources.APICollection):
@@ -41,4 +51,6 @@ class BookCitationCollection(resources.APICollection):
     _COLLECTION = db.BookCitation
     _DOCUMENT_RESOURCE = BookCitationDocument
 
-    _create_schema = schema.CreateBookCitation
+    _SCHEMA = {
+        'POST': schema.CreateBookCitation
+    }
