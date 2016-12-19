@@ -11,13 +11,19 @@ class IndexResource(object):
     :class:`.IndexResource` nor ``None`` and if ``name`` is not a string.
     """
 
+    _OFFSPRING = {}
+
     def __init__(self, parent, name):
         if not (parent is None or isinstance(parent, IndexResource)) \
                 or not isinstance(name, str):
             raise TypeError("Invalid class: {}".format(type(parent)))
+
         self.__parent__ = parent
         self.__name__ = name
         self._items = {}
+
+        for name, child in self._OFFSPRING.items():
+            self[name] = child
 
     def __setitem__(self, key, value):
         """
