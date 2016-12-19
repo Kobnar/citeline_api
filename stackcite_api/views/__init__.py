@@ -1,2 +1,7 @@
-from .api import APIExceptionViews, APICollectionViews, APIDocumentViews
+from .api import (
+    APIExceptionViews,
+    APIIndexViews,
+    APICollectionViews,
+    APIDocumentViews
+)
 from .base import BaseView

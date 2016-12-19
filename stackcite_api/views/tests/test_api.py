@@ -32,7 +32,24 @@ class APINotFoundViewsTestCase(APIExceptionViewsTestCase):
         self.assertEqual(expected, result)
 
 
-class APIViewTestCase(object):
+class APIIndexViewsTestCase(testing.views.ViewTestCase):
+
+    from ..api import APIIndexViews
+    VIEW_CLASS = APIIndexViews
+
+    from stackcite_api.resources import APIIndexResource
+    RESOURCE_CLASS = APIIndexResource
+
+    def test_retrieve_raises_no_content_exception(self):
+        """APIIndexViews raises 204 NO CONTENT exception
+        """
+        from stackcite_api.exceptions import APINoContent
+        view = self.get_view()
+        with self.assertRaises(APINoContent):
+            view.retrieve()
+
+
+class APIViewsIntegrationTestCase(object):
     """
     A base test case for API views providing a custom view/schema for the
     :class:`~MockDocument` class.
@@ -40,6 +57,8 @@ class APIViewTestCase(object):
     NOTE: This class must be defined before any other testing view classes in
     cases of multiple inheritance.
     """
+
+    layer = testing.layers.MongoIntegrationTestLayer
 
     from stackcite_api.resources import APICollection
     class _MockAPICollectionResource(APICollection):
@@ -84,11 +103,9 @@ class APIViewTestCase(object):
     RESOURCE_CLASS = _MockAPICollectionResource
 
 
-class APICollectionViewsTestCase(
-        APIViewTestCase,
+class APICollectionViewsIntegrationTestCase(
+        APIViewsIntegrationTestCase,
         testing.views.CollectionViewTestCase):
-
-    layer = testing.layers.MongoIntegrationTestLayer
 
     # Define resource and view class under test
     from ..api import APICollectionViews
@@ -112,7 +129,7 @@ class APICollectionViewsTestCase(
         return docs
 
 
-class APICollectionViewsCreateTestCase(APICollectionViewsTestCase):
+class APICollectionViewsCreateTestCase(APICollectionViewsIntegrationTestCase):
 
     def test_create_returns_id(self):
         """APICollectionViews.create() returns a valid ObjectId
@@ -214,7 +231,7 @@ class APICollectionViewsCreateTestCase(APICollectionViewsTestCase):
             view.create()
 
 
-class APICollectionViewsRetrieveTestCase(APICollectionViewsTestCase):
+class APICollectionViewsRetrieveTestCase(APICollectionViewsIntegrationTestCase):
 
     def test_retrieve_gets_all_documents(self):
         """APICollectionViews.retrieve() returns all expected results
@@ -288,13 +305,12 @@ class APICollectionViewsRetrieveTestCase(APICollectionViewsTestCase):
             view.retrieve()
 
 
-class APIDocumentViewsTestCase(
-        APIViewTestCase,
+class APIDocumentViewsIntegrationTestCase(
+        APIViewsIntegrationTestCase,
         testing.views.DocumentViewTestCase):
     """
     A test case for :class:`.APIDocumentViews`.
     """
-    layer = testing.layers.MongoIntegrationTestLayer
 
     # Define resource and view class under test
     from ..api import APIDocumentViews
@@ -321,7 +337,7 @@ class APIDocumentViewsTestCase(
         return docs
 
 
-class APIDocumentViewsRetrieveTestCase(APIDocumentViewsTestCase):
+class APIDocumentViewsRetrieveTestCase(APIDocumentViewsIntegrationTestCase):
 
     def test_retrieve_returns_correct_person(self):
         """APIDocumentViews.retrieve() returns correct Person data
@@ -372,7 +388,7 @@ class APIDocumentViewsRetrieveTestCase(APIDocumentViewsTestCase):
             view.retrieve()
 
 
-class APIDocumentViewsUpdateTestCase(APIDocumentViewsTestCase):
+class APIDocumentViewsUpdateTestCase(APIDocumentViewsIntegrationTestCase):
 
     def test_update_returns_changes(self):
         """APIDocumentViews.update() returns updated Person data
@@ -452,7 +468,7 @@ class APIDocumentViewsUpdateTestCase(APIDocumentViewsTestCase):
             view.update()
 
 
-class APIDocumentViewsDeleteTestCase(APIDocumentViewsTestCase):
+class APIDocumentViewsDeleteTestCase(APIDocumentViewsIntegrationTestCase):
 
     def test_delete_deletes_correct_person(self):
         """APIDocumentViews.delete() deletes the correct document in MongoDB

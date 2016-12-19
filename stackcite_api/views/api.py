@@ -34,6 +34,21 @@ class APIExceptionViews(base.BaseView):
 
 
 @view_defaults(renderer='json')
+class APIIndexViews(base.BaseView):
+    """
+    A base view class providing empty API index views that do not perform any
+    CRUD operations.
+    """
+
+    METHODS = (
+        ('GET', 'retrieve'),
+    )
+
+    def retrieve(self):
+        raise exceptions.APINoContent()
+
+
+@view_defaults(renderer='json')
 class APICollectionViews(base.BaseView):
     """
     A base view class to CREATE and RETRIEVE documents from a MongoDB
