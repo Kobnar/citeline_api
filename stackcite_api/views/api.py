@@ -40,9 +40,9 @@ class APIIndexViews(base.BaseView):
     CRUD operations.
     """
 
-    METHODS = (
-        ('GET', 'retrieve'),
-    )
+    METHODS = {
+        'GET': 'retrieve'
+    }
 
     def retrieve(self):
         raise exceptions.APINoContent()
@@ -59,10 +59,10 @@ class APICollectionViews(base.BaseView):
     already been serialized into a nested dictionary representation of data.
     """
 
-    METHODS = (
-        ('POST', 'create'),
-        ('GET', 'retrieve')
-    )
+    METHODS = {
+        'POST': 'create',
+        'GET': 'retrieve'
+    }
 
     def create(self):
         """CREATE a new document using JSON data from the request body.
@@ -112,11 +112,11 @@ class APIDocumentViews(base.BaseView):
     collection using v.1 of the Stackcite API
     """
 
-    METHODS = (
-        ('GET', 'retrieve'),
-        ('PUT', 'update'),
-        ('DELETE', 'delete')
-    )
+    METHODS = {
+        'GET': 'retrieve',
+        'PUT': 'update',
+        'DELETE': 'delete'
+    }
 
     def retrieve(self):
         """RETRIEVE an individual document

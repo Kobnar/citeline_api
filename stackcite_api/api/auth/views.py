@@ -9,12 +9,12 @@ from stackcite_api import views, exceptions
 class AuthViews(views.BaseView):
     """``../auth/``"""
 
-    METHODS = (
-        ('POST', 'create'),
-        ('GET', 'retrieve'),
-        ('PUT', 'update'),
-        ('DELETE', 'delete')
-    )
+    METHODS = {
+        'POST': 'create',
+        'GET': 'retrieve',
+        'PUT': 'update',
+        'DELETE': 'delete'
+    }
 
     def create(self):
         try:

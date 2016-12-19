@@ -23,7 +23,7 @@ class EndpointResourceTests(unittest.TestCase):
     class _MockEndpointResource(EndpointResource):
 
         class _MockViewClass(object):
-            METHODS = (('TEST', 'test'),)
+            METHODS = {'TEST': 'test'}
 
         class _MockOffspring(object):
             @classmethod

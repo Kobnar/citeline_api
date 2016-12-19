@@ -35,7 +35,7 @@ class EndpointResource(object):
 
         :param config: A Pyramid WSGI configuration object
         """
-        for method, attr in cls._VIEW_CLASS.METHODS:
+        for method, attr in cls._VIEW_CLASS.METHODS.items():
             config.add_view(
                 cls._VIEW_CLASS,
                 context=cls,
