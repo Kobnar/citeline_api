@@ -3,56 +3,29 @@ import unittest
 from stackcite_api import testing
 
 
-# TODO: Clean this mess up.
-
-
 class EndpointResourceTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
-    class _MockConfig(object):
-        def __init__(self):
-            self.views = []
-
-        def add_view(self, view_class, context, **kwargs):
-            self.views.append({
-                'view_class': view_class,
-                'context': context})
-
-    from ..api import EndpointResource
-    class _MockEndpointResource(EndpointResource):
-
-        class _MockViewClass(object):
-            METHODS = {'TEST': 'test'}
-
-        class _MockOffspring(object):
-            @classmethod
-            def add_views(cls, config):
-                config.add_view('OFFSPRING_VIEW', context='OFFSPRING')
-
-        _VIEW_CLASS = _MockViewClass
-        _OFFSPRING = {
-            'offspring_0': _MockOffspring,
-            'offspring_1': _MockOffspring
-        }
+    def setUp(self):
+        from . import MockEndpointResource
+        self.config = MockEndpointResource.MockConfig()
+        self.resource = MockEndpointResource()
 
     def test_add_views_adds_own_view(self):
         """APIIndexResource.add_views() adds own view class to configuration object
         """
-        config = self._MockConfig()
-        resource = self._MockEndpointResource()
-        resource.add_views(config)
-        results = [v['context'] for v in config.views]
-        self.assertIn(self._MockEndpointResource, results)
+        self.resource.add_views(self.config)
+        results = [v['context'] for v in self.config.views]
+        from . import MockEndpointResource
+        self.assertIn(MockEndpointResource, results)
 
     def test_add_views_adds_offspring_views(self):
         """APIIndexResource.add_views() adds offspring view classes to configuration object
         """
-        config = self._MockConfig()
-        resource = self._MockEndpointResource()
-        resource.add_views(config)
-        results = [v['view_class'] for v in config.views
-                   if v['view_class'] is 'OFFSPRING_VIEW']
+        self.resource.add_views(self.config)
+        results = [v['view_class'] for v in self.config.views
+                   if v['view_class'] is 'TEST']
         self.assertEqual(2, len(results))
 
 
@@ -60,78 +33,34 @@ class ValidatedResourceTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
-    from ..api import ValidatedResource
-    class _MockBaseValidatedResource(ValidatedResource):
-        from marshmallow import Schema
-        class _MockBaseSchema(Schema):
-            from marshmallow import fields
-            required = fields.Bool()
-        _DEFAULT_SCHEMA = {'TEST': _MockBaseSchema}
-
-    class _MockValidatedResource(ValidatedResource):
-        from marshmallow import Schema
-        class _MockSchema(Schema):
-            from marshmallow import fields
-            required = fields.String(required=True)
-        _SCHEMA = {'TEST': _MockSchema}
-
-    def test_schema_validation_default_is_strict(self):
-        """ValidatedResource.validate() defaults to strict validation
+    def test_validation_default_is_strict(self):
+        """ValidatedResource.validate() default is set to 'strict=True'
         """
+        from . import MockValidatedResource
+        resource = MockValidatedResource()
+        data = {'required': 'dogs'}
         from marshmallow import ValidationError
-        resource = self._MockValidatedResource()
         with self.assertRaises(ValidationError):
-            resource.validate('TEST', {})
+            resource.validate('GET', data)
 
-    def test_overidden_schema_used(self):
-        """ValidatedResource.validate() uses an overridden resource if defined
+    def test_validate_uses_overidden_schema(self):
+        """ValidatedResource.validate() uses an overridden resource if one is defined
         """
+        from . import MockValidatedChildResource
+        resource = MockValidatedChildResource()
         from marshmallow import ValidationError
-        resource = self._MockValidatedResource()
         with self.assertRaises(ValidationError):
-            resource.validate('TEST', {'required': True})
+            resource.validate('GET', {})
 
 
 class APIResourceTests(unittest.TestCase):
 
     layer = testing.layers.MongoIntegrationTestLayer
 
-    # Define "mock" traversal resources and schema:
-    from stackcite_api.resources import APICollectionResource
-    class _MockAPICollectionResource(APICollectionResource):
-        from stackcite_api.schema import forms
-        class _MockAPIRetrieveCollectionSchema(forms.RetrieveCollection):
-            from marshmallow import fields
-            name = fields.String()
-            number = fields.Integer()
-            fact = fields.Bool()
-        from stackcite_api.resources import APIDocumentResource
-        class _MockAPIDocumentResource(APIDocumentResource):
-            pass
-        _COLLECTION = testing.mock.MockDocument
-        _DOCUMENT_RESOURCE = _MockAPIDocumentResource
-        _SCHEMA = {'GET': _MockAPIRetrieveCollectionSchema}
-
     def setUp(self):
-        # Drops existing.mock.MockDocument data:
         testing.mock.MockDocument.drop_collection()
-        # Define testing resource:
-        self.col_resource = self._MockAPICollectionResource(
+        self.col_resource = testing.mock.MockAPICollectionResource(
                 None, 'mock_collection')
-
-    def make_data(self, data_range=16, save=False):
-        docs = []
-        for n in range(data_range):
-            name = 'document {}'.format(n)
-            doc = testing.mock.MockDocument()
-            doc.name = name
-            doc.number = n
-            doc.fact = bool(n % 2)
-            if save:
-                doc.save()
-            docs.append(doc)
-        return docs
-
 
 class APICollectionTests(APIResourceTests):
 
@@ -147,7 +76,7 @@ class APICollectionTests(APIResourceTests):
     def test_create_returns_serialized_data(self):
         """APICollection.create() returns accurately serialized documents
         """
-        docs = self.make_data()
+        docs = testing.mock.utils.create_mock_data()
         for doc in docs:
             expected = {
                 'name': doc.name,
@@ -171,7 +100,7 @@ class APICollectionTests(APIResourceTests):
     def test_retrieve_returns_list(self):
         """APICollection.retrieve() returns a list of items if documents exist
         """
-        self.make_data(save=True)
+        testing.mock.utils.create_mock_data(save=True)
         results = self.col_resource.retrieve()['items']
         msg = 'No data was returned'
         self.assertNotEqual(results, [], msg=msg)
@@ -181,7 +110,7 @@ class APICollectionTests(APIResourceTests):
         """APICollection.retrieve() returns an accurate count of items if documents exist
         """
         count = 16
-        self.make_data(count, save=True)
+        testing.mock.utils.create_mock_data(count, save=True)
         result = self.col_resource.retrieve()['count']
         self.assertEqual(count, result)
 
@@ -202,7 +131,7 @@ class APICollectionTests(APIResourceTests):
     def test_retrieve_returns_serialized_data(self):
         """APICollection.retrieve() returns a list of accurately serialized documents
         """
-        docs = self.make_data(save=True)
+        docs = testing.mock.utils.create_mock_data(save=True)
         results = self.col_resource.retrieve()
         for idx, doc in enumerate(docs):
             result = results['items'][idx]
@@ -216,7 +145,7 @@ class APICollectionTests(APIResourceTests):
     def test_retrieve_with_query_returns_data(self):
         """APICollection.retrieve() returns a list of items data with a valid query
         """
-        self.make_data(save=True)
+        testing.mock.utils.create_mock_data(save=True)
         raw_query = {'fact': True}
         results = self.col_resource.retrieve(raw_query)
         self.assertGreater(len(results), 0)
@@ -224,7 +153,7 @@ class APICollectionTests(APIResourceTests):
     def test_retrieve_with_query_returns_correct_results(self):
         """APICollection.retrieve() returns a list of accurate data with a valid query
         """
-        self.make_data(save=True)
+        testing.mock.utils.create_mock_data(save=True)
         raw_query = {'fact': True}
         results = self.col_resource.retrieve(raw_query)['items']
         for doc in results:
@@ -233,7 +162,7 @@ class APICollectionTests(APIResourceTests):
     def test_retrieve_filters_fields(self):
         """APICollection.retrieve() filters explicitly named fields
         """
-        docs = self.make_data(save=True)
+        docs = testing.mock.utils.create_mock_data(save=True)
         query = {'fields': 'name,fact'}
         results = self.col_resource.retrieve(query)
         for idx, doc in enumerate(docs):
@@ -246,35 +175,35 @@ class APICollectionTests(APIResourceTests):
     def test_retrieve_default_limit(self):
         """APICollection.retrieve() limits results to a default number of items
         """
-        self.make_data(128, save=True)
+        testing.mock.utils.create_mock_data(128, save=True)
         results = self.col_resource.retrieve()['items']
         self.assertEqual(100, len(results))
 
     def test_retrieve_override_limit(self):
         """APICollection.retrieve() limits results to an explicit number of items
         """
-        self.make_data(128, save=True)
+        testing.mock.utils.create_mock_data(128, save=True)
         results = self.col_resource.retrieve({'limit': 64})['items']
         self.assertEqual(64, len(results))
 
     def test_retrieve_default_skip(self):
         """APICollection.retrieve() skips nothing by default
         """
-        self.make_data(save=True)
+        testing.mock.utils.create_mock_data(save=True)
         result = self.col_resource.retrieve()['items'][0]
         self.assertEqual(0, result['number'])
 
     def test_retrieve_override_skip(self):
         """APICollection.retrieve() skips to an explicit value
         """
-        self.make_data(save=True)
+        testing.mock.utils.create_mock_data(save=True)
         result = self.col_resource.retrieve({'skip': 4})['items'][0]
         self.assertEqual(4, result['number'])
 
     def test_retrieve_returns_matching_ids(self):
         """APICollection.retrieve() returns documents listed in ids"""
         from random import randint
-        docs = self.make_data(data_range=8, save=True)
+        docs = testing.mock.utils.create_mock_data(count=8, save=True)
         expected = [str(d.id) for d in docs]
         for n in range(3):
             r_idx = randint(0, len(expected) - 1)
@@ -341,7 +270,7 @@ class APIDocumentTests(APIResourceTests):
 
     def setUp(self):
         super(APIDocumentTests, self).setUp()
-        docs = self.make_data(save=True)
+        docs = testing.mock.utils.create_mock_data(save=True)
         self.doc = docs[8]
         self.doc_resource = self.col_resource[self.doc.id]
 
