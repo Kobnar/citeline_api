@@ -5,14 +5,14 @@ from stackcite_api import resources
 from . import schema
 
 
-class BookSourceDocument(resources.APIDocument):
+class BookSourceDocument(resources.APIDocumentResource):
 
     _SCHEMA = {
         'PUT': schema.UpdateBookSource
     }
 
 
-class BookSourceCollection(resources.APICollection):
+class BookSourceCollection(resources.APICollectionResource):
 
     _COLLECTION = db.BookSource
     _DOCUMENT_RESOURCE = BookSourceDocument
@@ -22,14 +22,14 @@ class BookSourceCollection(resources.APICollection):
     }
 
 
-class TextSourceDocument(resources.APIDocument):
+class TextSourceDocument(resources.APIDocumentResource):
 
     _SCHEMA = {
         'PUT': schema.UpdateTextSource
     }
 
 
-class TextSourceCollection(resources.APICollection):
+class TextSourceCollection(resources.APICollectionResource):
 
     _COLLECTION = db.TextSource
     _DOCUMENT_RESOURCE = TextSourceDocument
@@ -43,14 +43,14 @@ class TextSourceCollection(resources.APICollection):
     }
 
 
-class SourceDocument(resources.APIDocument):
+class SourceDocument(resources.APIDocumentResource):
 
     _SCHEMA = {
         'PUT': schema.UpdateSource
     }
 
 
-class SourceCollection(resources.APICollection):
+class SourceCollection(resources.APICollectionResource):
 
     _COLLECTION = db.Source
     _DOCUMENT_RESOURCE = SourceDocument

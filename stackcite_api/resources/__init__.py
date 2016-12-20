@@ -2,8 +2,8 @@ from .api import (
     EndpointResource,
     ValidatedResource,
     APIIndexResource,
-    APICollection,
-    APIDocument
+    APICollectionResource,
+    APIDocumentResource
 )
 from .index import IndexResource
 from .mongo import CollectionResource, DocumentResource

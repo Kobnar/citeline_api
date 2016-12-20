@@ -5,14 +5,14 @@ from stackcite_api import resources
 from . import schema
 
 
-class PersonDocument(resources.APIDocument):
+class PersonDocument(resources.APIDocumentResource):
 
     _SCHEMA = {
         'PUT': schema.UpdatePerson
     }
 
 
-class PersonCollection(resources.APICollection):
+class PersonCollection(resources.APICollectionResource):
 
     _COLLECTION = db.Person
     _DOCUMENT_RESOURCE = PersonDocument

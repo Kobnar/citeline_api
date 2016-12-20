@@ -80,7 +80,7 @@ class APIIndexResource(index.IndexResource, EndpointResource):
     """
 
 
-class APIDocument(
+class APIDocumentResource(
         mongo.DocumentResource, ValidatedResource, EndpointResource):
     """
     The API-level traversal resource.
@@ -116,7 +116,7 @@ class APIDocument(
         return bool(result)
 
 
-class APICollection(
+class APICollectionResource(
         mongo.CollectionResource, ValidatedResource, EndpointResource):
     """
     The API-level traversal resource.

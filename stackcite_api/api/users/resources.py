@@ -7,7 +7,7 @@ from stackcite_api import resources, auth
 from . import schema
 
 
-class UserDocument(resources.APIDocument):
+class UserDocument(resources.APIDocumentResource):
 
     def __acl__(self):
         return [
@@ -21,7 +21,7 @@ class UserDocument(resources.APIDocument):
     }
 
 
-class UserCollection(resources.APICollection):
+class UserCollection(resources.APICollectionResource):
 
     __acl__ = [
         (sec.Allow, auth.ADMIN, 'retrieve'),

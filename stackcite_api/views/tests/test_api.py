@@ -60,8 +60,8 @@ class APIViewsIntegrationTestCase(object):
 
     layer = testing.layers.MongoIntegrationTestLayer
 
-    from stackcite_api.resources import APICollection
-    class _MockAPICollectionResource(APICollection):
+    from stackcite_api.resources import APICollectionResource
+    class _MockAPICollectionResource(APICollectionResource):
 
         from marshmallow import Schema
         class _MockAPICreateDocumentSchema(Schema):
@@ -78,8 +78,8 @@ class APIViewsIntegrationTestCase(object):
             number = fields.Integer()
             fact = fields.Bool()
 
-        from stackcite_api.resources import APIDocument
-        class _MockAPIDocumentResource(APIDocument):
+        from stackcite_api.resources import APIDocumentResource
+        class _MockAPIDocumentResource(APIDocumentResource):
 
             from marshmallow import Schema
             class _MockAPIUpdateDocumentSchema(Schema):
