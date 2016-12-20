@@ -44,7 +44,9 @@ class MockAPICollectionResource(resources.APICollectionResource):
     """
     _COLLECTION = models.MockDocument
     _DOCUMENT_RESOURCE = MockAPIDocumentResource
-    _SCHEMA = {'POST': schema.MockCreateDocumentSchema}
+    _SCHEMA = {
+        'POST': schema.MockCreateDocumentSchema,
+        'GET': schema.MockRetrieveCollectionSchema}
 
 
 class MockAPIIndexResource(resources.APIIndexResource):
