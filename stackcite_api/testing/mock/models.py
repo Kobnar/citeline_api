@@ -8,7 +8,7 @@ class MockDocument(utils.IDocument):
     A "mock" collection definition designed for integration testing.
     """
 
-    name = mongoengine.StringField(unique=True)
+    name = mongoengine.StringField(required=True, unique=True)
     number = mongoengine.IntField()
     fact = mongoengine.BooleanField()
 
