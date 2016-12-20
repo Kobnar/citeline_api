@@ -30,7 +30,7 @@ class CreateMockDataTestCase(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_create_mock_data_saves_nothing_if_not_specified(self):
-        """create_mock_data() saves nothing to the database if 'save=False'
+        """create_mock_data() saves nothing to the database by default
         """
         expected = 0
         from ..utils import create_mock_data
