@@ -5,6 +5,14 @@ from stackcite.data import User
 from stackcite_api.schema import fields as api_fields
 
 
+class CreateConfirmationToken(Schema):
+    user = api_fields.ObjectIdField(required=True)
+
+
+class ConfirmConfirmationToken(Schema):
+    key = api_fields.AuthTokenKeyField(required=True)
+
+
 def _validate_default_groups(value):
     for default_group in User.DEFAULT_GROUPS:
         if default_group not in value:
