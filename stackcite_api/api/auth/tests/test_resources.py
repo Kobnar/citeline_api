@@ -41,7 +41,7 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         """
         from mongoengine import DoesNotExist
         auth_data = {'email': 'test@email.com', 'password': 'T3stPa$$word'}
-        with(self.assertRaises(DoesNotExist)):
+        with self.assertRaises(DoesNotExist):
             self.collection.create(auth_data)
 
     def test_create_raises_exception_for_wrong_password(self):
@@ -55,8 +55,29 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         user.save()
         # Log in user
         auth_data = {'email': email, 'password': 'Wr0ngPa$$word'}
-        with(self.assertRaises(AuthenticationError)):
+        with self.assertRaises(AuthenticationError):
             self.collection.create(auth_data)
+
+    def test_create_raises_exception_for_unknown_key(self):
+        """AuthResource.create() raises exception for unknown key
+        """
+        from mongoengine import DoesNotExist
+        key = '64aed86ea2b9474054a79d053aad410b1db8cf2c0ebc1707e1523ced'
+        auth_data = {'key': key}
+        with self.assertRaises(DoesNotExist):
+            self.collection.create(auth_data)
+
+    def test_create_returns_201_on_success_with_confirm_key(self):
+        """AuthResource.create() returns a dict containing a user for successful login
+        """
+        user = testing.utils.create_user(
+            'test@email.com', 'T3stPa$$word', save=True)
+        from stackcite import data as db
+        conf_token = db.ConfirmToken.new(user, save=True)
+        key = conf_token.key
+        auth_data = {'key': key}
+        result = self.collection.create(auth_data)
+        self.assertIn('user', result.keys())
 
     def test_create_returns_user_field_on_success(self):
         """AuthResource.create() returns a dict containing a user for successful login

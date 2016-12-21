@@ -22,13 +22,21 @@ class AuthResource(resources.APIIndexResource, resources.ValidatedResource):
 
     def create(self, data):
         """
-        Creates or updates a :class:`~AuthToken` based on valid user authentication
-        credentials.
+        Creates or updates a :class:`~AuthToken` based on valid user
+        authentication credentials.
+
+        NOTE: "key" in  this context refers to a :class:`~ConfirmToken` key,
+        not a :class:`~AuthToken` key.
         """
         data, errors = self.validate('CREATE', data)
-        email = data['email']
-        password = data['password']
-        user = db.User.authenticate(email, password)
+        key = data.get('key')
+        if key:
+            confirm_token = db.ConfirmToken.objects.get(_key=key)
+            user = confirm_token.confirm()
+        else:
+            email = data.get('email')
+            password = data.get('password')
+            user = db.User.authenticate(email, password)
         token = db.AuthToken(_user=user)
         token.save()
         user.touch_login()
