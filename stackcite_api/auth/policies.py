@@ -11,7 +11,7 @@ from . import utils
 
 
 @implementer(IAuthenticationPolicy)
-class TokenAuthenticationPolicy(CallbackAuthenticationPolicy):
+class AuthTokenAuthenticationPolicy(CallbackAuthenticationPolicy):
     """
     A custom REST authentication policy that evaluates an `api_key` provided in
     the request header against those saved in the database.
@@ -23,7 +23,7 @@ class TokenAuthenticationPolicy(CallbackAuthenticationPolicy):
 
     def authenticated_userid(self, request):
         """
-        Resolves a :class:`stackcite.Token` key to retrieve the
+        Resolves a :class:`stackcite.AuthToken` key to retrieve the
         :class:`bson.ObjectId` of a :class:`stackcite.User`. If the token
         does not exist, method returns `None`.
         """

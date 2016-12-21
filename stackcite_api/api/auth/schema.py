@@ -6,7 +6,7 @@ from stackcite_api.schema import fields as api_fields
 class Authenticate(Schema):
     email = fields.Email()
     password = api_fields.PasswordField()
-    key = api_fields.TokenKeyField()
+    key = api_fields.AuthTokenKeyField()
 
     @validates_schema
     def validate_dependant_fields(self, data):
@@ -21,6 +21,5 @@ class Authenticate(Schema):
             raise ValidationError(err_msg, field_names=missing_fields)
 
 
-class Token(Schema):
-    # TODO: This should be "key"
-    token = api_fields.TokenKeyField(required=True)
+class AuthToken(Schema):
+    key = api_fields.AuthTokenKeyField(required=True)

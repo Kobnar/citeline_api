@@ -22,14 +22,14 @@ class AuthResource(resources.APIIndexResource, resources.ValidatedResource):
 
     def create(self, data):
         """
-        Creates or updates a :class:`~Token` based on valid user authentication
+        Creates or updates a :class:`~AuthToken` based on valid user authentication
         credentials.
         """
         data, errors = self.validate('CREATE', data)
         email = data['email']
         password = data['password']
         user = db.User.authenticate(email, password)
-        token = db.Token(_user=user)
+        token = db.AuthToken(_user=user)
         token.save()
         user.touch_login()
         user.save()
@@ -37,20 +37,20 @@ class AuthResource(resources.APIIndexResource, resources.ValidatedResource):
 
     def retrieve(self, token):
         """
-        Confirms the existence of a :class:`~Token`.
+        Confirms the existence of a :class:`~AuthToken`.
         """
         return token.serialize()
 
     def update(self, token):
         """
-        Updates an existing :class:`~Token`.
+        Updates an existing :class:`~AuthToken`.
         """
         token.save()
         return token.serialize()
 
     def delete(self, token):
         """
-        Deletes an existing :class:`~Token`.
+        Deletes an existing :class:`~AuthToken`.
         """
         if token:
             token.delete()

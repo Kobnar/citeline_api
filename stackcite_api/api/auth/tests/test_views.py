@@ -13,7 +13,7 @@ class AuthViewsTests(testing.views.CollectionViewTestCase):
 
     def setUp(self):
         from stackcite import data as db
-        db.Token.drop_collection()
+        db.AuthToken.drop_collection()
         db.User.drop_collection()
         super().setUp()
 

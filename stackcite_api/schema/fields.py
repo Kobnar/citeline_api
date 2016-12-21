@@ -3,9 +3,9 @@ from marshmallow import fields
 from . import validators
 
 
-class TokenKeyField(fields.String):
+class AuthTokenKeyField(fields.String):
     """
-    A Token key field that automatically validates its content.
+    A AuthToken key field that automatically validates its content.
 
     :param args: The same positional arguments that
         :class:`marshmallow.fields.String` receives.
@@ -18,7 +18,7 @@ class TokenKeyField(fields.String):
         super().__init__(self, *args, **kwargs)
         # Insert validation into self.validators so that multiple errors can be
         # stored.
-        self.validators.insert(0, validators.keys.TokenKeyValidator(
+        self.validators.insert(0, validators.keys.AuthTokenKeyValidator(
             error=self.error_messages['invalid']))
 
 

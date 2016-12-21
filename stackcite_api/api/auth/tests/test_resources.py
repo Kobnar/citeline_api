@@ -8,9 +8,9 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
     layer = testing.layers.MongoIntegrationTestLayer
 
     def setUp(self):
-        from stackcite.data import Token, User
+        from stackcite.data import AuthToken, User
         User.drop_collection()
-        Token.drop_collection()
+        AuthToken.drop_collection()
         from ..resources import AuthResource
         self.collection = AuthResource(None, 'auth')
 
@@ -94,7 +94,7 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         user = testing.utils.create_user(email, password)
         user.save()
         # Make new token
-        token = db.Token(_user=user)
+        token = db.AuthToken(_user=user)
         token.save()
         result = self.collection.retrieve(token)['key']
         expected = token.key
@@ -110,7 +110,7 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         user = testing.utils.create_user(email, password)
         user.save()
         # Make new token
-        token = db.Token(_user=user)
+        token = db.AuthToken(_user=user)
         token.save()
         result = self.collection.update(token)['key']
         expected = token.key
@@ -132,7 +132,7 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         user = testing.utils.create_user(email, password)
         user.save()
         # Create auth token
-        token = db.Token(_user=user)
+        token = db.AuthToken(_user=user)
         token.save()
         result = self.collection.delete(token)
         self.assertTrue(result)

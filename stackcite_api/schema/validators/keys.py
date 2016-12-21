@@ -3,11 +3,11 @@ from marshmallow import validate
 from stackcite.data.validators.keys import validate_key
 
 
-class TokenKeyValidator(validate.Validator):
+class AuthTokenKeyValidator(validate.Validator):
     """
-    A ``marshmallow`` style :class:`bson.Token` key validator. Raises
+    A ``marshmallow`` style :class:`bson.AuthToken` key validator. Raises
     :class:`marshmallow.ValidationError` if the string provided is not a valid
-    :class:`bson.Token` key.
+    :class:`bson.AuthToken` key.
     """
 
     default_message = 'Invalid API token key: {}'

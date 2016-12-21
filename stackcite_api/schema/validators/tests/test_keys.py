@@ -3,16 +3,16 @@ import unittest
 from stackcite_api import testing
 
 
-class TokenKeyValidatorTests(unittest.TestCase):
+class AuthTokenKeyValidatorTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
-        from ..keys import TokenKeyValidator
-        self.validator = TokenKeyValidator()
+        from ..keys import AuthTokenKeyValidator
+        self.validator = AuthTokenKeyValidator()
 
     def test_invalid_keys_raise_exception(self):
-        """TokenKeyValidator raises exception for invalid keys
+        """AuthTokenKeyValidator raises exception for invalid keys
         """
         from marshmallow import ValidationError
         invalid_keys = testing.data.invalid_keys()
@@ -21,7 +21,7 @@ class TokenKeyValidatorTests(unittest.TestCase):
                 self.validator(key)
 
     def test_valid_keys_dont_raise_exception(self):
-        """TokenKeyValidator does not raise exception for valid keys
+        """AuthTokenKeyValidator does not raise exception for valid keys
         """
         from marshmallow import ValidationError
         valid_keys = testing.data.valid_keys()

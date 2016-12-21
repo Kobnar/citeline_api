@@ -10,12 +10,12 @@ class AuthUtilsBaseIntegrationTestCase(unittest.TestCase):
     def setUp(self):
         from stackcite import data as db
         db.User.drop_collection()
-        db.Token.drop_collection()
+        db.AuthToken.drop_collection()
         self.user = db.User.new('test@email.com', 'T3stPa$$word', save=True)
-        self.token = db.Token.new(self.user, save=True)
+        self.token = db.AuthToken.new(self.user, save=True)
 
 
-class GetTokenIntegrationTestCase(AuthUtilsBaseIntegrationTestCase):
+class GetAuthTokenIntegrationTestCase(AuthUtilsBaseIntegrationTestCase):
 
     def test_get_token_returns_correct_token(self):
         from pyramid.testing import DummyRequest

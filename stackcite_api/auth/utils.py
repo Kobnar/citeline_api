@@ -17,7 +17,7 @@ def get_token(request):
     try:
         auth_type, key = request.authorization
         if auth_type.lower() == 'key' and keys.validate_key(key):
-            token = db.Token.objects.get(_key=key)
+            token = db.AuthToken.objects.get(_key=key)
             return token
     except (ValueError, TypeError):
         return None

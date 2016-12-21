@@ -35,7 +35,7 @@ def main(global_config, **settings):
     config.add_request_method(auth.get_user, 'user', reify=True)
 
     # Authentication and authorization policies
-    authentication_policy = auth.TokenAuthenticationPolicy(debug=True)
+    authentication_policy = auth.AuthTokenAuthenticationPolicy(debug=True)
     authorization_policy = ACLAuthorizationPolicy()
     config.set_authentication_policy(authentication_policy)
     config.set_authorization_policy(authorization_policy)

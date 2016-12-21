@@ -33,16 +33,16 @@ class AuthenticateTests(unittest.TestCase):
         self.assertNotIn('password', result)
 
 
-class TokenTests(unittest.TestCase):
+class AuthTokenTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
-        from ..schema import Token
-        self.schema = Token()
+        from ..schema import AuthToken
+        self.schema = AuthToken()
 
     def test_token_field_required(self):
         """Authenticate.token is a required field
         """
         result = self.schema.load({}).errors.keys()
-        self.assertIn('token', result)
+        self.assertIn('key', result)

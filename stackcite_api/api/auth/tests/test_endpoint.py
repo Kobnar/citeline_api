@@ -4,8 +4,8 @@ from stackcite_api import testing
 class AuthAPIEndpointTests(testing.endpoint.APIEndpointTestCase):
 
     def setUp(self):
-        from stackcite.data import Token, User
-        Token.drop_collection()
+        from stackcite.data import AuthToken, User
+        AuthToken.drop_collection()
         User.drop_collection()
         super().setUp()
 
@@ -22,7 +22,7 @@ class AuthAPIEndpointTests(testing.endpoint.APIEndpointTestCase):
         return response.json_body['key']
 
 
-class CreateTokenAPIEndpointTests(AuthAPIEndpointTests):
+class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
 
     def test_create_token_returns_400_with_invalid_json_body(self):
         """CREATE 'auth/' returns 400 BAD REQUEST with invalid JSON data
@@ -103,7 +103,7 @@ class CreateTokenAPIEndpointTests(AuthAPIEndpointTests):
         """GET 'auth/' returns 403 FORBIDDEN with unknown key
         """
         from stackcite import data as db
-        key = db.Token.gen_key()
+        key = db.utils.gen_key()
         response = self.test_app.get(
             '/v0/auth/',
             headers={'Authorization': 'key {}'.format(key)},
