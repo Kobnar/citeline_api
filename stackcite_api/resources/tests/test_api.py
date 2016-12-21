@@ -212,56 +212,59 @@ class APICollectionTests(APIResourceTests):
         results = [r['id'] for r in self.col_resource.retrieve(query)['items']]
         self.assertEqual(expected, results)
 
-    def test_get_commons_default_values(self):
-        """APICollection.get_commons() outputs default values
+    def test_get_params_default_values(self):
+        """APICollection.get_params() outputs default values
         """
-        expected = ((), 100, 0)
-        results = self.col_resource.get_commons({})
+        expected = {
+            'fields': (),
+            'limit': 100,
+            'skip': 0}
+        query, results = self.col_resource.get_params({})
         self.assertEqual(expected, results)
 
     def test_modifies_source_dict(self):
-        """APICollection.get_commons() modifies the source dictionary
+        """APICollection.get_params() does not modify the source dictionary
         """
         source = {
             'name': 'Document 0',
             'number': 12,
             'fact': True,
-            'fields': ['id' 'name']}
-        self.col_resource.get_commons(source)
-        self.assertFalse('fields' in source.keys())
+            'fields': ['id', 'name']}
+        self.col_resource.get_params(source)
+        self.assertTrue('fields' in source.keys())
 
     def test_fields_set(self):
-        """APICollection.get_commons() extracts a value for fields
+        """APICollection.get_params() extracts a value for fields
         """
         source = {
             'name': 'Document 0',
             'number': 12,
             'fact': True,
             'fields': 'id,name'}
-        result = self.col_resource.get_commons(source)
-        self.assertEqual('id,name', result[0])
+        query, result = self.col_resource.get_params(source)
+        self.assertEqual('id,name', result['fields'])
 
     def test_limit_set(self):
-        """APICollection.get_commons() extracts a value for limit
+        """APICollection.get_params() extracts a value for limit
         """
         source = {
             'name': 'Document 0',
             'number': 12,
             'fact': True,
             'limit': 32}
-        result = self.col_resource.get_commons(source)
-        self.assertEqual(32, result[1])
+        query, result = self.col_resource.get_params(source)
+        self.assertEqual(32, result['limit'])
 
     def test_skip_set(self):
-        """APICollection.get_commons() extracts a value for set
+        """APICollection.get_params() extracts a value for skip
         """
         source = {
             'name': 'Document 0',
             'number': 12,
             'fact': True,
             'skip': 13}
-        result = self.col_resource.get_commons(source)
-        self.assertEqual(13, result[2])
+        query, result = self.col_resource.get_params(source)
+        self.assertEqual(13, result['skip'])
 
 
 class APIDocumentTests(APIResourceTests):

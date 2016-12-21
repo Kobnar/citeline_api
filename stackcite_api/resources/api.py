@@ -80,6 +80,25 @@ class APIIndexResource(index.IndexResource, EndpointResource):
     """
 
 
+def _get_params(query, params):
+    """
+    Extracts a dictionary of special query parameters to update a dictionary
+    of known defaults.
+
+    NOTE: This function creates copies of the original dicts instead of
+        modifying the existing data structures
+
+    :param query: A dictionary of document-level query parameters
+    :param params: A dictionary of collection-level query parameters
+    :return: A two-tuple in the form of (``query``, ``params``)
+    """
+    query = query.copy()
+    params = params.copy()
+    params.update({k: query.pop(k) for k in params.keys()
+                   if k in query.keys()})
+    return query, params
+
+
 class APIDocumentResource(
         mongo.DocumentResource, ValidatedResource, EndpointResource):
     """
@@ -101,9 +120,9 @@ class APIDocumentResource(
     def retrieve(self, query=None):
         query = query or {}
         query, errors = self.validate('GET', query)
-        fields = query.get('fields')
-        result = super().retrieve(fields)
-        return result.serialize(fields)
+        query, params = self.get_params(query)
+        result = super().retrieve(**params)
+        return result.serialize(**params)
 
     def update(self, data):
         data = data or {}
@@ -114,6 +133,22 @@ class APIDocumentResource(
     def delete(self):
         result = super().delete()
         return bool(result)
+
+    @staticmethod
+    def get_params(query):
+        """
+        A helper method used to extract collection-level query parameters,
+        including:
+
+            * ``fields``
+
+        :param query: A dictionary of document-level query parameters
+        :return: A two-tuple in the form of (``query``, ``params``)
+        """
+        params = {
+            'fields': ()
+        }
+        return _get_params(query, params)
 
 
 class APICollectionResource(
@@ -143,37 +178,36 @@ class APICollectionResource(
     def retrieve(self, query=None):
         query = query or {}
         query, errors = self.validate('GET', query)
-        fields, limit, skip = self.get_commons(query)
+        query, params = self.get_params(query)
         raw_query = self._raw_query(query)
-        results = super().retrieve(raw_query, fields, limit, skip)
+        results = super().retrieve(raw_query, **params)
 
         return {
             'count': results.count(),
-            'limit': limit,
-            'skip': skip,
-            'items': [doc.serialize(fields) for doc in results]
+            'limit': params['limit'],
+            'skip': params['skip'],
+            'items': [doc.serialize(params['fields']) for doc in results]
         }
 
     @staticmethod
-    def get_commons(query):
+    def get_params(query):
         """
-        A helper method used to extract and prepare the common ``fields``,
-        ``limit`` and ``skip`` values used by-default in collection-level
-        queries.
+        A helper method used to extract collection-level query parameters,
+        including:
 
-        :param query: A nested dictionary of values
-        :return: fields, limit, skip
+            * ``fields``
+            * ``limit``
+            * ``skip``
+
+        :param query: A dictionary of document-level query parameters
+        :return: A two-tuple in the form of (``query``, ``params``)
         """
-        fields, limit, skip = (), 100, 0
-
-        if 'fields' in query.keys():
-            fields = query.pop('fields')
-        if 'limit' in query.keys():
-            limit = query.pop('limit')
-        if 'skip' in query.keys():
-            skip = query.pop('skip')
-
-        return fields, limit, skip
+        params = {
+            'fields': (),
+            'limit': 100,
+            'skip': 0
+        }
+        return _get_params(query, params)
 
     @staticmethod
     def _raw_query(query=None):
