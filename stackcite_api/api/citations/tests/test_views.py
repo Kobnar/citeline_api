@@ -57,12 +57,5 @@ class CitationDocumentViewsIntegrationTestCase(
         data.Source.drop_collection()
         data.Citation.drop_collection()
 
-    def make_citation(self, save=False):
-        from stackcite import data
-        from .test_resources import make_citation
-        source = data.Source(title='Test Source')
-        source.save()
-        return make_citation({}, source, save=True)
-
     def get_view(self, object_id=None, name='citation'):
         return super().get_view(object_id, name)

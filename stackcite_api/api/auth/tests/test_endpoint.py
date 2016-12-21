@@ -9,18 +9,6 @@ class AuthAPIEndpointTests(testing.endpoint.APIEndpointTestCase):
         User.drop_collection()
         super().setUp()
 
-    @staticmethod
-    def make_user(email, password, groups=(), save=False):
-        from stackcite import data as db
-        user = db.User()
-        user.email = email
-        user.set_password(password)
-        for g in groups:
-            user.add_group(g)
-        if save:
-            user.save()
-        return user
-
     def auth_user(self, email, password):
         import json
         auth_data = {
@@ -60,7 +48,8 @@ class CreateTokenAPIEndpointTests(AuthAPIEndpointTests):
             'email': 'test@email.com',
             'password': 'bad_password'}
 
-        self.make_user(auth_data['email'], auth_data['password'], save=True)
+        testing.utils.create_user(
+            auth_data['email'], auth_data['password'], save=True)
 
         response = self.test_app.post(
             '/v0/auth/',
@@ -78,7 +67,7 @@ class CreateTokenAPIEndpointTests(AuthAPIEndpointTests):
             'email': 'test@email.com',
             'password': 'T#stPa55word'}
 
-        self.make_user(
+        testing.utils.create_user(
             auth_data['email'],
             auth_data['password'],
             save=True)
@@ -129,7 +118,7 @@ class CreateTokenAPIEndpointTests(AuthAPIEndpointTests):
             'email': 'test@email.com',
             'password': 'T#stPa55word'}
 
-        self.make_user(
+        testing.utils.create_user(
             auth_data['email'],
             auth_data['password'],
             save=True)
@@ -163,7 +152,7 @@ class CreateTokenAPIEndpointTests(AuthAPIEndpointTests):
             'email': 'test@email.com',
             'password': 'T#stPa55word'}
 
-        self.make_user(
+        testing.utils.create_user(
             auth_data['email'],
             auth_data['password'],
             save=True)
@@ -197,7 +186,7 @@ class CreateTokenAPIEndpointTests(AuthAPIEndpointTests):
             'email': 'test@email.com',
             'password': 'T#stPa55word'}
 
-        self.make_user(
+        testing.utils.create_user(
             auth_data['email'],
             auth_data['password'],
             save=True)

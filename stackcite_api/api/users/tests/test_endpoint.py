@@ -8,17 +8,6 @@ class UsersAPIEndpointTests(testing.endpoint.APIEndpointTestCase):
         User.drop_collection()
         super().setUp()
 
-    def make_user(self, email, password, groups=(), save=False):
-        from stackcite import data as db
-        user = db.User()
-        user.email = email
-        user.set_password(password)
-        for g in groups:
-            user.add_group(g)
-        if save:
-            user.save()
-        return user
-
     def auth_user(self, email, password):
         import json
         auth_data = {
@@ -105,7 +94,7 @@ class UserCollectionAPIEndpointTests(UsersAPIEndpointTests):
             'password': 'T#stPa55word'}
 
         # Create a new user
-        self.make_user(
+        testing.utils.create_user(
             auth_data['email'],
             auth_data['password'],
             save=True)
@@ -131,7 +120,7 @@ class UserCollectionAPIEndpointTests(UsersAPIEndpointTests):
             'password': 'T#stPa55word'}
 
         # Create a new staff user
-        self.make_user(
+        testing.utils.create_user(
             auth_data['email'],
             auth_data['password'],
             groups=['staff'],
@@ -158,7 +147,7 @@ class UserCollectionAPIEndpointTests(UsersAPIEndpointTests):
             'password': 'T#stPa55word'}
 
         # Create a new admin user
-        self.make_user(
+        testing.utils.create_user(
             auth_data['email'],
             auth_data['password'],
             groups=['admin'],
@@ -185,7 +174,7 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
             'password': 'T#stPa55word'}
 
         # Create a new user
-        user = self.make_user(
+        user = testing.utils.create_user(
             auth_data['email'],
             auth_data['password'],
             save=True)
@@ -204,7 +193,7 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
             'password': 'T#stPa55word'}
 
         # Create a new user
-        user = self.make_user(
+        user = testing.utils.create_user(
             auth_data['email'],
             auth_data['password'],
             save=True)
@@ -223,7 +212,7 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
             'password': 'T#stPa55word'}
 
         # Create a new user
-        user = self.make_user(
+        user = testing.utils.create_user(
             auth_data['email'],
             auth_data['password'],
             save=True)
@@ -242,7 +231,7 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
             'password': 'T#stPa55word'}
 
         # Create a new user
-        user = self.make_user(
+        user = testing.utils.create_user(
             auth_data['email'],
             auth_data['password'],
             save=True)
@@ -268,7 +257,7 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
             'email': 'changed@email.com'}
 
         # Create a new user
-        user = self.make_user(
+        user = testing.utils.create_user(
             auth_data['email'],
             auth_data['password'],
             save=True)
@@ -294,7 +283,7 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
         new_data = '{"this": {horrible": data}'
 
         # Create a new user
-        user = self.make_user(
+        user = testing.utils.create_user(
             auth_data['email'],
             auth_data['password'],
             save=True)
@@ -320,7 +309,7 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
             'password': 'T#stPa55word'}
 
         # Create a new user
-        user = self.make_user(
+        user = testing.utils.create_user(
             auth_data['email'],
             auth_data['password'],
             save=True)
@@ -346,13 +335,13 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
             'password': 'T#stPa55word'}
 
         # Create a new user
-        self.make_user(
+        testing.utils.create_user(
             user_1_auth_data['email'],
             user_1_auth_data['password'],
             save=True)
 
         # Create a new admin user
-        user_2 = self.make_user(
+        user_2 = testing.utils.create_user(
             user_2_auth_data['email'],
             user_2_auth_data['password'],
             save=True)
@@ -379,13 +368,13 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
             'password': 'T#stPa55word'}
 
         # Create a new user
-        user = self.make_user(
+        user = testing.utils.create_user(
             user_auth_data['email'],
             user_auth_data['password'],
             save=True)
 
         # Create a new admin user
-        self.make_user(
+        testing.utils.create_user(
             staff_auth_data['email'],
             staff_auth_data['password'],
             groups=['staff'],
@@ -413,13 +402,13 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
             'password': 'T#stPa55word'}
 
         # Create a new user
-        user = self.make_user(
+        user = testing.utils.create_user(
             user_auth_data['email'],
             user_auth_data['password'],
             save=True)
 
         # Create a new admin user
-        self.make_user(
+        testing.utils.create_user(
             admin_auth_data['email'],
             admin_auth_data['password'],
             groups=['admin'],
@@ -449,13 +438,13 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
             'email': 'other@email.com'}
 
         # Create a new user
-        user = self.make_user(
+        user = testing.utils.create_user(
             user_auth_data['email'],
             user_auth_data['password'],
             save=True)
 
         # Create a new admin user
-        self.make_user(
+        testing.utils.create_user(
             admin_auth_data['email'],
             admin_auth_data['password'],
             groups=['admin'],
@@ -484,13 +473,13 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
             'password': 'T#stPa55word'}
 
         # Create a new user
-        user = self.make_user(
+        user = testing.utils.create_user(
             user_auth_data['email'],
             user_auth_data['password'],
             save=True)
 
         # Create a new admin user
-        self.make_user(
+        testing.utils.create_user(
             admin_auth_data['email'],
             admin_auth_data['password'],
             groups=['admin'],

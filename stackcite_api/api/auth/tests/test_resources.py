@@ -3,15 +3,6 @@ import unittest
 from stackcite_api import testing
 
 
-def make_user(email, password, save=False):
-    from stackcite.data import User
-    user = User(email)
-    user.password = password
-    if save:
-        user.save()
-    return user
-
-
 class AuthResourceIntegrationTestCase(unittest.TestCase):
 
     layer = testing.layers.MongoIntegrationTestLayer
@@ -30,7 +21,7 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         email = 'test@email.com'
         password = 'T3stPa$$word'
         # Create user and set last_login
-        user = make_user(email, password)
+        user = testing.utils.create_user(email, password)
         prev_login = user.touch_login()
         user.save()
         # Wait 0.1 seconds
@@ -60,7 +51,7 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         email = 'test@email.com'
         password = 'T3stPa$$word'
         # Create user
-        user = make_user(email, password)
+        user = testing.utils.create_user(email, password)
         user.save()
         # Log in user
         auth_data = {'email': email, 'password': 'Wr0ngPa$$word'}
@@ -73,7 +64,7 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         email = 'test@email.com'
         password = 'T3stPa$$word'
         # Create user
-        user = make_user(email, password)
+        user = testing.utils.create_user(email, password)
         user.save()
         # Log in user
         auth_data = {'email': email, 'password': password}
@@ -86,7 +77,7 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         email = 'test@email.com'
         password = 'T3stPa$$word'
         # Create user
-        user = make_user(email, password)
+        user = testing.utils.create_user(email, password)
         user.save()
         # Log in user
         auth_data = {'email': email, 'password': password}
@@ -100,7 +91,7 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         email = 'test@email.com'
         password = 'T3stPa$$word'
         # Create user
-        user = make_user(email, password)
+        user = testing.utils.create_user(email, password)
         user.save()
         # Make new token
         token = db.Token(_user=user)
@@ -116,7 +107,7 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         email = 'test@email.com'
         password = 'T3stPa$$word'
         # Create user
-        user = make_user(email, password)
+        user = testing.utils.create_user(email, password)
         user.save()
         # Make new token
         token = db.Token(_user=user)
@@ -138,7 +129,7 @@ class AuthResourceIntegrationTestCase(unittest.TestCase):
         email = 'test@email.com'
         password = 'T3stPa$$word'
         # Create user
-        user = make_user(email, password)
+        user = testing.utils.create_user(email, password)
         user.save()
         # Create auth token
         token = db.Token(_user=user)
