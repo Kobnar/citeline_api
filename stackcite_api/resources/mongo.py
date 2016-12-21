@@ -183,7 +183,8 @@ class CollectionResource(index.IndexResource):
         assert isinstance(skip, int)
 
         # Process query:
-        results = self.collection.objects(__raw__=query).limit(limit).skip(skip)
+        limit += skip
+        results = self.collection.objects(__raw__=query)[skip:limit]
         # Filter fields:
         if fields:
             results = results.only(*fields)
