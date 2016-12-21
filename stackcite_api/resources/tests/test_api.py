@@ -62,28 +62,28 @@ class APIResourceTests(unittest.TestCase):
         self.col_resource = testing.mock.MockAPICollectionResource(
                 None, 'mock_collection')
 
+
 class APICollectionTests(APIResourceTests):
 
     layer = testing.layers.MongoIntegrationTestLayer
 
-    def test_create_returns_dict(self):
-        """APICollection.create() returns a dictionary
+    def test_create_returns_doc(self):
+        """APICollection.create() returns document object
         """
         data = {'name': 'Mock Document'}
         result = self.col_resource.create(data)
-        self.assertIsInstance(result, dict)
+        self.assertIsInstance(result, testing.mock.MockDocument)
 
-    def test_create_returns_serialized_data(self):
-        """APICollection.create() returns accurately serialized documents
+    def test_create_returns_accurate_doc(self):
+        """APICollection.create() returns accurately created document
         """
-        docs = testing.mock.utils.create_mock_data()
-        for doc in docs:
-            expected = {
-                'name': doc.name,
-                'number': doc.number,
-                'fact': doc.fact}
-            result = self.col_resource.create(expected)
-            result.pop('id')
+        data = {
+            'name': 'Test Document',
+            'number': 42,
+            'fact': False}
+        doc = self.col_resource.create(data)
+        for key, expected in data.items():
+            result = getattr(doc, key)
             self.assertEqual(expected, result)
 
     def test_create_creates_document_in_mongodb(self):
@@ -93,123 +93,99 @@ class APICollectionTests(APIResourceTests):
         doc = self.col_resource.create(data)
         from mongoengine import DoesNotExist
         try:
-            testing.mock.MockDocument.objects(id=doc['id'])
+            testing.mock.MockDocument.objects(id=doc.id)
         except DoesNotExist as err:
             self.fail(err)
 
-    def test_retrieve_returns_list(self):
-        """APICollection.retrieve() returns a list of items if documents exist
+    def test_retrieve_returns_queryset(self):
+        """APICollection.retrieve() returns a queryset of items
         """
         testing.mock.utils.create_mock_data(save=True)
-        results = self.col_resource.retrieve()['items']
-        msg = 'No data was returned'
-        self.assertNotEqual(results, [], msg=msg)
-        self.assertIsInstance(results, list)
+        results, params = self.col_resource.retrieve()
+        from mongoengine import QuerySet
+        self.assertIsInstance(results, QuerySet)
+
+    def test_retrieve_returns_zero_count_if_no_documents_exist(self):
+        """APICollection.retrieve() returns zero items if no documents exist
+        """
+        results, params = self.col_resource.retrieve()
+        self.assertEqual(0, results.count())
 
     def test_retrieve_returns_accurate_count_if_documents_exist(self):
         """APICollection.retrieve() returns an accurate count of items if documents exist
         """
         count = 16
         testing.mock.utils.create_mock_data(count, save=True)
-        result = self.col_resource.retrieve()['count']
-        self.assertEqual(count, result)
-
-    def test_retrieve_returns_empty_list_if_nothing_exists(self):
-        """APICollection.retrieve() returns an empty list of items if nothing is found
-        """
-        expected = []
-        result = self.col_resource.retrieve()['items']
-        self.assertEqual(expected, result)
-
-    def test_retrieve_returns_zero_count_if_nothing_exists(self):
-        """APICollection.retrieve() returns a count of zero if nothing is found
-        """
-        expected = 0
-        result = self.col_resource.retrieve()['count']
-        self.assertEqual(expected, result)
-
-    def test_retrieve_returns_serialized_data(self):
-        """APICollection.retrieve() returns a list of accurately serialized documents
-        """
-        docs = testing.mock.utils.create_mock_data(save=True)
-        results = self.col_resource.retrieve()
-        for idx, doc in enumerate(docs):
-            result = results['items'][idx]
-            expected = {
-                'id': str(doc.id),
-                'name': doc.name,
-                'number': doc.number,
-                'fact': doc.fact}
-            self.assertEqual(expected, result)
+        results, params = self.col_resource.retrieve()
+        self.assertEqual(count, results.count())
 
     def test_retrieve_with_query_returns_data(self):
-        """APICollection.retrieve() returns a list of items data with a valid query
+        """APICollection.retrieve() returns queryset of items with a valid query
         """
         testing.mock.utils.create_mock_data(save=True)
-        raw_query = {'fact': True}
-        results = self.col_resource.retrieve(raw_query)
-        self.assertGreater(len(results), 0)
+        query = {'fact': True}
+        results, params = self.col_resource.retrieve(query)
+        self.assertGreater(results.count(), 0)
 
     def test_retrieve_with_query_returns_correct_results(self):
-        """APICollection.retrieve() returns a list of accurate data with a valid query
+        """APICollection.retrieve() returns a queryset of accurate data with a valid query
         """
         testing.mock.utils.create_mock_data(save=True)
-        raw_query = {'fact': True}
-        results = self.col_resource.retrieve(raw_query)['items']
+        query = {'fact': True}
+        results, params = self.col_resource.retrieve(query)
         for doc in results:
-            self.assertTrue(doc['fact'])
+            self.assertTrue(doc.fact)
 
     def test_retrieve_filters_fields(self):
         """APICollection.retrieve() filters explicitly named fields
         """
-        docs = testing.mock.utils.create_mock_data(save=True)
+        testing.mock.utils.create_mock_data(save=True)
         query = {'fields': 'name,fact'}
-        results = self.col_resource.retrieve(query)
-        for idx, doc in enumerate(docs):
-            result = results['items'][idx]
-            expected = {
-                'name': doc.name,
-                'fact': doc.fact}
-            self.assertEqual(expected, result)
+        results, params = self.col_resource.retrieve(query)
+        for doc in results:
+            self.assertIsNone(doc.number)
 
     def test_retrieve_default_limit(self):
         """APICollection.retrieve() limits results to a default number of items
         """
         testing.mock.utils.create_mock_data(128, save=True)
-        results = self.col_resource.retrieve()['items']
-        self.assertEqual(100, len(results))
+        results, params = self.col_resource.retrieve()
+        self.assertEqual(100, results.count(True))
 
     def test_retrieve_override_limit(self):
         """APICollection.retrieve() limits results to an explicit number of items
         """
         testing.mock.utils.create_mock_data(128, save=True)
-        results = self.col_resource.retrieve({'limit': 64})['items']
-        self.assertEqual(64, len(results))
+        results, params = self.col_resource.retrieve({'limit': 64})
+        self.assertEqual(64, results.count(True))
 
     def test_retrieve_default_skip(self):
         """APICollection.retrieve() skips nothing by default
         """
         testing.mock.utils.create_mock_data(save=True)
-        result = self.col_resource.retrieve()['items'][0]
-        self.assertEqual(0, result['number'])
+        results, params = self.col_resource.retrieve()
+        self.assertEqual(0, results[0].number)
 
     def test_retrieve_override_skip(self):
-        """APICollection.retrieve() skips to an explicit value
+        """APICollection.retrieve() skips to defined value
         """
         testing.mock.utils.create_mock_data(save=True)
-        result = self.col_resource.retrieve({'skip': 4})['items'][0]
-        self.assertEqual(4, result['number'])
+        results, params = self.col_resource.retrieve({'skip': 4})
+        self.assertEqual(4, results[0].number)
 
     def test_retrieve_returns_matching_ids(self):
-        """APICollection.retrieve() returns documents listed in ids"""
+        """APICollection.retrieve() returns documents listed in ids
+        """
         from random import randint
         docs = testing.mock.utils.create_mock_data(count=8, save=True)
+        # Create a list of all IDs and pop random ones
         expected = [str(d.id) for d in docs]
         for n in range(3):
             r_idx = randint(0, len(expected) - 1)
             expected.pop(r_idx)
         query = {'ids': ','.join(expected)}
-        results = [r['id'] for r in self.col_resource.retrieve(query)['items']]
+        results, params = self.col_resource.retrieve(query)
+        results = [str(r.id) for r in results]
         self.assertEqual(expected, results)
 
     def test_get_params_default_values(self):
@@ -286,39 +262,33 @@ class APIDocumentTests(APIResourceTests):
         with self.assertRaises(DoesNotExist):
             doc_resource.retrieve()
 
-    def test_retrieve_returns_dict(self):
-        """APIDocument.retrieve() returns a dictionary
+    def test_retrieve_returns_obj(self):
+        """APIDocument.retrieve() returns a document object
         """
-        result = self.doc_resource.retrieve()
-        self.assertIsInstance(result, dict)
+        result, params = self.doc_resource.retrieve()
+        self.assertIsInstance(result, testing.mock.MockDocument)
 
     def test_retrieve_returns_serialized_data(self):
-        """APIDocument.retrieve() returns accurately serialized document
+        """APIDocument.retrieve() returns correct document
         """
-        expected = {
-            'id': str(self.doc.id),
-            'name': self.doc.name,
-            'number': self.doc.number,
-            'fact': self.doc.fact}
-        result = self.doc_resource.retrieve()
+        expected = self.doc.id
+        result, params = self.doc_resource.retrieve()
+        result = result.id
         self.assertEqual(expected, result)
 
     def test_retrieve_filters_fields(self):
-        """APIDocument.retrieve() filters explicitly named fields
+        """APIDocument.retrieve() filters explicitly named fields on document
         """
         query = {'fields': 'name,fact'}
-        expected = {
-            'name': self.doc.name,
-            'fact': self.doc.fact}
-        result = self.doc_resource.retrieve(query)
-        self.assertEqual(expected, result)
+        result, params = self.doc_resource.retrieve(query)
+        self.assertIsNone(result.number)
 
     def test_update_returns_updated_data(self):
-        """APIDocument.update() returns updated data
+        """APIDocument.update() returns document with updated data
         """
         data = {'name': 'Updated Document'}
         result = self.doc_resource.update(data)
-        self.assertEqual(result['name'], data['name'])
+        self.assertEqual(result.name, data['name'])
 
     def test_update_updates_document_in_mongodb(self):
         """APIDocument.update() updates document in MongoDB

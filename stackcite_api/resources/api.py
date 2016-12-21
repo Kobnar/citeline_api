@@ -121,18 +121,15 @@ class APIDocumentResource(
         query = query or {}
         query, errors = self.validate('GET', query)
         query, params = self.get_params(query)
-        result = super().retrieve(**params)
-        return result.serialize(**params)
+        return super().retrieve(**params), params
 
     def update(self, data):
         data = data or {}
         data, errors = self.validate('PUT', data)
-        result = super().update(data)
-        return result.serialize()
+        return super().update(data)
 
     def delete(self):
-        result = super().delete()
-        return bool(result)
+        return bool(super().delete())
 
     @staticmethod
     def get_params(query):
@@ -172,22 +169,14 @@ class APICollectionResource(
     def create(self, data):
         data = data or {}
         data, errors = self.validate('POST', data)
-        result = super().create(data)
-        return result.serialize()
+        return super().create(data)
 
     def retrieve(self, query=None):
         query = query or {}
         query, errors = self.validate('GET', query)
         query, params = self.get_params(query)
         raw_query = self._raw_query(query)
-        results = super().retrieve(raw_query, **params)
-
-        return {
-            'count': results.count(),
-            'limit': params['limit'],
-            'skip': params['skip'],
-            'items': [doc.serialize(params['fields']) for doc in results]
-        }
+        return super().retrieve(raw_query, **params), params
 
     @staticmethod
     def get_params(query):

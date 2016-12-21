@@ -72,7 +72,8 @@ class APICollectionViews(base.BaseView):
         try:
             data = self.request.json_body
             self.request.response.status = 201
-            return self.context.create(data)
+            result = self.context.create(data)
+            return result.serialize()
 
         except ValueError:
             msg = 'Failed to decode JSON body'
@@ -98,7 +99,13 @@ class APICollectionViews(base.BaseView):
         """
         query = self.request.params
         try:
-            return self.context.retrieve(query)
+            results, params = self.context.retrieve(query)
+            return {
+                'count': results.count(),
+                'limit': params['limit'],
+                'skip': params['skip'],
+                'items': [doc.serialize(params['fields']) for doc in results]
+            }
 
         except marshmallow.ValidationError as err:
             msg = err.messages
@@ -125,7 +132,8 @@ class APIDocumentViews(base.BaseView):
         """
         query = self.request.params
         try:
-            return self.context.retrieve(query)
+            results, params = self.context.retrieve(query)
+            return results.serialize(params['fields'])
 
         except mongoengine.DoesNotExist:
             raise exceptions.APINotFound()
@@ -142,7 +150,8 @@ class APIDocumentViews(base.BaseView):
         """
         try:
             data = self.request.json_body
-            return self.context.update(data)
+            result = self.context.update(data)
+            return result.serialize()
 
         except ValueError:
             msg = 'Failed to decode JSON body'
