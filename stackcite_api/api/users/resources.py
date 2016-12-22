@@ -1,11 +1,12 @@
 import logging
+import mongoengine
 from pyramid import security as sec
 
 from stackcite import data as db
 
 from stackcite_api import resources, auth
 
-from . import schema
+from . import schema, views
 
 
 _LOG = logging.getLogger(__name__)
@@ -14,30 +15,42 @@ _LOG = logging.getLogger(__name__)
 class ConfirmationResource(
         resources.APIIndexResource, resources.ValidatedResource):
 
+    _VIEW_CLASS = views.ConfirmationViews
+
+    __acl__ = [
+        (sec.Allow, sec.Everyone, ('create', 'update'))
+    ]
+
     _SCHEMA = {
         'create': schema.CreateConfirmationToken,
-        'update': schema.ConfirmConfirmationToken
+        'update': schema.UpdateConfirmationToken
     }
 
     def create(self, data):
         """
-        Creates a new confirmation token and dispatches an email request to
-        the end-user.
+        Issues a new account confirmation token. Replaces an existing token if
+        one already exists in the database.
         """
         data, errors = self.validate('create', data)
-        user_id = data['user']
-        user = db.User.objects.get(id=user_id)
-        token = db.ConfirmToken.new(user, save=True)
-        # Dispatch new email
+        email = data['email']
+        user = db.User.objects.get(email=email)
+        token = db.ConfirmToken.new(user)
+        try:
+            token.save()
+        except mongoengine.NotUniqueError:
+            db.ConfirmToken.objects(_user=user).delete()
+            token.save()
+        return token
 
-        # If user is already confirmed, return 409 CONFLICT
-
-    def update(self):
+    def update(self, data):
         """
         Confirms a user's registration.
         """
-        # Accept confirmation key
-        # Confirm user account
+        data, errors = self.validate('update', data)
+        key = data['key']
+        token = db.ConfirmToken.objects.get(_key=key)
+        token.confirm_user()
+        return True
 
 
 class UserDocument(resources.APIDocumentResource):
@@ -48,10 +61,6 @@ class UserDocument(resources.APIDocumentResource):
             (sec.Allow, auth.ADMIN, ('retrieve', 'update', 'delete')),
             sec.DENY_ALL
         ]
-
-    _OFFSPRING = {
-        'confirmation': ConfirmationResource
-    }
 
     _SCHEMA = {
         'PUT': schema.UpdateUser
@@ -68,6 +77,10 @@ class UserCollection(resources.APICollectionResource):
 
     _COLLECTION = db.User
     _DOCUMENT_RESOURCE = UserDocument
+
+    _OFFSPRING = {
+        'confirmation': ConfirmationResource
+    }
 
     _SCHEMA = {
         'POST': schema.CreateUser
