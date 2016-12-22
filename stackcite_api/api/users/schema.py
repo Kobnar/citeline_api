@@ -6,10 +6,10 @@ from stackcite_api.schema import fields as api_fields
 
 
 class CreateConfirmationToken(Schema):
-    user = api_fields.ObjectIdField(required=True)
+    email = fields.Email(required=True)
 
 
-class ConfirmConfirmationToken(Schema):
+class UpdateConfirmationToken(Schema):
     key = api_fields.AuthTokenKeyField(required=True)
 
 

@@ -12,10 +12,10 @@ class CreateConfirmationTokenTests(unittest.TestCase):
         self.schema = CreateConfirmationToken()
 
     def test_user_id_required(self):
-        """CreateConfirmToken.user is required
+        """CreateConfirmationToken.email is required
         """
         result = self.schema.load({}).errors.keys()
-        self.assertIn('user', result)
+        self.assertIn('email', result)
 
 
 class UpdateConfirmationTokenTests(unittest.TestCase):
@@ -23,8 +23,8 @@ class UpdateConfirmationTokenTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
-        from ..schema import ConfirmConfirmationToken
-        self.schema = ConfirmConfirmationToken()
+        from ..schema import UpdateConfirmationToken
+        self.schema = UpdateConfirmationToken()
 
     def test_user_id_required(self):
         """ConfirmConfirmationToken.key is required
