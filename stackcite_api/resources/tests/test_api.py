@@ -33,6 +33,18 @@ class ValidatedResourceTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
+    def test_missing_schema_has_no_validation(self):
+        from ..api import ValidatedResource
+        class MockValidatedResource(ValidatedResource):
+            _DEFAULT_SCHEMA = {}
+        resource = MockValidatedResource()
+        from marshmallow import ValidationError
+        try:
+            resource.validate('GET', {})
+        except ValidationError as err:
+            msg = 'Validation failed somehow: {}'.format(err)
+            self.fail(msg=msg)
+
     def test_validation_default_is_strict(self):
         """ValidatedResource.validate() default is set to 'strict=True'
         """
