@@ -40,6 +40,7 @@ class ConfirmationResource(
         except mongoengine.NotUniqueError:
             db.ConfirmToken.objects(_user=user).delete()
             token.save()
+        _LOG.info('Confirmation key: {} {}'.format(user.email, token.key))
         return token
 
     def update(self, data):
