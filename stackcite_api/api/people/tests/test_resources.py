@@ -30,7 +30,7 @@ class PersonCollectionCreateTestCase(PersonCollectionIntegrationTestCase):
         """
         data = {'name': {'full': 'John Nobody Doe'}}
         result = self.collection.create(data)
-        self.assertIsNotNone(result['id'])
+        self.assertIsNotNone(result.id)
 
     def test_create_invalid_person_raises_exception(self):
         """PersonCollection.create() raises exception for invalid data
@@ -60,8 +60,8 @@ class PersonCollectionRetrieveTestCase(PersonCollectionIntegrationTestCase):
         """
         from stackcite.testing.data import people as ppl
         people = [make_person(p, save=True) for p in ppl()]
-        results = self.collection.retrieve()['items']
-        results = [r['id'] for r in results]
+        results, params = self.collection.retrieve()
+        results = [str(r.id) for r in results]
         for pid in people:
             expected = str(pid.id)
             self.assertIn(expected, results)
@@ -93,12 +93,12 @@ class PersonDocumentRetrieveTestCase(PersonDocumentIntegrationTestCase):
             msg = 'PersonCollection has no GET schema defined'
             self.fail(msg)
 
-
     def test_retrieve_returns_person(self):
         """PersonDocument.retrieve() returns data with the correct ObjectId
         """
         expected = str(self.document.id)
-        result = self.document.retrieve()['id']
+        result, params = self.document.retrieve()
+        result = str(result.id)
         self.assertEqual(expected, result)
 
 
@@ -109,7 +109,8 @@ class PersonDocumentUpdateTestCase(PersonDocumentIntegrationTestCase):
         """
         expected = 'Updated Person'
         data = {'name': {'title': expected}}
-        result = self.document.update(data)['name']['title']
+        result = self.document.update(data)
+        result = result.name.title
         self.assertEqual(expected, result)
 
     def test_update_with_invalid_data_raises_exception(self):
