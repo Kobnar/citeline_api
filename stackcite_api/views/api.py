@@ -1,6 +1,3 @@
-import marshmallow
-import mongoengine
-
 from pyramid import exceptions as exc
 
 from pyramid.view import (
@@ -64,33 +61,18 @@ class APICollectionViews(base.BaseView):
         'GET': 'retrieve'
     }
 
+    @base.managed_view
     def create(self):
         """CREATE a new document using JSON data from the request body.
 
         :return dict: A dictionary containing the new document's ``ObjectId``
         """
-        try:
-            data = self.request.json_body
-            self.request.response.status = 201
-            result = self.context.create(data)
-            return result.serialize()
+        data = self.request.json_body
+        self.request.response.status = 201
+        result = self.context.create(data)
+        return result.serialize()
 
-        except ValueError:
-            msg = 'Failed to decode JSON body'
-            raise exceptions.APIBadRequest(detail=msg)
-
-        except marshmallow.ValidationError as err:
-            msg = err.messages
-            raise exceptions.APIBadRequest(detail=msg)
-
-        except mongoengine.NotUniqueError:
-            msg = 'Object with matching unique fields already exists'
-            raise exceptions.APIBadRequest(detail=msg)
-
-        except mongoengine.ValidationError:
-            msg = 'Object failed low-level validation'
-            raise exceptions.APIBadRequest(detail=msg)
-
+    @base.managed_view
     def retrieve(self):
         """
         RETRIEVE a list of documents matching the provided query (if any).
@@ -98,18 +80,13 @@ class APICollectionViews(base.BaseView):
         :return: A list of serialized documents matching query parameters (if any)
         """
         query = self.request.params
-        try:
-            results, params = self.context.retrieve(query)
-            return {
-                'count': results.count(),
-                'limit': params['limit'],
-                'skip': params['skip'],
-                'items': [doc.serialize(params['fields']) for doc in results]
-            }
-
-        except marshmallow.ValidationError as err:
-            msg = err.messages
-            raise exceptions.APIBadRequest(detail=msg)
+        results, params = self.context.retrieve(query)
+        return {
+            'count': results.count(),
+            'limit': params['limit'],
+            'skip': params['skip'],
+            'items': [doc.serialize(params['fields']) for doc in results]
+        }
 
 
 @view_defaults(renderer='json')
@@ -125,19 +102,17 @@ class APIDocumentViews(base.BaseView):
         'DELETE': 'delete'
     }
 
+    @base.managed_view
     def retrieve(self):
         """RETRIEVE an individual document
 
         :return: A serialized version of the document
         """
         query = self.request.params
-        try:
-            results, params = self.context.retrieve(query)
-            return results.serialize(params['fields'])
+        results, params = self.context.retrieve(query)
+        return results.serialize(params['fields'])
 
-        except mongoengine.DoesNotExist:
-            raise exceptions.APINotFound()
-
+    @base.managed_view
     def update(self):
         """
         UPDATE an individual document using JSON data from the request.
@@ -148,26 +123,11 @@ class APIDocumentViews(base.BaseView):
 
         :return: A serialized version of the updated document
         """
-        try:
-            data = self.request.json_body
-            result = self.context.update(data)
-            return result.serialize()
+        data = self.request.json_body
+        result = self.context.update(data)
+        return result.serialize()
 
-        except ValueError:
-            msg = 'Failed to decode JSON body'
-            raise exceptions.APIBadRequest(detail=msg)
-
-        except marshmallow.ValidationError as err:
-            msg = err.messages
-            raise exceptions.APIBadRequest(detail=msg)
-
-        except mongoengine.DoesNotExist:
-            raise exceptions.APINotFound()
-
-        except mongoengine.ValidationError:
-            msg = 'Object failed low-level validation'
-            raise exceptions.APIBadRequest(detail=msg)
-
+    @base.managed_view
     def delete(self):
         """
         DELETE an individual document.
@@ -175,8 +135,5 @@ class APIDocumentViews(base.BaseView):
         Raises ``204 NO CONTENT`` if successful or ``404 NOT FOUND`` if
         document does not exist.
         """
-        result = self.context.delete()
-        if result:
-            raise exceptions.APINoContent()
-        else:
-            raise exceptions.APINotFound()
+        self.context.delete()
+        raise exceptions.APINoContent()
