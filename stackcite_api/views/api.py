@@ -39,11 +39,11 @@ def managed_view(view_method):
             raise exceptions.APINotFound()
 
         except mongoengine.NotUniqueError:
-            msg = 'Object already exists'
-            raise exceptions.APIBadRequest(detail=msg)
+            msg = 'Document must be unique'
+            raise exceptions.APIConflict(detail=msg)
 
         except mongoengine.ValidationError:
-            msg = 'Object failed low-level validation'
+            msg = 'Document failed low-level validation'
             raise exceptions.APIBadRequest(detail=msg)
 
     return wrapper
@@ -58,6 +58,7 @@ class APIExceptionViews(base.BaseView):
     @forbidden_view_config()
     @notfound_view_config()
     @view_config(context=exc.HTTPBadRequest)
+    @view_config(context=exceptions.APIConflict)
     def exception(self):
         self.request.response.status_code = self.context.code
         return {

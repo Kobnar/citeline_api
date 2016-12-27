@@ -150,7 +150,7 @@ class APICollectionViewsCreateTestCase(APICollectionViewsIntegrationTestCase):
             self.assertEqual(result, 201)
 
     def test_create_existing_raises_400_BAD_REQUEST(self):
-        """APICollectionViews.create() raises 400 BAD REQUEST if the document exists
+        """APICollectionViews.create() raises 409 CONFLICT if the document exists
         """
         view = self.get_view()
         # Create an existing person:
@@ -160,8 +160,8 @@ class APICollectionViewsCreateTestCase(APICollectionViewsIntegrationTestCase):
         # Create the same person:
         duplicate_doc = {'name': 'Mock Document'}
         view.request.json_body = duplicate_doc
-        from stackcite_api.exceptions import APIBadRequest
-        with self.assertRaises(APIBadRequest):
+        from stackcite_api.exceptions import APIConflict
+        with self.assertRaises(APIConflict):
             view.create()
 
     def test_create_invalid_data_raises_400_BAD_REQUEST(self):
