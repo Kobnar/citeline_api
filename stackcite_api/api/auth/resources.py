@@ -29,32 +29,27 @@ class AuthResource(resources.APIIndexResource, resources.ValidatedResource):
         not a :class:`~AuthToken` key.
         """
         data, errors = self.validate('CREATE', data)
-        key = data.get('key')
-        if key:
-            confirm_token = db.ConfirmToken.objects.get(_key=key)
-            user = confirm_token.confirm()
-        else:
-            email = data.get('email')
-            password = data.get('password')
-            user = db.User.authenticate(email, password)
+        email = data.get('email')
+        password = data.get('password')
+        user = db.User.authenticate(email, password)
         token = db.AuthToken(_user=user)
         token.save()
         user.touch_login()
         user.save()
-        return token.serialize()
+        return token
 
     def retrieve(self, token):
         """
         Confirms the existence of a :class:`~AuthToken`.
         """
-        return token.serialize()
+        return token
 
     def update(self, token):
         """
         Updates an existing :class:`~AuthToken`.
         """
         token.save()
-        return token.serialize()
+        return token
 
     def delete(self, token):
         """

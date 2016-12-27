@@ -23,15 +23,6 @@ class AuthenticateTests(unittest.TestCase):
         result = self.schema.load({}).errors.keys()
         self.assertIn('password', result)
 
-    def test_email_password_optional_if_key_set(self):
-        """Authenticate.key makes 'email' and 'password' fields optional
-        """
-        data = {
-            'key': '3ba7b73edb07bbc8f5ee7a642a27bba555b33bbf8fffd7669f3d2af4'}
-        result = self.schema.load(data).errors.keys()
-        self.assertNotIn('email', result)
-        self.assertNotIn('password', result)
-
 
 class AuthTokenTests(unittest.TestCase):
 

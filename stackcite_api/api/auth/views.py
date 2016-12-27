@@ -20,7 +20,8 @@ class AuthViews(views.BaseView):
         try:
             auth_data = self.request.json_body
             self.request.response.status_code = 201
-            return self.context.create(auth_data)
+            auth_token = self.context.create(auth_data)
+            return auth_token.serialize()
 
         except ValueError:
             msg = 'Failed to decode JSON body'
@@ -36,11 +37,13 @@ class AuthViews(views.BaseView):
 
     def retrieve(self):
         token = self.request.token
-        return self.context.retrieve(token)
+        auth_token = self.context.retrieve(token)
+        return auth_token.serialize()
 
     def update(self):
         token = self.request.token
-        return self.context.update(token)
+        auth_token = self.context.update(token)
+        return auth_token.serialize()
 
     def delete(self):
         token = self.request.token
