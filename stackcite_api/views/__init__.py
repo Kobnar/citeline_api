@@ -4,4 +4,4 @@ from .api import (
     APICollectionViews,
     APIDocumentViews
 )
-from .base import BaseView
+from .base import managed_view, BaseView
