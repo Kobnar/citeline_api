@@ -73,7 +73,7 @@ class UserCollectionAPIEndpointTests(UsersAPIEndpointTests):
         """
         json_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         response = self.test_app.post_json(
             '/v0/users/', params=json_data)
@@ -86,7 +86,7 @@ class UserCollectionAPIEndpointTests(UsersAPIEndpointTests):
         import bson
         json_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         response = self.test_app.post_json(
             '/v0/users/', content_type='applicaiton/json', params=json_data)
@@ -119,7 +119,7 @@ class UserCollectionAPIEndpointTests(UsersAPIEndpointTests):
         """
         auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         # Create a new user
         testing.utils.create_user(
@@ -145,7 +145,7 @@ class UserCollectionAPIEndpointTests(UsersAPIEndpointTests):
         """
         auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         # Create a new staff user
         testing.utils.create_user(
@@ -172,7 +172,7 @@ class UserCollectionAPIEndpointTests(UsersAPIEndpointTests):
         """
         auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         # Create a new admin user
         testing.utils.create_user(
@@ -199,7 +199,7 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
         """
         auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         # Create a new user
         user = testing.utils.create_user(
@@ -218,7 +218,7 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
         """
         auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         # Create a new user
         user = testing.utils.create_user(
@@ -237,7 +237,7 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
         """
         auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         # Create a new user
         user = testing.utils.create_user(
@@ -256,7 +256,7 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
         """
         auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         # Create a new user
         user = testing.utils.create_user(
@@ -279,7 +279,7 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
         """
         auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
         new_data = {
             'email': 'changed@email.com'}
 
@@ -305,7 +305,7 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
         """
         auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
         new_data = '{"this": {horrible": data}'
 
         # Create a new user
@@ -331,7 +331,7 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
         """
         auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         # Create a new user
         user = testing.utils.create_user(
@@ -354,10 +354,10 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
         """
         user_1_auth_data = {
             'email': 'user1@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
         user_2_auth_data = {
             'email': 'user2@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         # Create a new user
         testing.utils.create_user(
@@ -387,10 +387,10 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
         """
         user_auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
         staff_auth_data = {
             'email': 'admin@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         # Create a new user
         user = testing.utils.create_user(
@@ -421,10 +421,10 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
         """
         user_auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
         admin_auth_data = {
             'email': 'admin@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         # Create a new user
         user = testing.utils.create_user(
@@ -455,10 +455,10 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
         import json
         user_auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
         admin_auth_data = {
             'email': 'admin@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
         new_user_data = {
             'email': 'other@email.com'}
 
@@ -492,10 +492,10 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
         """
         user_auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
         admin_auth_data = {
             'email': 'admin@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         # Create a new user
         user = testing.utils.create_user(

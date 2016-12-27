@@ -43,7 +43,7 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
         import json
         auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
         bad_auth_data = {
             'email': 'test@email.com',
             'password': 'bad_password'}
@@ -65,7 +65,7 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
         import json
         auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         testing.utils.create_user(
             auth_data['email'],
@@ -116,7 +116,7 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
         """
         auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         testing.utils.create_user(
             auth_data['email'],
@@ -150,7 +150,7 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
         """
         auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         testing.utils.create_user(
             auth_data['email'],
@@ -184,7 +184,7 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
         """
         auth_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'}
+            'password': 'T3stPa$$word'}
 
         testing.utils.create_user(
             auth_data['email'],
