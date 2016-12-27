@@ -1,7 +1,8 @@
 from .api import (
+    managed_view,
     APIExceptionViews,
     APIIndexViews,
     APICollectionViews,
     APIDocumentViews
 )
-from .base import managed_view, BaseView
+from .base import BaseView

@@ -1,3 +1,7 @@
+import functools
+import mongoengine
+import marshmallow
+
 from pyramid import exceptions as exc
 
 from pyramid.view import (
@@ -10,6 +14,39 @@ from pyramid.view import (
 from stackcite_api import exceptions
 
 from . import base
+
+
+def managed_view(view_method):
+    """
+    An exception manager for catching expected base exceptions in view methods
+    and converting them into Pyramid-style API HTTP exceptions.
+    """
+
+    @functools.wraps(view_method)
+    def wrapper(self, *args, **kwargs):
+        try:
+            return view_method(self, *args, **kwargs)
+
+        except ValueError:
+            msg = 'Failed to decode JSON body'
+            raise exceptions.APIBadRequest(detail=msg)
+
+        except marshmallow.ValidationError as err:
+            msg = err.messages
+            raise exceptions.APIBadRequest(detail=msg)
+
+        except mongoengine.DoesNotExist:
+            raise exceptions.APINotFound()
+
+        except mongoengine.NotUniqueError:
+            msg = 'Object already exists'
+            raise exceptions.APIBadRequest(detail=msg)
+
+        except mongoengine.ValidationError:
+            msg = 'Object failed low-level validation'
+            raise exceptions.APIBadRequest(detail=msg)
+
+    return wrapper
 
 
 @view_defaults(renderer='json')
@@ -61,7 +98,7 @@ class APICollectionViews(base.BaseView):
         'GET': 'retrieve'
     }
 
-    @base.managed_view
+    @managed_view
     def create(self):
         """CREATE a new document using JSON data from the request body.
 
@@ -72,7 +109,7 @@ class APICollectionViews(base.BaseView):
         result = self.context.create(data)
         return result.serialize()
 
-    @base.managed_view
+    @managed_view
     def retrieve(self):
         """
         RETRIEVE a list of documents matching the provided query (if any).
@@ -102,7 +139,7 @@ class APIDocumentViews(base.BaseView):
         'DELETE': 'delete'
     }
 
-    @base.managed_view
+    @managed_view
     def retrieve(self):
         """RETRIEVE an individual document
 
@@ -112,7 +149,7 @@ class APIDocumentViews(base.BaseView):
         results, params = self.context.retrieve(query)
         return results.serialize(params['fields'])
 
-    @base.managed_view
+    @managed_view
     def update(self):
         """
         UPDATE an individual document using JSON data from the request.
@@ -127,7 +164,7 @@ class APIDocumentViews(base.BaseView):
         result = self.context.update(data)
         return result.serialize()
 
-    @base.managed_view
+    @managed_view
     def delete(self):
         """
         DELETE an individual document.
