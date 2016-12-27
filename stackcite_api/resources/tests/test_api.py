@@ -305,12 +305,13 @@ class APIDocumentTests(APIResourceTests):
         self.assertTrue(result)
 
     def test_delete_returns_false_if_document_does_not_exist(self):
-        """APIDocument.delete() returns False if document does not exist
+        """APIDocument.delete() raises exception if document does not exist
         """
         from bson import ObjectId
         doc_resource = self.col_resource[ObjectId()]
-        result = doc_resource.delete()
-        self.assertFalse(result)
+        from mongoengine import DoesNotExist
+        with self.assertRaises(DoesNotExist):
+            doc_resource.delete()
 
     def test_delete_deletes_document_in_mongodb(self):
         """APIDocument.delete() deletes document in MongoDB

@@ -88,7 +88,8 @@ class DocumentResource(index.IndexResource):
         Raises :class:`mongoengine.DoesNotExist` exception if the document
         cannot be found.
         """
-        return self.collection.objects(id=self.id).delete()
+        self.collection.objects.get(id=self.id).delete()
+        return True
 
 
 class CollectionResource(index.IndexResource):
