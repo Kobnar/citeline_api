@@ -1,22 +1,54 @@
 from stackcite_api import testing
 
 
+class ConfirmationAPIEndpointTests(testing.endpoint.APIEndpointTestCase):
+
+    def setUp(self):
+        from stackcite import data as db
+        db.User.drop_collection()
+        db.ConfirmToken.drop_collection()
+        super().setUp()
+
+    def test_unauthenticated_user_can_create(self):
+        """CREATE without authentication returns 200 OK
+        """
+        from stackcite import data as db
+        db.User.new('test@email.com', 'T3stPa$$word', save=True)
+        json_data = {'email': 'test@email.com'}
+        response = self.test_app.post_json(
+            '/v0/users/confirmation/',
+            params=json_data,
+            expect_errors=False)
+        self.assertEqual(204, response.status_code)
+
+    def test_unauthenticated_user_can_update(self):
+        """UPDATE without authentication returns 200 OK
+        """
+        from stackcite import data as db
+        user = db.User.new('test@email.com', 'T3stPa$$word', save=True)
+        key = db.ConfirmToken.new(user, save=True).key
+        json_data = {'key': key}
+        response = self.test_app.put_json(
+            '/v0/users/confirmation/',
+            params=json_data,
+            expect_errors=False)
+        self.assertEqual(204, response.status_code)
+
+
 class UsersAPIEndpointTests(testing.endpoint.APIEndpointTestCase):
 
     def setUp(self):
-        from stackcite.data import User
-        User.drop_collection()
+        from stackcite import data as db
+        db.User.drop_collection()
         super().setUp()
 
     def auth_user(self, email, password):
-        import json
         auth_data = {
             'email': email,
             'password': password}
-        response = self.test_app.post(
+        response = self.test_app.post_json(
             '/v0/auth/',
-            content_type='applicaiton/json',
-            params=json.dumps(auth_data),
+            params=auth_data,
             expect_errors=True)
         return response.json_body['key']
 
@@ -28,7 +60,7 @@ class UserCollectionAPIEndpointTests(UsersAPIEndpointTests):
         """
         json_data = '{"this": {horrible": data}'
 
-        response = self.test_app.post(
+        response = self.test_app.post_json(
             '/v0/users/',
             content_type='applicaiton/json',
             params=json_data,
@@ -39,26 +71,24 @@ class UserCollectionAPIEndpointTests(UsersAPIEndpointTests):
     def test_create_user_success_returns_201(self):
         """Successful POST to 'users/' returns 201 CREATED
         """
-        import json
-        json_data = json.dumps({
+        json_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'})
+            'password': 'T#stPa55word'}
 
-        response = self.test_app.post(
-            '/v0/users/', content_type='applicaiton/json', params=json_data)
+        response = self.test_app.post_json(
+            '/v0/users/', params=json_data)
         result = response.status_code
         self.assertEqual(201, result)
 
     def test_create_valid_user_returns_valid_object_id(self):
         """Successful POST to 'users/' returns HTTP 201 status
         """
-        import json
         import bson
-        json_data = json.dumps({
+        json_data = {
             'email': 'test@email.com',
-            'password': 'T#stPa55word'})
+            'password': 'T#stPa55word'}
 
-        response = self.test_app.post(
+        response = self.test_app.post_json(
             '/v0/users/', content_type='applicaiton/json', params=json_data)
         result = response.json_body['id']
         self.assertTrue(bson.ObjectId.is_valid(result))
@@ -66,14 +96,12 @@ class UserCollectionAPIEndpointTests(UsersAPIEndpointTests):
     def test_create_invalid_user_password_returns_400(self):
         """Invalid password POST to 'users/' returns 400 BAD REQUEST
         """
-        import json
-        json_data = json.dumps({
+        json_data = {
             'email': 'test@email.com',
-            'password': 'TestPassword'})
+            'password': 'TestPassword'}
 
-        response = self.test_app.post(
+        response = self.test_app.post_json(
             '/v0/users/',
-            content_type='applicaiton/json',
             params=json_data,
             expect_errors=True)
         self.assertEqual(400, response.status_code)
@@ -199,7 +227,7 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
             save=True)
 
         # Try to update user data
-        response = self.test_app.put(
+        response = self.test_app.put_json(
             '/v0/users/{}/'.format(str(user.id)),
             expect_errors=True)
         self.assertEqual(403, response.status_code)
@@ -249,7 +277,6 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
     def test_authenticated_update_returns_200(self):
         """Authenticated PUT to 'users/{id}/' returns 200 OK
         """
-        import json
         auth_data = {
             'email': 'test@email.com',
             'password': 'T#stPa55word'}
@@ -267,11 +294,10 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
 
         # Try to update user data
         headers = {'Authorization': 'key {}'.format(key)}
-        response = self.test_app.put(
+        response = self.test_app.put_json(
             '/v0/users/{}/'.format(str(user.id)),
-            content_type='applicaiton/json',
             headers=headers,
-            params=json.dumps(new_data))
+            params=new_data)
         self.assertEqual(200, response.status_code)
 
     def test_authenticatd_update_invalid_json_body_returns_400(self):
@@ -295,7 +321,6 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
         headers = {'Authorization': 'key {}'.format(key)}
         response = self.test_app.put(
             '/v0/users/{}/'.format(str(user.id)),
-            content_type='applicaiton/json',
             headers=headers,
             params=new_data,
             expect_errors=True)
@@ -455,11 +480,11 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
 
         # Try to view user data
         headers = {'Authorization': 'key {}'.format(admin_key)}
-        response = self.test_app.put(
+        response = self.test_app.put_json(
             '/v0/users/{}/'.format(str(user.id)),
             content_type='application/json',
             headers=headers,
-            params=json.dumps(new_user_data))
+            params=new_user_data)
         self.assertEqual(200, response.status_code)
 
     def test_admin_delete_other_user_returns_204(self):
