@@ -1,6 +1,5 @@
 from pyramid import security as sec
 from stackcite import data as db
-
 from stackcite_api import resources
 
 from . import schema, views

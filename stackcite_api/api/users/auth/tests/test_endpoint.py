@@ -15,7 +15,7 @@ class AuthAPIEndpointTests(testing.endpoint.APIEndpointTestCase):
             'email': email,
             'password': password}
         response = self.test_app.post(
-            '/v0/auth/',
+            '/v0/users/auth/',
             content_type='applicaiton/json',
             params=json.dumps(auth_data),
             expect_errors=True)
@@ -30,7 +30,7 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
         json_data = '{"this": {horrible": data}'
 
         response = self.test_app.post(
-            '/v0/auth/',
+            '/v0/users/auth/',
             content_type='applicaiton/json',
             params=json_data,
             expect_errors=True)
@@ -52,7 +52,7 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
             auth_data['email'], auth_data['password'], save=True)
 
         response = self.test_app.post(
-            '/v0/auth/',
+            '/v0/users/auth/',
             content_type='applicaiton/json',
             params=json.dumps(bad_auth_data),
             expect_errors=True)
@@ -73,7 +73,7 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
             save=True)
 
         response = self.test_app.post(
-            '/v0/auth/',
+            '/v0/users/auth/',
             content_type='applicaiton/json',
             params=json.dumps(auth_data))
         result = response.status_code
@@ -83,7 +83,7 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
         """GET 'auth/' returns 403 FORBIDDEN with no key
         """
         response = self.test_app.get(
-            '/v0/auth/',
+            '/v0/users/auth/',
             expect_errors=True)
         result = response.status_code
         self.assertEqual(403, result)
@@ -93,7 +93,7 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
         """
         key = 'invalid_key'
         response = self.test_app.get(
-            '/v0/auth/',
+            '/v0/users/auth/',
             headers={'Authorization': 'key {}'.format(key)},
             expect_errors=True)
         result = response.status_code
@@ -105,7 +105,7 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
         from stackcite import data as db
         key = db.utils.gen_key()
         response = self.test_app.get(
-            '/v0/auth/',
+            '/v0/users/auth/',
             headers={'Authorization': 'key {}'.format(key)},
             expect_errors=True)
         result = response.status_code
@@ -128,7 +128,7 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
             auth_data['password'])
 
         response = self.test_app.get(
-            '/v0/auth/',
+            '/v0/users/auth/',
             headers={'Authorization': 'key {}'.format(key)},
             expect_errors=True)
         result = response.status_code
@@ -139,7 +139,7 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
         """
         key = 'invalid_key'
         response = self.test_app.put(
-            '/v0/auth/',
+            '/v0/users/auth/',
             headers={'Authorization': 'key {}'.format(key)},
             expect_errors=True)
         result = response.status_code
@@ -162,7 +162,7 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
             auth_data['password'])
 
         response = self.test_app.put(
-            '/v0/auth/',
+            '/v0/users/auth/',
             headers={'Authorization': 'key {}'.format(key)},
             expect_errors=True)
         result = response.status_code
@@ -173,7 +173,7 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
         """
         key = 'invalid_key'
         response = self.test_app.delete(
-            '/v0/auth/',
+            '/v0/users/auth/',
             headers={'Authorization': 'key {}'.format(key)},
             expect_errors=True)
         result = response.status_code
@@ -196,7 +196,7 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
             auth_data['password'])
 
         response = self.test_app.delete(
-            '/v0/auth/',
+            '/v0/users/auth/',
             headers={'Authorization': 'key {}'.format(key)},
             expect_errors=True)
         result = response.status_code

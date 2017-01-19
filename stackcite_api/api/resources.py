@@ -1,5 +1,4 @@
 from pyramid import security as sec
-
 from stackcite_api import api, resources
 
 from . import views
@@ -18,7 +17,6 @@ class APIIndex(resources.APIIndexResource):
     ]
 
     _OFFSPRING = {
-        'auth': api.auth.AuthResource,
         'citations': api.citations.CitationCollection,
         'organizations': api.organizations.OrganizationCollection,
         'people': api.people.PersonCollection,

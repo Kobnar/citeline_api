@@ -7,6 +7,7 @@ from stackcite import data as db
 from stackcite_api import resources, auth
 
 from . import schema, views
+from . import auth as api_auth
 
 
 _LOG = logging.getLogger(__name__)
@@ -80,6 +81,7 @@ class UserCollection(resources.APICollectionResource):
     _DOCUMENT_RESOURCE = UserDocument
 
     _OFFSPRING = {
+        'auth': api_auth.AuthResource,
         'confirmation': ConfirmationResource
     }
 

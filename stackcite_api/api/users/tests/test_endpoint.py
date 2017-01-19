@@ -47,7 +47,7 @@ class UsersAPIEndpointTests(testing.endpoint.APIEndpointTestCase):
             'email': email,
             'password': password}
         response = self.test_app.post_json(
-            '/v0/auth/',
+            '/v0/users/auth/',
             params=auth_data,
             expect_errors=True)
         return response.json_body['key']
