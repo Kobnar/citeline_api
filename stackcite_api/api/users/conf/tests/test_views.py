@@ -8,7 +8,7 @@ class ConfirmationViewsTestCase(testing.views.ViewTestCase):
     from ..resources import ConfirmationResource
     RESOURCE_CLASS = ConfirmationResource
 
-    from ..views import ConfirmationViews
+    from stackcite_api.api.users.conf.views import ConfirmationViews
     VIEW_CLASS = ConfirmationViews
 
     def setUp(self):
