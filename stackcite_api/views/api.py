@@ -28,7 +28,7 @@ def managed_view(view_method):
             return view_method(self, *args, **kwargs)
 
         except ValueError:
-            msg = 'Failed to decode JSON body'
+            msg = 'Failed to decode JSON body.'
             raise exceptions.APIBadRequest(detail=msg)
 
         except marshmallow.ValidationError as err:
@@ -39,11 +39,11 @@ def managed_view(view_method):
             raise exceptions.APINotFound()
 
         except mongoengine.NotUniqueError:
-            msg = 'Document must be unique'
+            msg = 'Document must be unique.'
             raise exceptions.APIConflict(detail=msg)
 
         except mongoengine.ValidationError:
-            msg = 'Document failed low-level validation'
+            msg = 'Document failed low-level validation.'
             raise exceptions.APIBadRequest(detail=msg)
 
     return wrapper

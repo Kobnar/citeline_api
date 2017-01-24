@@ -2,7 +2,7 @@ from stackcite_api import views, exceptions
 
 
 class ConfirmationViews(views.BaseView):
-    """``../confirmation/``"""
+    """``../conf/``"""
 
     METHODS = {
         'POST': 'create',
