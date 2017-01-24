@@ -28,23 +28,21 @@ def managed_view(view_method):
             return view_method(self, *args, **kwargs)
 
         except ValueError:
-            msg = 'Failed to decode JSON body.'
-            raise exceptions.APIBadRequest(detail=msg)
+            raise exceptions.APIDecodingError()
 
         except marshmallow.ValidationError as err:
-            msg = err.messages
-            raise exceptions.APIBadRequest(detail=msg)
+            errors = err.messages
+            raise exceptions.APIValidationError(detail=errors)
 
         except mongoengine.DoesNotExist:
             raise exceptions.APINotFound()
 
         except mongoengine.NotUniqueError:
-            msg = 'Document must be unique.'
-            raise exceptions.APIConflict(detail=msg)
+            raise exceptions.APINotUniqueError()
 
-        except mongoengine.ValidationError:
-            msg = 'Document failed low-level validation.'
-            raise exceptions.APIBadRequest(detail=msg)
+        except mongoengine.ValidationError as err:
+            errors = err.to_dict()
+            raise exceptions.APIValidationError(detail=errors)
 
     return wrapper
 
@@ -61,10 +59,22 @@ class APIExceptionViews(base.BaseView):
     @view_config(context=exceptions.APIConflict)
     def exception(self):
         self.request.response.status_code = self.context.code
+
+        # TODO: Replace manual overrides with exception class instantiation
+
+        # Override exception detail for 403 Forbidden errors
+        if self.context.code == exceptions.APIForbidden.code:
+            self.context.detail = {}
+
+        # Override exception detail for 404 NotFound errors
+        if self.context.code == exceptions.APINotFound.code:
+            self.context.detail = {'path': self.context.detail}
+
         return {
-            'code': self.context.status_code,
+            'code': self.context.code,
             'title': self.context.title,
-            'detail': self.context.detail
+            'explanation': self.context.explanation,
+            'detail': self.context.detail or {}
         }
 
 

@@ -24,16 +24,14 @@ class AuthViews(views.BaseView):
             return auth_token.serialize()
 
         except ValueError:
-            msg = 'Failed to decode JSON body.'
-            raise exceptions.APIBadRequest(detail=msg)
+            raise exceptions.APIDecodingError()
 
         except marshmallow.ValidationError as err:
-            msg = err.messages
-            raise exceptions.APIBadRequest(detail=msg)
+            errors = err.messages
+            raise exceptions.APIValidationError(detail=errors)
 
         except (mongoengine.DoesNotExist, stackcite.AuthenticationError):
-            msg = 'Authentication failed.'
-            raise exceptions.APIBadRequest(detail=msg)
+            raise exceptions.APIAuthenticationFailed()
 
     def retrieve(self):
         token = self.request.token

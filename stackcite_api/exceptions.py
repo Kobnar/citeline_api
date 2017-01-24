@@ -21,24 +21,23 @@ class APIBadRequest(httpexceptions.HTTPBadRequest):
     """
 
 
-class APINotFound(httpexceptions.HTTPNotFound):
+class APIDecodingError(APIBadRequest):
     """
-    Subclass of :class:`~HTTPNotFound` used to raise HTTP exceptions within
-    the API instead of forwarding the user to a front-end styled exception
-    page.
-
-    code: 404, title: Not Found
+    Subclass of :class:`~APIBadReqeust` used to set a custom explanation for
+    `ValueError` exceptions thrown because of JSON decoding errors.
     """
+    explanation = 'The server failed to decode the JSON data included with ' \
+                  'the request.'
 
 
-class APIUnauthorized(httpexceptions.HTTPUnauthorized):
+class APIValidationError(APIBadRequest):
     """
-    Subclass of :class:`~HTTPUnauthorized` used to raise HTTP exceptions within
-    the API instead of forwarding the user to a front-end styled exception
-    page.
-
-    code: 401, title: Unauthorized
+    Subclass of :class:`~APIBadReqeust` used to set a custom explanation for
+    :class:`marshmallow.ValidationError` and
+    :class:`mongoengine.ValidationError` exceptions.
     """
+    explanation = 'The server could not comply with the request because it ' \
+                  'contains invalid data.'
 
 
 class APIForbidden(httpexceptions.HTTPForbidden):
@@ -51,6 +50,24 @@ class APIForbidden(httpexceptions.HTTPForbidden):
     """
 
 
+class APIAuthenticationFailed(APIForbidden):
+    """
+    Subclass of :class:`~APIForbidden` used to set a custom explanation for
+    :class:`stackcite.AuthenticationError`.
+    """
+    explanation = 'Authentication failed.'
+
+
+class APINotFound(httpexceptions.HTTPNotFound):
+    """
+    Subclass of :class:`~HTTPNotFound` used to raise HTTP exceptions within
+    the API instead of forwarding the user to a front-end styled exception
+    page.
+
+    code: 404, title: Not Found
+    """
+
+
 class APIConflict(httpexceptions.HTTPConflict):
     """
     Subclass of :class:`~HTTPConflict` used to raise HTTP exceptions within
@@ -59,3 +76,12 @@ class APIConflict(httpexceptions.HTTPConflict):
 
     code: 409, title: Conflict
     """
+
+
+class APINotUniqueError(APIConflict):
+    """
+    Subclass of :class:`~APIConflict` used to set a custom explanation for
+    :class:`mongoengine.NotUniqueError` exceptions.
+    """
+    explanation = 'The server could not comply with the request because it ' \
+                  'contains insufficiently unique data.'
