@@ -58,11 +58,11 @@ class AuthViewsCreateTests(AuthViewsTests):
         self.make_user('test@email.com', 'T3stPa$$word', save=True)
         view = self.get_view()
         view.request.json_body = data
-        with(self.assertRaises(exc.APIBadRequest)):
+        with(self.assertRaises(exc.APIValidationError)):
             view.create()
 
     def test_create_no_user_returns_400(self):
-        """AuthViews.create() with unregistered user raises 400 BAD REQUEST
+        """AuthViews.create() with unregistered user raises 403 UNAUTHORIZED
         """
         from stackcite_api import exceptions as exc
         data = {
@@ -71,11 +71,11 @@ class AuthViewsCreateTests(AuthViewsTests):
         self.make_user('test@email.com', data['password'], save=True)
         view = self.get_view()
         view.request.json_body = data
-        with(self.assertRaises(exc.APIBadRequest)):
+        with(self.assertRaises(exc.APIAuthenticationFailed)):
             view.create()
 
     def test_create_wrong_password_returns_400(self):
-        """AuthViews.create() with wrong password raises 400 BAD REQUEST
+        """AuthViews.create() with wrong password raises 403 UNAUTHORIZED
         """
         from stackcite_api import exceptions as exc
         data = {
@@ -84,5 +84,5 @@ class AuthViewsCreateTests(AuthViewsTests):
         self.make_user(data['email'], 'B4dPa$$word', save=True)
         view = self.get_view()
         view.request.json_body = data
-        with(self.assertRaises(exc.APIBadRequest)):
+        with(self.assertRaises(exc.APIAuthenticationFailed)):
             view.create()
