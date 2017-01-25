@@ -1,4 +1,6 @@
 import logging
+import mongoengine
+from contextlib import suppress
 from pyramid import security as sec
 from stackcite import data as db
 from stackcite_api import resources, auth
@@ -22,6 +24,12 @@ class UserDocument(resources.APIDocumentResource):
     _SCHEMA = {
         'PUT': schema.UpdateUser
     }
+
+    def delete(self):
+        # Delete associated CachedReferenceFields
+        with suppress(mongoengine.DoesNotExist):
+            db.AuthToken.objects(_user__id=self.id).delete()
+        super().delete()
 
 
 class UserCollection(resources.APICollectionResource):

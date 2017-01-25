@@ -201,3 +201,28 @@ class CreateAuthTokenAPIEndpointTests(AuthAPIEndpointTests):
             expect_errors=True)
         result = response.status_code
         self.assertEqual(204, result)
+
+    def test_delete_token_returns_403_with_deleted_user(self):
+        """DELETE 'auth/' returns 403 FORBIDDEN if user is already deleted
+        """
+        auth_data = {
+            'email': 'test@email.com',
+            'password': 'T3stPa$$word'}
+
+        user = testing.utils.create_user(
+            auth_data['email'],
+            auth_data['password'],
+            save=True)
+
+        key = self.auth_user(
+            auth_data['email'],
+            auth_data['password'])
+
+        user.delete()
+
+        response = self.test_app.delete(
+            '/v0/users/auth/',
+            headers={'Authorization': 'key {}'.format(key)},
+            expect_errors=True)
+        result = response.status_code
+        self.assertEqual(403, result)
