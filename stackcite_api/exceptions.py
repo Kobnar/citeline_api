@@ -85,3 +85,13 @@ class APINotUniqueError(APIConflict):
     """
     explanation = 'The server could not comply with the request because it ' \
                   'contains insufficiently unique data.'
+
+
+class APIInternalServerError(httpexceptions.HTTPInternalServerError):
+    """
+    Subclass of :class:`~HTTPInternalServerError` used to raise HTTP exceptions
+    within the API instead of forwarding the user to a front-end styled
+    exception page.
+
+    code: 500, title: Internal Server Error
+    """
