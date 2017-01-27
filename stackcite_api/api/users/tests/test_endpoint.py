@@ -292,6 +292,37 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
             expect_errors=True)
         self.assertEqual(400, response.status_code)
 
+    def test_authenticated_update_groups_returns_403(self):
+        """Authenticated PUT attempting to change groups returns 403 FORBIDDEN
+        """
+        auth_data = {
+            'email': 'test@email.com',
+            'password': 'T3stPa$$word'}
+        new_data = {
+            'groups': ['users', 'staff']}
+
+        # Create a new user
+        user = testing.utils.create_user(
+            auth_data['email'],
+            auth_data['password'],
+            save=True)
+
+        # Authenticate user
+        key = self.auth_user(**auth_data)
+
+        # Try to update user data
+        headers = {'Authorization': 'key {}'.format(key)}
+        response = self.test_app.put_json(
+            '/v0/users/{}/'.format(str(user.id)),
+            headers=headers,
+            params=new_data,
+            expect_errors=True)
+
+        print(response.json_body)
+
+        self.assertEqual(403, response.status_code)
+
+
     def test_authenticated_delete_returns_200(self):
         """Authenticated DELETE to 'users/{id}/' returns 204 NO CONTENT
         """
