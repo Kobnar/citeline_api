@@ -126,7 +126,11 @@ class APIDocumentResource(
     def update(self, data):
         data = data or {}
         data, errors = self.validate('PUT', data)
+        self._update(data)
         return super().update(data)
+
+    def _update(self, data):
+        pass
 
     def delete(self):
         return bool(super().delete())
@@ -169,7 +173,11 @@ class APICollectionResource(
     def create(self, data):
         data = data or {}
         data, errors = self.validate('POST', data)
+        self._create(data)
         return super().create(data)
+
+    def _create(self, data):
+        pass
 
     def retrieve(self, query=None):
         query = query or {}

@@ -25,6 +25,21 @@ class UserDocumentTestCase(UserResourceTestCase):
 
         self.doc_rec = self.col_rec[user.id]
 
+    def test_update_new_password_changes_existing_password(self):
+        """UserDocument.update() changes an existing password
+        """
+        data = {
+            'new_password': 'N3wPa$$word',
+            'password': 'T3stPa$$word'}
+        user = self.doc_rec.update(data)
+        from stackcite import data as db
+        from stackcite import AuthenticationError
+        try:
+            db.User.authenticate(user.email, data['new_password'])
+        except AuthenticationError as err:
+            msg = 'Unexpected exception raised: {}'.format(err)
+            self.fail(msg)
+
     def test_delete_user_deletes_auth_tokens(self):
         """UserDocument.delete() deletes associated auth tokens
         """

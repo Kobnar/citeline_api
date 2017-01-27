@@ -25,6 +25,13 @@ class UserDocument(resources.APIDocumentResource):
         'PUT': schema.UpdateUser
     }
 
+    def _update(self, data):
+        if data.get('new_password'):
+            user, params = self.retrieve()
+            password = data.pop('password')
+            if user.check_password(password):
+                data['password'] = data.pop('new_password')
+
     def delete(self):
         # Delete associated CachedReferenceFields
         with suppress(mongoengine.DoesNotExist):
