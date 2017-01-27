@@ -41,6 +41,13 @@ class UpdateUserTests(unittest.TestCase):
         result = self.schema.load({}).errors.keys()
         self.assertNotIn('groups', result)
 
+    def test_new_password_requires_password(self):
+        """UpdateUser.new_password requires password
+        """
+        data = {'new_password': 'N3wPa$$word'}
+        result = self.schema.load(data).errors.keys()
+        self.assertIn('new_password', result)
+
 
 class CreateUserTests(unittest.TestCase):
 
