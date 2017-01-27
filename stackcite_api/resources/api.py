@@ -121,6 +121,7 @@ class APIDocumentResource(
         query = query or {}
         query, errors = self.validate('GET', query)
         query, params = self.get_params(query)
+        self._retrieve(query)
         return super().retrieve(**params), params
 
     def update(self, data):
@@ -129,11 +130,18 @@ class APIDocumentResource(
         self._update(data)
         return super().update(data)
 
+    def delete(self):
+        self._delete()
+        return bool(super().delete())
+
+    def _retrieve(self, query):
+        pass
+
     def _update(self, data):
         pass
 
-    def delete(self):
-        return bool(super().delete())
+    def _delete(self):
+        pass
 
     @staticmethod
     def get_params(query):
@@ -176,15 +184,19 @@ class APICollectionResource(
         self._create(data)
         return super().create(data)
 
-    def _create(self, data):
-        pass
-
     def retrieve(self, query=None):
         query = query or {}
         query, errors = self.validate('GET', query)
         query, params = self.get_params(query)
         raw_query = self._raw_query(query)
+        self._retrieve(query)
         return super().retrieve(raw_query, **params), params
+
+    def _create(self, data):
+        pass
+
+    def _retrieve(self, query):
+        pass
 
     @staticmethod
     def get_params(query):

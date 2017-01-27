@@ -32,11 +32,10 @@ class UserDocument(resources.APIDocumentResource):
             if user.check_password(password):
                 data['password'] = data.pop('new_password')
 
-    def delete(self):
+    def _delete(self):
         # Delete associated CachedReferenceFields
         with suppress(mongoengine.DoesNotExist):
             db.AuthToken.objects(_user__id=self.id).delete()
-        super().delete()
 
 
 class UserCollection(resources.APICollectionResource):
