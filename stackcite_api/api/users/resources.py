@@ -36,6 +36,7 @@ class UserDocument(resources.APIDocumentResource):
         # Delete associated CachedReferenceFields
         with suppress(mongoengine.DoesNotExist):
             db.AuthToken.objects(_user__id=self.id).delete()
+            db.ConfirmToken.objects(_user__id=self.id).delete()
 
 
 class UserCollection(resources.APICollectionResource):
