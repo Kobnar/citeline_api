@@ -1,5 +1,7 @@
 from marshmallow import Schema, fields
 
+from stackcite_api.schema import forms as api_forms
+
 
 class UpdateOrganization(Schema):
     name = fields.String()
@@ -9,6 +11,10 @@ class UpdateOrganization(Schema):
 class CreateOrganization(Schema):
     name = fields.String(required=True)
     established = fields.Integer()
+
+
+class RetrieveOrganizations(api_forms.RetrieveCollection):
+    q = fields.String()
 
 
 class UpdatePublisher(Schema):

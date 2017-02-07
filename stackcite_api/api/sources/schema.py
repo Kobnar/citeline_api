@@ -2,7 +2,10 @@ from marshmallow import Schema, fields, validates, ValidationError
 
 from stackcite import data as db
 
-from stackcite_api.schema import fields as api_fields
+from stackcite_api.schema import (
+    fields as api_fields,
+    forms as api_forms
+)
 
 
 class _MediumChoices(object):
@@ -25,6 +28,10 @@ class UpdateSource(Schema, _MediumChoices):
 class CreateSource(Schema, _MediumChoices):
     title = fields.String(required=True)
     description = fields.String()
+
+
+class RetrieveSources(api_forms.RetrieveCollection):
+    q = fields.String()
 
 
 class UpdateTextSource(Schema, _MediumChoices):

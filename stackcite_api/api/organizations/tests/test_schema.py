@@ -27,6 +27,22 @@ class CreateOrganizationTests(unittest.TestCase):
         self.assertIn('name', result)
 
 
+class RetrieveOrganizationsTests(unittest.TestCase):
+
+    layer = testing.layers.UnitTestLayer
+
+    def setUp(self):
+        from ..schema import RetrieveOrganizations
+        self.schema = RetrieveOrganizations()
+
+    def test_accepts_q_field(self):
+        """RetrieveOrganizations accepts "q" field
+        """
+        data = {'q': 'Some query string.'}
+        result, errors = self.schema.load(data)
+        self.assertIn('q', result)
+
+
 class UpdatePublisherTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer

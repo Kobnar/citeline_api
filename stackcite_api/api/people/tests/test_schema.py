@@ -117,3 +117,19 @@ class CreatePersonUnitTests(unittest.TestCase):
                 'middle': 'Nobody'}}
         with self.assertRaises(ValidationError):
             self.schema.load(data)
+
+
+class RetrievePeopleUnitTests(unittest.TestCase):
+
+    layer = testing.layers.UnitTestLayer
+
+    def setUp(self):
+        from ..schema import RetrievePeople
+        self.schema = RetrievePeople(strict=True)
+
+    def test_accepts_q_field(self):
+        """RetrievePeople accepts "q" field
+        """
+        data = {'q': 'Some query string.'}
+        result, errors = self.schema.load(data)
+        self.assertIn('q', result)

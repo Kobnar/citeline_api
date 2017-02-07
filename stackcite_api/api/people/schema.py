@@ -1,5 +1,7 @@
 from marshmallow import Schema, fields, validates_schema, ValidationError
 
+from stackcite_api.schema import forms as api_forms
+
 
 class UpdateName(Schema):
 
@@ -47,3 +49,7 @@ class UpdatePerson(Schema):
 
 class CreatePerson(UpdatePerson):
     name = fields.Nested(CreateName, required=True)
+
+
+class RetrievePeople(api_forms.RetrieveCollection):
+    q = fields.String()
