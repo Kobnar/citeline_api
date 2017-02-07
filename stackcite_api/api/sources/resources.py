@@ -60,5 +60,17 @@ class SourceCollection(resources.APICollectionResource):
     }
 
     _SCHEMA = {
-        'POST': schema.CreateSource
+        'POST': schema.CreateSource,
+        'GET': schema.RetrieveSources
     }
+
+    def _retrieve(self, query):
+        # Converts "q" field into a case-insensitive regex query
+        q = query.pop('q', None)
+        if q:
+            query.update({
+                'title': {
+                    '$regex': q.lower(),
+                    '$options': 'i'
+                }
+            })

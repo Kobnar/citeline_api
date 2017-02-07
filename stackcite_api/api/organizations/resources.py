@@ -39,5 +39,17 @@ class OrganizationCollection(resources.APICollectionResource):
     }
 
     _SCHEMA = {
-        'POST': schema.CreateOrganization
+        'POST': schema.CreateOrganization,
+        'GET': schema.RetrieveOrganizations
     }
+
+    def _retrieve(self, query):
+        # Converts "q" field into a case-insensitive regex query
+        q = query.pop('q', None)
+        if q:
+            query.update({
+                'name': {
+                    '$regex': q.lower(),
+                    '$options': 'i'
+                }
+            })

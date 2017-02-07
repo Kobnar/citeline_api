@@ -66,6 +66,21 @@ class PersonCollectionRetrieveTestCase(PersonCollectionIntegrationTestCase):
             expected = str(pid.id)
             self.assertIn(expected, results)
 
+    def test_retrieve_q_returns_matching_people(self):
+        """PersonCollection.retrieve() returns Person documents matching query string
+        """
+        names = ['J.N. Doe', 'Arthur Brooks', 'James McArthur']
+        from stackcite import data as db
+        for name in names:
+            person = db.Person()
+            person.name.title = name
+            person.save()
+        query = {'q': 'arthur'}
+        items, params = self.collection.retrieve(query)
+        expected = {'Arthur Brooks', 'James McArthur'}
+        results = {p.name.title for p in items}
+        self.assertEqual(expected, results)
+
 
 class PersonDocumentIntegrationTestCase(PersonCollectionIntegrationTestCase):
 
