@@ -50,4 +50,4 @@ class ConfirmationResource(
         key = data['key']
         token = db.ConfirmToken.objects.get(_key=key)
         token.confirm_user()
-        return True
+        return token
