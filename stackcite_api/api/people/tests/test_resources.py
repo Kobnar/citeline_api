@@ -81,6 +81,25 @@ class PersonCollectionRetrieveTestCase(PersonCollectionIntegrationTestCase):
         results = {p.name.title for p in items}
         self.assertEqual(expected, results)
 
+    def test_retrieve_q_returns_matching_people_w_multiple_fields(self):
+        """PersonCollection.retrieve() returns Person documents w/ matching title or full name
+        """
+        names = (
+            ('J.N. Doe', 'John Doe'),
+            ('John Scott', 'Wilbur Darling'),
+            ('Maxwell Ohm', 'Maxwell Ohm'))
+        from stackcite import data as db
+        for title, full_name in names:
+            person = db.Person()
+            person.name.title = title
+            person.name.full = full_name
+            person.save()
+        query = {'q': 'john'}
+        items, params = self.collection.retrieve(query)
+        expected = {'J.N. Doe', 'John Scott'}
+        results = {p.name.title for p in items}
+        self.assertEqual(expected, results)
+
 
 class PersonDocumentIntegrationTestCase(PersonCollectionIntegrationTestCase):
 

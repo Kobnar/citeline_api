@@ -23,12 +23,23 @@ class PersonCollection(resources.APICollectionResource):
     }
 
     def _retrieve(self, query):
-        # Converts "q" field into a case-insensitive regex query
+        # TODO: It has been said this will lead to heat death at scale.
         q = query.pop('q', None)
         if q:
             query.update({
-                'name.title': {
-                    '$regex': q.lower(),
-                    '$options': 'i'
-                }
+                '$or': [
+                    {
+                        'name.title': {
+                            '$regex': q.lower(),
+                            '$options': 'i'
+                        }
+                    },
+                    {
+                        'name.full': {
+                            '$regex': q.lower(),
+                            '$options': 'i'
+                        }
+                    }
+                ]
+
             })
