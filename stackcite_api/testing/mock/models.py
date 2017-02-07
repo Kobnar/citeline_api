@@ -12,7 +12,15 @@ class MockDocument(utils.IDocument):
     number = mongoengine.IntField()
     fact = mongoengine.BooleanField()
 
-    meta = {'allow_inheritance': True}
+    meta = {
+        'allow_inheritance': True,
+        'indexes': [
+            {
+                'fields': ['$name'],
+                'cls': False
+            }
+        ]
+    }
 
     def _serialize(self, fields=()):
         return {
