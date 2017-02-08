@@ -19,28 +19,30 @@ requires = [
     'WebTest >= 1.3.1',  # py3 compat
     'nose2',
     'cov-core'
-    ]
+]
 
-setup(name='stackcite_api',
-      version='0.0',
-      description='stackcite_api',
-      long_description=README + '\n\n' + CHANGES,
-      classifiers=[
-          "Programming Language :: Python",
-          "Framework :: Pyramid",
-          "Topic :: Internet :: WWW/HTTP",
-          "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
-      ],
-      author='',
-      author_email='',
-      url='',
-      keywords='web pyramid pylons',
-      packages=find_packages(),
-      include_package_data=True,
-      zip_safe=False,
-      install_requires=requires,
-      entry_points="""\
-      [paste.app_factory]
-      main = stackcite_api:main
-      """,
-      )
+setup(
+    name='stackcite.api',
+    version='0.0',
+    description='The REST API web application for Stackcite.',
+    long_description=README + '\n\n' + CHANGES,
+    author='Konrad R.K. Ludwig',
+    author_email='konrad.rk.ludwig@gmail.com',
+    url='http://www.konradrkludwig.com/',
+    packages=find_packages(),
+    namespace_packages=['stackcite'],
+    install_requires=requires,
+    classifiers=[
+    "Programming Language :: Python",
+    "Framework :: Pyramid",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+    ],
+    keywords='web pyramid pylons',
+    include_package_data=True,
+    zip_safe=False,
+    entry_points="""\
+    [paste.app_factory]
+    main = stackcite.api:main
+    """,
+)
