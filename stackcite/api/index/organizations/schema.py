@@ -5,12 +5,12 @@ from stackcite.api.schema import forms as api_forms
 
 class UpdateOrganization(Schema):
     name = fields.String()
-    established = fields.Integer()
+    established = fields.Integer(allow_none=True)
 
 
 class CreateOrganization(Schema):
     name = fields.String(required=True)
-    established = fields.Integer()
+    established = fields.Integer(allow_none=True)
 
 
 class RetrieveOrganizations(api_forms.RetrieveCollection):

@@ -43,8 +43,8 @@ class CreateName(UpdateName):
 class UpdatePerson(Schema):
     name = fields.Nested(UpdateName)
     description = fields.String()
-    birth = fields.Integer()
-    death = fields.Integer()
+    birth = fields.Integer(allow_none=True)
+    death = fields.Integer(allow_none=True)
 
 
 class CreatePerson(UpdatePerson):

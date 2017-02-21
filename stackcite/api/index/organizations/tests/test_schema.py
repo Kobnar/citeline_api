@@ -11,6 +11,13 @@ class UpdateOrganizationTests(unittest.TestCase):
         from ..schema import UpdateOrganization
         self.schema = UpdateOrganization()
 
+    def test_established_allows_none(self):
+        """UpdateOrganization allows established value of None
+        """
+        data = {'established': None}
+        result = self.schema.load(data).errors.keys()
+        self.assertNotIn('established', result)
+
 
 class CreateOrganizationTests(unittest.TestCase):
 
@@ -25,6 +32,13 @@ class CreateOrganizationTests(unittest.TestCase):
         """
         result = self.schema.load({}).errors.keys()
         self.assertIn('name', result)
+
+    def test_established_allows_none(self):
+        """CreateOrganization allows established value of None
+        """
+        data = {'established': None}
+        result = self.schema.load(data).errors.keys()
+        self.assertNotIn('established', result)
 
 
 class RetrieveOrganizationsTests(unittest.TestCase):

@@ -90,6 +90,20 @@ class UpdatePersonUnitTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             self.schema.load(data)
 
+    def test_birth_allows_none(self):
+        """UpdatePerson.birth accepts None value
+        """
+        data = {'birth': None}
+        result = self.schema.load(data).errors.keys()
+        self.assertNotIn('birth', result)
+
+    def test_death_allows_none(self):
+        """UpdatePerson.death accepts None value
+        """
+        data = {'death': None}
+        result = self.schema.load(data).errors.keys()
+        self.assertNotIn('death', result)
+
 
 class CreatePersonUnitTests(unittest.TestCase):
 
@@ -117,6 +131,24 @@ class CreatePersonUnitTests(unittest.TestCase):
                 'middle': 'Nobody'}}
         with self.assertRaises(ValidationError):
             self.schema.load(data)
+
+    def test_birth_allows_none(self):
+        """CreatePerson.birth accepts None value
+        """
+        data = {
+            'name': {'title': 'J.N. Doe'},
+            'birth': None}
+        result = self.schema.load(data).errors.keys()
+        self.assertNotIn('birth', result)
+
+    def test_death_allows_none(self):
+        """CreatePerson.death accepts None value
+        """
+        data = {
+            'name': {'title': 'J.N. Doe'},
+            'birth': None}
+        result = self.schema.load(data).errors.keys()
+        self.assertNotIn('death', result)
 
 
 class RetrievePeopleUnitTests(unittest.TestCase):
