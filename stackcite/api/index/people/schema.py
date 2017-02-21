@@ -20,7 +20,7 @@ class UpdateName(Schema):
         sub_names = data.get('first') or data.get('middle') or data.get('last')
         if full_name and sub_names:
             msg = 'Cannot set "first", "middle", or "last" if "full" is set'
-            raise ValidationError(msg)
+            raise ValidationError(msg, ['full'])
 
 
 class CreateName(UpdateName):
@@ -37,7 +37,7 @@ class CreateName(UpdateName):
         full_name = data.get('full')
         if not (title or last_name or full_name):
             msg = 'One of "title", "last", or "full" must be set'
-            raise ValidationError(msg)
+            raise ValidationError(msg, ['title', 'last', 'full'])
 
 
 class UpdatePerson(Schema):
