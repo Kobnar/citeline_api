@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields, validates, ValidationError
+from marshmallow import Schema, fields, validates_schema, ValidationError
 
 from stackcite import data as db
 
@@ -8,67 +8,60 @@ from stackcite.api.schema import (
 )
 
 
-class _MediumChoices(object):
-
-    medium = fields.String(
-        default='PRINT', validate=lambda m: m in db.Source.MEDIUMS)
-
-    # @validates('medium')
-    # def validate_medium(self, data):
-    #     if data not in db.Source.MEDIUMS:
-    #         msg = '{} is an invalid medium'
-    #         raise ValidationError(msg.format(data))
-
-
-class UpdateSource(Schema, _MediumChoices):
+class _UpdateSource(object):
+    source_type = fields.String(load_from='type')
     title = fields.String()
-    description = fields.String()
+    description = fields.String(allow_none=True)
 
 
-class CreateSource(Schema, _MediumChoices):
+class _CreateSource(_UpdateSource):
+    source_type = fields.String(
+        load_from='type',
+        missing='SOURCE',
+        required=True,
+        validate=lambda t: t in db.Source.TYPES)
     title = fields.String(required=True)
-    description = fields.String()
+
+
+class _UpdateTextSource(object):
+    authors = fields.List(api_fields.ObjectIdField())
+    editors = fields.List(api_fields.ObjectIdField())
+
+
+class _CreateTextSource(_UpdateTextSource):
+    @validates_schema
+    def validate_authors(self, data):
+        source_type = data.get('source_type')
+        authors = data.get('authors')
+        if source_type in ('TEXT', 'BOOK') and not authors:
+            msg = 'Missing data for required field.'
+            raise ValidationError(msg, ['authors'])
+
+
+class _UpdateBookSource(object):
+    edition = fields.String(allow_none=True)
+    publisher = api_fields.ObjectIdField(allow_none=True)
+    published = fields.Integer(allow_none=True)
+    location = fields.String(allow_none=True)
+    isbn10 = api_fields.ISBN10Field(allow_none=True)
+    isbn13 = api_fields.ISBN13Field(allow_none=True)
+
+
+class UpdateSource(
+        Schema,
+        _UpdateSource,
+        _UpdateTextSource,
+        _UpdateBookSource):
+    pass
+
+
+class CreateSource(
+        Schema,
+        _CreateSource,
+        _CreateTextSource,
+        _UpdateBookSource):
+    pass
 
 
 class RetrieveSources(api_forms.RetrieveCollection):
     q = fields.String()
-
-
-class UpdateTextSource(Schema, _MediumChoices):
-    title = fields.String()
-    description = fields.String()
-    authors = fields.List(api_fields.ObjectIdField())
-    editors = fields.List(api_fields.ObjectIdField())
-
-
-class CreateTextSource(Schema, _MediumChoices):
-    title = fields.String(required=True)
-    description = fields.String()
-    authors = fields.List(api_fields.ObjectIdField(), required=True)
-    editors = fields.List(api_fields.ObjectIdField())
-
-
-class UpdateBookSource(Schema, _MediumChoices):
-    title = fields.String()
-    description = fields.String()
-    authors = fields.List(api_fields.ObjectIdField())
-    editors = fields.List(api_fields.ObjectIdField())
-    edition = fields.String()
-    publisher = api_fields.ObjectIdField()
-    published = fields.Integer(allow_none=True)
-    location = fields.String()
-    isbn10 = api_fields.ISBN10Field()
-    isbn13 = api_fields.ISBN13Field()
-
-
-class CreateBookSource(Schema, _MediumChoices):
-    title = fields.String(required=True)
-    description = fields.String()
-    authors = fields.List(api_fields.ObjectIdField(), required=True)
-    editors = fields.List(api_fields.ObjectIdField())
-    edition = fields.String()
-    publisher = api_fields.ObjectIdField()
-    published = fields.Integer(allow_none=True)
-    location = fields.String()
-    isbn10 = api_fields.ISBN10Field()
-    isbn13 = api_fields.ISBN13Field()
