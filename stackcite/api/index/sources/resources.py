@@ -8,7 +8,7 @@ from . import schema
 class BookSourceDocument(resources.APIDocumentResource):
 
     _SCHEMA = {
-        'PUT': schema.UpdateBookSource
+        'PUT': schema.UpdateSource
     }
 
 
@@ -18,14 +18,14 @@ class BookSourceCollection(resources.APICollectionResource):
     _DOCUMENT_RESOURCE = BookSourceDocument
 
     _SCHEMA = {
-        'POST': schema.CreateBookSource
+        'POST': schema.CreateSource
     }
 
 
 class TextSourceDocument(resources.APIDocumentResource):
 
     _SCHEMA = {
-        'PUT': schema.UpdateTextSource
+        'PUT': schema.UpdateSource
     }
 
 
@@ -39,7 +39,7 @@ class TextSourceCollection(resources.APICollectionResource):
     }
 
     _SCHEMA = {
-        'POST': schema.CreateTextSource
+        'POST': schema.CreateSource
     }
 
 
