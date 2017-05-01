@@ -34,6 +34,8 @@ class ValidatedResourceTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     def test_missing_schema_has_no_validation(self):
+        """ValidatedREsource.validate() a missing schema does no validation
+        """
         from ..api import ValidatedResource
         class MockValidatedResource(ValidatedResource):
             _DEFAULT_SCHEMA = {}
@@ -63,6 +65,19 @@ class ValidatedResourceTests(unittest.TestCase):
         from marshmallow import ValidationError
         with self.assertRaises(ValidationError):
             resource.validate('GET', {})
+
+    def test_validate_accepts_list_as_many(self):
+        """ValidatedResource.validate() validates a list of objects
+        """
+        from . import MockValidatedResource
+        resource = MockValidatedResource()
+        data = [{'required': 'dogs'}, {'required': 'cats'}]
+        from marshmallow import ValidationError
+        try:
+            resource.validate('GET', data)
+        except ValidationError as err:
+            msg = 'List failed to validate: {}'.format(err)
+            self.fail(msg=msg)
 
 
 class APIResourceTests(unittest.TestCase):
