@@ -34,10 +34,6 @@ class TextCitationCollection(resources.APICollectionResource):
     _COLLECTION = db.TextCitation
     _DOCUMENT_RESOURCE = TextCitationDocument
 
-    _OFFSPRING = {
-        'books': BookCitationCollection
-    }
-
     _SCHEMA = {
         'POST': schema.CreateTextCitation
     }
@@ -54,10 +50,6 @@ class CitationCollection(resources.APICollectionResource):
 
     _COLLECTION = db.Citation
     _DOCUMENT_RESOURCE = CitationDocument
-
-    _OFFSPRING = {
-        'text': TextCitationCollection
-    }
 
     _SCHEMA = {
         'POST': schema.CreateCitation

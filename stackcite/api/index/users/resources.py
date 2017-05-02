@@ -50,11 +50,6 @@ class UserCollection(resources.APICollectionResource):
     _COLLECTION = db.User
     _DOCUMENT_RESOURCE = UserDocument
 
-    _OFFSPRING = {
-        'auth': users_auth.AuthResource,
-        'conf': users_conf.ConfirmationResource
-    }
-
     _SCHEMA = {
         'POST': schema.CreateUser
     }

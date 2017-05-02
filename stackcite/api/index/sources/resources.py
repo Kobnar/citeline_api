@@ -34,10 +34,6 @@ class TextSourceCollection(resources.APICollectionResource):
     _COLLECTION = db.TextSource
     _DOCUMENT_RESOURCE = TextSourceDocument
 
-    _OFFSPRING = {
-        'books': BookSourceCollection
-    }
-
     _SCHEMA = {
         'POST': schema.CreateSource
     }
@@ -54,10 +50,6 @@ class SourceCollection(resources.APICollectionResource):
 
     _COLLECTION = db.Source
     _DOCUMENT_RESOURCE = SourceDocument
-
-    _OFFSPRING = {
-        'text': TextSourceCollection
-    }
 
     _SCHEMA = {
         'POST': schema.CreateSource,

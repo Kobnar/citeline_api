@@ -34,10 +34,6 @@ class OrganizationCollection(resources.APICollectionResource):
     _COLLECTION = db.Organization
     _DOCUMENT_RESOURCE = OrganizationDocument
 
-    _OFFSPRING = {
-        'publishers': PublisherCollection
-    }
-
     _SCHEMA = {
         'POST': schema.CreateOrganization,
         'GET': schema.RetrieveOrganizations
