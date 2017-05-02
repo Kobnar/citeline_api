@@ -15,7 +15,7 @@ class IndexResource(object):
 
     def __init__(self, parent, name):
         if not (parent is None or isinstance(parent, IndexResource)):
-            raise TypeError('Invalid class: {}'.format(type(parent)))
+            raise TypeError('Invalid traversal resource: {}'.format(type(parent)))
         if not isinstance(name, str):
             raise TypeError('Invalid name: {}'.format(name))
 
@@ -31,12 +31,15 @@ class IndexResource(object):
         Adds a child :class:`IndexResource` to the traversal tree.
 
         Raises an exception if ``value`` is not a type or instance of
-        IndexResource or its children.
+        IndexResource or its children, or cannot be called as one to
+        create an instance of IndexResource.
         """
-        if isclass(value):
-            value = value(self, key)
         if not isinstance(value, IndexResource):
-            raise TypeError('Invalid class: {}'.format(type(value)))
+            try:
+                value = value(self, key)
+            except TypeError as err:
+                msg = 'Invalid traversal resource: {}: {}'
+                raise TypeError(msg.format(value, err))
         self._items[key] = value
 
     def __getitem__(self, key):

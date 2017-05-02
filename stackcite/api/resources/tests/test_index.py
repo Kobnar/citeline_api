@@ -90,8 +90,8 @@ class IndexResourceTestCase(unittest.TestCase):
             with self.assertRaises(TypeError):
                 IndexResource(None, x)
 
-    def test_setitem_sets_names(self):
-        """IndexResource.__setitem__() sets the correct name
+    def test_setitem_sets_names_for_cls(self):
+        """IndexResource.__setitem__() sets the correct name for class
         """
         self.make_root()
         from ..index import IndexResource
@@ -120,8 +120,8 @@ class IndexResourceTestCase(unittest.TestCase):
             self.root['2']['2.2'].__name__,
             '2.2')
 
-    def test_setitem_sets_parents(self):
-        """IndexResource.__setitem__() sets the correct parent
+    def test_setitem_sets_parents_for_cls(self):
+        """IndexResource.__setitem__() sets the correct parent for class
         """
         self.make_root()
         from ..index import IndexResource
@@ -189,3 +189,39 @@ class IndexResourceTestCase(unittest.TestCase):
         result = level_1.lineage
         expected = ['level_1', 'level_0', 'root']
         self.assertEqual(result, expected)
+
+    def test_setitem_sets_parent_with_traversal_factory_pattern(self):
+        """IndexResource.__setitem__() sets parent with traversal_factory pattern
+        """
+        self.make_root()
+        from ..index import IndexResource
+
+        def mock_traversal_factory(parent, name):
+            return IndexResource(parent, name)
+
+        self.root['child'] = mock_traversal_factory
+        self.assertEqual(self.root['child'].__parent__, self.root)
+
+    def test_setitem_sets_name_with_traversal_factory_pattern(self):
+        """IndexResource.__setitem__() sets name with traversal_factory pattern
+        """
+        self.make_root()
+        from ..index import IndexResource
+
+        def mock_traversal_factory(parent, name):
+            return IndexResource(parent, name)
+
+        self.root['child'] = mock_traversal_factory
+        self.assertEqual(self.root['child'].__name__, 'child')
+
+    def test_setitem_raises_exception_for_bad_traversal_signature(self):
+        """IndexResource.__setitem__() raises exception for bad traversal signature
+        """
+        self.make_root()
+        from ..index import IndexResource
+
+        def mock_traversal_factory(parent):
+            return IndexResource(parent, 'some_child')
+
+        with self.assertRaises(TypeError):
+            self.root['child'] = mock_traversal_factory
