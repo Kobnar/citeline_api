@@ -14,8 +14,9 @@ from . import (
 
 
 def root_traversal_factory(request):
-    root = resources.IndexResource(None, '')
-    root[index.VERSION] = index.resources.APIIndex
+    root = resources.IndexResource(None, 'root')
+    # Defers naming the API's version to the package-level definition
+    root[index.VERSION] = index.traversal_factory(root)
     return root
 
 
