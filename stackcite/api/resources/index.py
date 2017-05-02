@@ -14,9 +14,10 @@ class IndexResource(object):
     _OFFSPRING = {}
 
     def __init__(self, parent, name):
-        if not (parent is None or isinstance(parent, IndexResource)) \
-                or not isinstance(name, str):
-            raise TypeError("Invalid class: {}".format(type(parent)))
+        if not (parent is None or isinstance(parent, IndexResource)):
+            raise TypeError('Invalid class: {}'.format(type(parent)))
+        if not isinstance(name, str):
+            raise TypeError('Invalid name: {}'.format(name))
 
         self.__parent__ = parent
         self.__name__ = name
@@ -35,7 +36,7 @@ class IndexResource(object):
         if isclass(value):
             value = value(self, key)
         if not isinstance(value, IndexResource):
-            raise TypeError("Invalid class: {}".format(type(value)))
+            raise TypeError('Invalid class: {}'.format(type(value)))
         self._items[key] = value
 
     def __getitem__(self, key):
