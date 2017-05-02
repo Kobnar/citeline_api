@@ -13,10 +13,10 @@ class IndexResource(object):
 
     _OFFSPRING = {}
 
-    def __init__(self, parent, name):
+    def __init__(self, parent=None, name=None):
         if not (parent is None or isinstance(parent, IndexResource)):
             raise TypeError('Invalid traversal resource: {}'.format(type(parent)))
-        if not isinstance(name, str):
+        if not (isinstance(name, str) or name is None):
             raise TypeError('Invalid name: {}'.format(name))
 
         self.__parent__ = parent

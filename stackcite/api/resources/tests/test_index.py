@@ -14,6 +14,15 @@ class IndexResourceTestCase(unittest.TestCase):
         from ..index import IndexResource
         self.root = IndexResource(None, 'root')
 
+    def test_init_accepts_no_params(self):
+        """IndexResource.__init__() accepts no parameters as valid
+        """
+        from ..index import IndexResource
+        try:
+            IndexResource()
+        except TypeError as err:
+            self.fail('Unexpected exception raised: {}'.format(err))
+
     def test_init_sets_parent(self):
         """IndexResource.__init__() sets the correct parent
         """
@@ -75,12 +84,11 @@ class IndexResourceTestCase(unittest.TestCase):
         self.assertEqual(child.__name__, 'child')
 
     def test_init_name_raises_exception_for_non_strings(self):
-        """IndexResource.__init__() raises an exception if 'name' is not a string
+        """IndexResource.__init__() raises an exception if 'name' is not a string or None
         """
         from bson import ObjectId
         from ..index import IndexResource
         non_strings = [
-            None,
             False,
             True,
             1, 1.1,
