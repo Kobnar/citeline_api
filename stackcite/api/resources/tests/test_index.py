@@ -225,3 +225,15 @@ class IndexResourceTestCase(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             self.root['child'] = mock_traversal_factory
+
+    def test_iter_through_children(self):
+        """IndexResource.__iter__() iterates through children
+        """
+        self.make_root()
+        from ..index import IndexResource
+        names = ('child_0', 'child_1', 'child_2')
+        for child in names:
+            self.root[child] = IndexResource
+        for name in self.root:
+            item = self.root[name]
+            self.assertIn(item.name, names)

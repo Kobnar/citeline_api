@@ -48,6 +48,9 @@ class IndexResource(object):
         """
         return self._items[key]
 
+    def __iter__(self):
+        return self._items.__iter__()
+
     @property
     def name(self):
         return self.__name__
