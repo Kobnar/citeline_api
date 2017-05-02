@@ -14,24 +14,12 @@ class EndpointResource(object):
     """
 
     _VIEW_CLASS = NotImplemented
-    _OFFSPRING = NotImplemented
 
     @classmethod
     def add_views(cls, config):
         """
         Recursively adds the ``_VIEW_CLASS`` associated with this class and any
         traversal routes defined in ``_OFFSPRING``.
-
-        :param config: A Pyramid WSGI configuration object
-        """
-        cls._add_cls_view(config)
-        for offspring in cls._OFFSPRING.values():
-            offspring.add_views(config)
-
-    @classmethod
-    def _add_cls_view(cls, config):
-        """
-        Adds this class' ``_VIEW_CLASS`` to a Pyramid WSGI configuration object.
 
         :param config: A Pyramid WSGI configuration object
         """

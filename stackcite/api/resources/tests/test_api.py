@@ -20,14 +20,6 @@ class EndpointResourceTests(unittest.TestCase):
         from . import MockEndpointResource
         self.assertIn(MockEndpointResource, results)
 
-    def test_add_views_adds_offspring_views(self):
-        """APIIndexResource.add_views() adds offspring view classes to configuration object
-        """
-        self.resource.add_views(self.config)
-        results = [v['view_class'] for v in self.config.views
-                   if v['view_class'] is 'TEST']
-        self.assertEqual(2, len(results))
-
 
 class ValidatedResourceTests(unittest.TestCase):
 
