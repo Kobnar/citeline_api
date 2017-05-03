@@ -44,7 +44,7 @@ class SerializableResource(object):
     def _get_schema(self, method):
         return self._SCHEMA.get(method) or self._DEFAULT_SCHEMA.get(method)
 
-    def load(self, method, data, many=False, strict=True):
+    def load(self, method, data, many=False, strict=True, json=False):
         """
         Loads (and validates) serialized data into a Python-compatible data
         structure.
@@ -58,16 +58,19 @@ class SerializableResource(object):
         :param data: A nested dictionary of request data
         :param many: Whether to deserialize data as a collection
         :param strict: Whether to raise an exception for validation errors
+        :param json: Whether the input data is a JSON encoded string
         :return: A tuple in the form of (``data``, ``errors``)
         """
-        errors = None
-        schema = self._get_schema(method)
-        if schema:
-            schema = schema(many=many, strict=strict)
-            data, errors = schema.load(data)
-        return data, errors
+        scheme = self._get_schema(method)
+        if scheme:
+            scheme = scheme(many=many, strict=strict)
+            if json:
+                return scheme.loads(data)
+            else:
+                return scheme.load(data)
+        return data, {}
 
-    def dump(self, method, data, many=False):
+    def dump(self, method, data, many=False, json=False):
         """
         Dumps (i.e. serializes) Python objects into a serialized data structure.
 
@@ -76,14 +79,23 @@ class SerializableResource(object):
         :param method: An HTTP request method name (e.g. `GET`)
         :param data: A nested dictionary of request data
         :param many: Whether to deserialize data as a collection
+        :param json: Whether the output data should be a JSON encoded string
         :return: A tuple in the form of (``data``, ``errors``)
         """
-        errors = None
-        schema = self._get_schema(method)
-        if schema:
-            schema = schema(many=many)
-            data, errors = schema.dump(data)
-        return data, errors
+        scheme = self._get_schema(method)
+        if scheme:
+            scheme = scheme(many=many)
+            if json:
+                return scheme.dumps(data)
+            else:
+                return scheme.dump(data)
+        return data, {}
+
+    def loads(self, method, data, many=False, strict=True):
+        return self.load(method, data, many, strict, json=True)
+
+    def dumps(self, method, data, many=False):
+        return self.dump(method, data, many, json=True)
 
 
 class APIIndexResource(index.IndexResource, EndpointResource):

@@ -71,6 +71,15 @@ class SerializableResourceTests(unittest.TestCase):
             msg = 'List failed to load: {}'.format(err)
             self.fail(msg=msg)
 
+    def test_loads_raises_exception_for_invalid_json(self):
+        """SerializableResource.loads() raises an exception for invalid JSON data
+        """
+        from . import MockValidatedResource
+        resource = MockValidatedResource()
+        from json import JSONDecodeError
+        with self.assertRaises(JSONDecodeError):
+            resource.loads('GET', '{invalid:"JSON!')
+
     def test_dump_serializes_object_correctly(self):
         """SerializableResource.dump() returns a dictionary with correct values
         """
@@ -95,6 +104,16 @@ class SerializableResourceTests(unittest.TestCase):
             expected = facts[idx]
             result = data[idx]['fact']
             self.assertEqual(expected, result)
+
+    def test_dumps_returns_str(self):
+        """SerializableResource.dumps() returns a string
+        """
+        from . import MockValidatedResource
+        resource = MockValidatedResource()
+        from stackcite.api import testing
+        doc = testing.mock.MockDocument(fact=True)
+        result, errors = resource.dumps('GET', doc)
+        self.assertTrue(isinstance(result, str))
 
 
 class APIResourceTests(unittest.TestCase):
