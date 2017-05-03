@@ -58,15 +58,15 @@ class ValidatedResourceTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             resource.load('GET', {})
 
-    def test_load_accepts_list_as_many(self):
-        """SerializableResource.load() validates a list of objects
+    def test_load_accepts_list_with_many_set(self):
+        """SerializableResource.load() validates a list of objects if many=True
         """
         from . import MockValidatedResource
         resource = MockValidatedResource()
-        data = [{'fact': 'dogs'}, {'fact': 'cats'}]
+        data = [{'fact': True}, {'fact': False}]
         from marshmallow import ValidationError
         try:
-            resource.load('GET', data)
+            resource.load('GET', data, many=True)
         except ValidationError as err:
             msg = 'List failed to load: {}'.format(err)
             self.fail(msg=msg)

@@ -41,7 +41,10 @@ class SerializableResource(object):
     _DEFAULT_SCHEMA = NotImplemented
     _SCHEMA = {}
 
-    def load(self, method, data, strict=True):
+    def _get_schema(self, method):
+        return self._SCHEMA.get(method) or self._DEFAULT_SCHEMA.get(method)
+
+    def load(self, method, data, many=False, strict=True):
         """
         If the `method` provided has an associated data validation schema
         defined in `_schema`, this method will instantiate the associated
@@ -54,9 +57,9 @@ class SerializableResource(object):
         :return: A tuple in the form of (``data``, ``errors``)
         """
         errors = None
-        schema = self._SCHEMA.get(method) or self._DEFAULT_SCHEMA.get(method)
+        schema = self._get_schema(method)
         if schema:
-            schema = schema(strict=strict)
+            schema = schema(many=many, strict=strict)
             data, errors = schema.load(data)
         return data, errors
 
