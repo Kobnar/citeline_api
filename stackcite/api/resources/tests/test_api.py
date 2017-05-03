@@ -26,49 +26,49 @@ class ValidatedResourceTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     def test_missing_schema_has_no_validation(self):
-        """ValidatedREsource.validate() a missing schema does no validation
+        """ValidatedResource.load() a missing schema does no validation
         """
-        from ..api import ValidatedResource
-        class MockValidatedResource(ValidatedResource):
+        from ..api import SerializableResource
+        class MockValidatedResource(SerializableResource):
             _DEFAULT_SCHEMA = {}
         resource = MockValidatedResource()
         from marshmallow import ValidationError
         try:
-            resource.validate('GET', {})
+            resource.load('GET', {})
         except ValidationError as err:
             msg = 'Validation failed somehow: {}'.format(err)
             self.fail(msg=msg)
 
     def test_validation_default_is_strict(self):
-        """ValidatedResource.validate() default is set to 'strict=True'
+        """SerializableResource.load() default is set to 'strict=True'
         """
         from . import MockValidatedResource
         resource = MockValidatedResource()
         data = {'required': 'dogs'}
         from marshmallow import ValidationError
         with self.assertRaises(ValidationError):
-            resource.validate('GET', data)
+            resource.load('GET', data)
 
-    def test_validate_uses_overidden_schema(self):
-        """ValidatedResource.validate() uses an overridden resource if one is defined
+    def test_load_uses_overidden_schema(self):
+        """SerializableResource.load() uses an overridden resource if one is defined
         """
         from . import MockValidatedChildResource
         resource = MockValidatedChildResource()
         from marshmallow import ValidationError
         with self.assertRaises(ValidationError):
-            resource.validate('GET', {})
+            resource.load('GET', {})
 
-    def test_validate_accepts_list_as_many(self):
-        """ValidatedResource.validate() validates a list of objects
+    def test_load_accepts_list_as_many(self):
+        """SerializableResource.load() validates a list of objects
         """
         from . import MockValidatedResource
         resource = MockValidatedResource()
         data = [{'required': 'dogs'}, {'required': 'cats'}]
         from marshmallow import ValidationError
         try:
-            resource.validate('GET', data)
+            resource.load('GET', data)
         except ValidationError as err:
-            msg = 'List failed to validate: {}'.format(err)
+            msg = 'List failed to load: {}'.format(err)
             self.fail(msg=msg)
 
 

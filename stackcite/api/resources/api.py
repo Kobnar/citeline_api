@@ -32,7 +32,7 @@ class EndpointResource(object):
                 permission=attr)
 
 
-class ValidatedResource(object):
+class SerializableResource(object):
     """
     An abstract class providing a basic schema loading and validation
     :class:`Resource`.
@@ -41,7 +41,7 @@ class ValidatedResource(object):
     _DEFAULT_SCHEMA = NotImplemented
     _SCHEMA = {}
 
-    def validate(self, method, data, strict=True):
+    def load(self, method, data, strict=True):
         """
         If the `method` provided has an associated data validation schema
         defined in `_schema`, this method will instantiate the associated
@@ -88,7 +88,7 @@ def _get_params(query, params):
 
 
 class APIDocumentResource(
-        mongo.DocumentResource, ValidatedResource, EndpointResource):
+        mongo.DocumentResource, SerializableResource, EndpointResource):
     """
     The API-level traversal resource.
     """
@@ -107,14 +107,14 @@ class APIDocumentResource(
 
     def retrieve(self, query=None):
         query = query or {}
-        query, errors = self.validate('GET', query)
+        query, errors = self.load('GET', query)
         query, params = self.get_params(query)
         self._retrieve(query)
         return super().retrieve(**params), params
 
     def update(self, data):
         data = data or {}
-        data, errors = self.validate('PUT', data)
+        data, errors = self.load('PUT', data)
         self._update(data)
         return super().update(data)
 
@@ -149,7 +149,7 @@ class APIDocumentResource(
 
 
 class APICollectionResource(
-        mongo.CollectionResource, ValidatedResource, EndpointResource):
+        mongo.CollectionResource, SerializableResource, EndpointResource):
     """
     The API-level traversal resource.
     """
@@ -168,13 +168,13 @@ class APICollectionResource(
 
     def create(self, data):
         data = data or {}
-        data, errors = self.validate('POST', data)
+        data, errors = self.load('POST', data)
         self._create(data)
         return super().create(data)
 
     def retrieve(self, query=None):
         query = query or {}
-        query, errors = self.validate('GET', query)
+        query, errors = self.load('GET', query)
         query, params = self.get_params(query)
         raw_query = self._raw_query(query)
         self._retrieve(query)
