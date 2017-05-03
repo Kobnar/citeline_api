@@ -21,7 +21,7 @@ class EndpointResourceTests(unittest.TestCase):
         self.assertIn(MockEndpointResource, results)
 
 
-class ValidatedResourceTests(unittest.TestCase):
+class SerializableResourceTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
@@ -70,6 +70,31 @@ class ValidatedResourceTests(unittest.TestCase):
         except ValidationError as err:
             msg = 'List failed to load: {}'.format(err)
             self.fail(msg=msg)
+
+    def test_dump_serializes_object_correctly(self):
+        """SerializableResource.dump() returns a dictionary with correct values
+        """
+        from . import MockValidatedResource
+        resource = MockValidatedResource()
+        from stackcite.api import testing
+        doc = testing.mock.MockDocument(fact=True)
+        data, errors = resource.dump('GET', doc)
+        result = data['fact']
+        self.assertTrue(result)
+
+    def test_dump_serializes_list_with_many_set(self):
+        """SerializableResource.dump() returns a list with correct values
+        """
+        from . import MockValidatedResource
+        resource = MockValidatedResource()
+        facts = (True, False, False, True)
+        from stackcite.api import testing
+        docs = [testing.mock.MockDocument(fact=f) for f in facts]
+        data, errors = resource.dump('GET', docs, many=True)
+        for idx, doc in enumerate(data):
+            expected = facts[idx]
+            result = data[idx]['fact']
+            self.assertEqual(expected, result)
 
 
 class APIResourceTests(unittest.TestCase):

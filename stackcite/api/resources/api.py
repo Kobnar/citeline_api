@@ -46,6 +46,9 @@ class SerializableResource(object):
 
     def load(self, method, data, many=False, strict=True):
         """
+        Loads (and validates) serialized data into a Python-compatible data
+        structure.
+
         If the `method` provided has an associated data validation schema
         defined in `_schema`, this method will instantiate the associated
         schema and validate the provided data. Otherwise, it will return the
@@ -53,7 +56,8 @@ class SerializableResource(object):
 
         :param method: An HTTP request method name (e.g. `GET`)
         :param data: A nested dictionary of request data
-        :param strict: If true, raises exception for validation errors
+        :param many: Whether to deserialize data as a collection
+        :param strict: Whether to raise an exception for validation errors
         :return: A tuple in the form of (``data``, ``errors``)
         """
         errors = None
@@ -61,6 +65,24 @@ class SerializableResource(object):
         if schema:
             schema = schema(many=many, strict=strict)
             data, errors = schema.load(data)
+        return data, errors
+
+    def dump(self, method, data, many=False):
+        """
+        Dumps (i.e. serializes) Python objects into a serialized data structure.
+
+        (See docstring for `load()` above.)
+
+        :param method: An HTTP request method name (e.g. `GET`)
+        :param data: A nested dictionary of request data
+        :param many: Whether to deserialize data as a collection
+        :return: A tuple in the form of (``data``, ``errors``)
+        """
+        errors = None
+        schema = self._get_schema(method)
+        if schema:
+            schema = schema(many=many)
+            data, errors = schema.dump(data)
         return data, errors
 
 
