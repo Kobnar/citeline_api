@@ -25,8 +25,8 @@ class ValidatedResourceTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
-    def test_missing_schema_has_no_validation(self):
-        """ValidatedResource.load() a missing schema does no validation
+    def test_missing_schema_does_not_load(self):
+        """ValidatedResource.load() does nothing if no schema is set
         """
         from ..api import SerializableResource
         class MockValidatedResource(SerializableResource):
@@ -44,7 +44,7 @@ class ValidatedResourceTests(unittest.TestCase):
         """
         from . import MockValidatedResource
         resource = MockValidatedResource()
-        data = {'required': 'dogs'}
+        data = {'fact': 'dogs'}
         from marshmallow import ValidationError
         with self.assertRaises(ValidationError):
             resource.load('GET', data)
@@ -63,7 +63,7 @@ class ValidatedResourceTests(unittest.TestCase):
         """
         from . import MockValidatedResource
         resource = MockValidatedResource()
-        data = [{'required': 'dogs'}, {'required': 'cats'}]
+        data = [{'fact': 'dogs'}, {'fact': 'cats'}]
         from marshmallow import ValidationError
         try:
             resource.load('GET', data)

@@ -32,21 +32,21 @@ class MockEndpointResource(_resources.EndpointResource):
         'route_1': MockOffspring}
 
 
-class MockValidatedResource(_resources.ValidatedResource):
+class MockValidatedResource(_resources.SerializableResource):
     """
-    A "mock" :class:~`ValidatedResource` used specifically to test shema
+    A "mock" :class:~`SerializableResource` used specifically to test shema
     validation.
     """
 
     class MockSchema(_Schema):
-        required = _fields.Bool()
+        fact = _fields.Bool()
 
     _DEFAULT_SCHEMA = {'GET': MockSchema}
 
 
 class MockValidatedChildResource(MockValidatedResource):
     """
-    A "mock" :class:~`ValidatedResource` used specifically to test overridden
+    A "mock" :class:~`SerializableResource` used specifically to test overridden
     and child schema validation.
     """
 
