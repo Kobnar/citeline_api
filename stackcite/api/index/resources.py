@@ -15,11 +15,3 @@ class APIIndex(resources.APIIndexResource):
         (sec.Allow, sec.Everyone, 'retrieve'),
         sec.DENY_ALL
     ]
-
-    _OFFSPRING = {
-        'citations': index.citations.CitationCollection,
-        'organizations': index.organizations.OrganizationCollection,
-        'people': index.people.PersonCollection,
-        'sources': index.sources.SourceCollection,
-        'users': index.users.UserCollection
-    }
