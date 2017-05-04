@@ -1,6 +1,7 @@
 import functools
 import mongoengine
 import marshmallow
+import json
 
 from pyramid import exceptions as exc
 
@@ -27,7 +28,7 @@ def managed_view(view_method):
         try:
             return view_method(self, *args, **kwargs)
 
-        except ValueError:
+        except (ValueError, json.JSONDecodeError):
             raise exceptions.APIDecodingError()
 
         except marshmallow.ValidationError as err:
@@ -117,6 +118,7 @@ class APICollectionViews(base.BaseView):
         """
         data = self.request.json_body
         self.request.response.status = 201
+        data, errors = self.context.load('POST', data)
         result = self.context.create(data)
         return result.serialize()
 
@@ -128,7 +130,9 @@ class APICollectionViews(base.BaseView):
         :return: A list of serialized documents matching query parameters (if any)
         """
         query = self.request.params
-        results, params = self.context.retrieve(query)
+        query, errors = self.context.load('GET', query)
+        query, params = self.context.get_params(query)
+        results = self.context.retrieve(query)
         return {
             'count': results.count(),
             'limit': params['limit'],
@@ -157,7 +161,9 @@ class APIDocumentViews(base.BaseView):
         :return: A serialized version of the document
         """
         query = self.request.params
-        results, params = self.context.retrieve(query)
+        query, errors = self.context.load('GET', query)
+        query, params = self.context.get_params(query)
+        results = self.context.retrieve(query)
         return results.serialize(params['fields'])
 
     @managed_view
@@ -172,6 +178,7 @@ class APIDocumentViews(base.BaseView):
         :return: A serialized version of the updated document
         """
         data = self.request.json_body
+        data, errors = self.context.load('PUT', data)
         result = self.context.update(data)
         return result.serialize()
 

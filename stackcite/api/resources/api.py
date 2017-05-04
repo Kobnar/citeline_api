@@ -66,8 +66,7 @@ class SerializableResource(object):
             scheme = scheme(many=many, strict=strict)
             if json:
                 return scheme.loads(data)
-            else:
-                return scheme.load(data)
+            return scheme.load(data)
         return data, {}
 
     def dump(self, method, data, many=False, json=False):
@@ -87,8 +86,7 @@ class SerializableResource(object):
             scheme = scheme(many=many)
             if json:
                 return scheme.dumps(data)
-            else:
-                return scheme.dump(data)
+            return scheme.dump(data)
         return data, {}
 
     def loads(self, method, data, many=False, strict=True):
@@ -142,32 +140,6 @@ class APIDocumentResource(
         'GET': schema.forms.RetrieveDocument
     }
 
-    def retrieve(self, query=None):
-        query = query or {}
-        query, errors = self.load('GET', query)
-        query, params = self.get_params(query)
-        self._retrieve(query)
-        return super().retrieve(**params), params
-
-    def update(self, data):
-        data = data or {}
-        data, errors = self.load('PUT', data)
-        self._update(data)
-        return super().update(data)
-
-    def delete(self):
-        self._delete()
-        return bool(super().delete())
-
-    def _retrieve(self, query):
-        pass
-
-    def _update(self, data):
-        pass
-
-    def _delete(self):
-        pass
-
     @staticmethod
     def get_params(query):
         """
@@ -203,22 +175,11 @@ class APICollectionResource(
         'GET': schema.forms.RetrieveCollection
     }
 
-    def create(self, data):
-        data = data or {}
-        data, errors = self.load('POST', data)
-        self._create(data)
-        return super().create(data)
-
-    def retrieve(self, query=None):
-        query = query or {}
-        query, errors = self.load('GET', query)
-        query, params = self.get_params(query)
+    # TODO: Find a better pattern to inject custom raw queries
+    def retrieve(self, query=None, fields=None, limit=100, skip=0):
         raw_query = self._raw_query(query)
         self._retrieve(query)
-        return super().retrieve(raw_query, **params), params
-
-    def _create(self, data):
-        pass
+        return super().retrieve(raw_query, fields, limit, skip)
 
     def _retrieve(self, query):
         pass
@@ -244,7 +205,7 @@ class APICollectionResource(
         return _get_params(query, params)
 
     @staticmethod
-    def _raw_query(query=None):
+    def _raw_query(query):
         """
         A hook to build a raw pymongo query.
 
@@ -252,9 +213,9 @@ class APICollectionResource(
         :return: A raw pymongo query
         """
         raw_query = query or {}
-        ids = query.pop('ids', None)
+        ids = query.pop('ids', None) if query else []
         if ids:
-            ids = [bson.ObjectId(id) for id in ids]
+            ids = [bson.ObjectId(oid) for oid in ids]
             raw_query.update({'_id': {'$in': ids}})
         return raw_query
 

@@ -280,7 +280,7 @@ class APIDocumentViewsRetrieveTestCase(APIDocumentViewsIntegrationTestCase):
         for doc in documents:
             view = self.get_view(doc.id)
             # Work around missing default schema:
-            view.request.params = ()
+            view.request.params = {}
             result = view.retrieve()
             self.assertEqual(doc.serialize(), result)
 
@@ -304,7 +304,7 @@ class APIDocumentViewsRetrieveTestCase(APIDocumentViewsIntegrationTestCase):
         for pid in ids:
             view = self.get_view(pid)
             # Work around missing default schema:
-            view.request.params = ()
+            view.request.params = {}
             view.retrieve()
             result = view.request.response.status_code
             self.assertEqual(result, 200)
@@ -316,7 +316,7 @@ class APIDocumentViewsRetrieveTestCase(APIDocumentViewsIntegrationTestCase):
         pid = ObjectId()
         view = self.get_view(pid)
         # Work around missing default schema:
-        view.request.params = ()
+        view.request.params = {}
         from stackcite.api.exceptions import APINotFound
         with self.assertRaises(APINotFound):
             view.retrieve()
