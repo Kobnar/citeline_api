@@ -53,6 +53,20 @@ class GetAuthTokenIntegrationTestCase(AuthUtilsBaseIntegrationTestCase):
         result = get_token(request)
         self.assertIsNone(result)
 
+    def test_deleted_user_does_not_raise_exception(self):
+        from pyramid.testing import DummyRequest
+        from ..utils import get_token
+        key = self.token.key
+        request = DummyRequest()
+        request.authorization = 'Key', key
+        self.user.delete()
+        from mongoengine import InvalidDocumentError
+        try:
+            get_token(request)
+        except InvalidDocumentError as err:
+            msg = 'Unexpected exception raised: {}'.format(err)
+            self.fail(msg=msg)
+
 
 class GetUserIntegrationTestCase(AuthUtilsBaseIntegrationTestCase):
 
