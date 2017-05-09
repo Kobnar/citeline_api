@@ -177,6 +177,19 @@ class APICollectionViewsCreateTestCase(APICollectionViewsIntegrationTestCase):
         with self.assertRaises(APIBadRequest):
             view.create()
 
+    def test_create_serializes_new_document(self):
+        """APICollectionViews.create() serializes new document
+        """
+        data = {
+            'name': 'Test Document',
+            'number': 0,
+            'fact': True}
+        view = self.get_view()
+        view.request.json_body = data
+        result = view.create()
+        data['id'] = result['id']
+        self.assertDictEqual(data, result)
+
 
 class APICollectionViewsRetrieveTestCase(APICollectionViewsIntegrationTestCase):
 

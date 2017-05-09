@@ -118,9 +118,11 @@ class APICollectionViews(base.BaseView):
         """
         data = self.request.json_body
         self.request.response.status = 201
-        data, errors = self.context.load('POST', data)
+        data = self.context.load(data, 'POST').data
         result = self.context.create(data)
-        return result.serialize()
+        result = self.context.dump(result).data
+        # TODO: Filter fields based on params['fields']
+        return result
 
     @managed_view
     def retrieve(self):
@@ -130,15 +132,16 @@ class APICollectionViews(base.BaseView):
         :return: A list of serialized documents matching query parameters (if any)
         """
         query = self.request.params
-        query, errors = self.context.load('GET', query)
+        query = self.context.load(query, 'GET').data
         query, params = self.context.get_params(query)
         results = self.context.retrieve(query)
         return {
             'count': results.count(),
             'limit': params['limit'],
             'skip': params['skip'],
-            'items': [doc.serialize(params['fields']) for doc in results]
+            'items': [self.context.dump(doc).data for doc in results]
         }
+        # TODO: Filter fields based on params['fields']
 
 
 @view_defaults(renderer='json')
@@ -161,10 +164,12 @@ class APIDocumentViews(base.BaseView):
         :return: A serialized version of the document
         """
         query = self.request.params
-        query, errors = self.context.load('GET', query)
+        query = self.context.load(query, 'GET').data
         query, params = self.context.get_params(query)
-        results = self.context.retrieve(query)
-        return results.serialize(params['fields'])
+        result = self.context.retrieve(query)
+        result = self.context.dump(result).data
+        # TODO: Filter fields based on params['fields']
+        return result
 
     @managed_view
     def update(self):
@@ -178,9 +183,11 @@ class APIDocumentViews(base.BaseView):
         :return: A serialized version of the updated document
         """
         data = self.request.json_body
-        data, errors = self.context.load('PUT', data)
+        data = self.context.load(data, 'PUT').data
         result = self.context.update(data)
-        return result.serialize()
+        result = self.context.dump(result).data
+        # TODO: Filter fields based on params['fields']
+        return result
 
     @managed_view
     def delete(self):
