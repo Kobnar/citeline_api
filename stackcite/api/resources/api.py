@@ -41,10 +41,10 @@ class SerializableResource(object):
     _DEFAULT_SCHEMA = NotImplemented
     _SCHEMA = {}
 
-    def _get_schema(self, method):
-        return self._SCHEMA.get(method) or self._DEFAULT_SCHEMA.get(method)
+    def _get_schema(self, method=None):
+        return self._SCHEMA.get(method) or self._DEFAULT_SCHEMA
 
-    def load(self, method, data, many=False, strict=True, json=False):
+    def load(self, data, method=None, many=False, strict=True, json=False):
         """
         Loads (and validates) serialized data into a Python-compatible data
         structure.
@@ -69,7 +69,7 @@ class SerializableResource(object):
             return scheme.load(data)
         return data, {}
 
-    def dump(self, method, data, many=False, json=False):
+    def dump(self, data, method=None, many=False, json=False):
         """
         Dumps (i.e. serializes) Python objects into a serialized data structure.
 
@@ -89,11 +89,11 @@ class SerializableResource(object):
             return scheme.dump(data)
         return data, {}
 
-    def loads(self, method, data, many=False, strict=True):
-        return self.load(method, data, many, strict, json=True)
+    def loads(self, data, method, many=False, strict=True):
+        return self.load(data, method, many, strict, json=True)
 
-    def dumps(self, method, data, many=False):
-        return self.dump(method, data, many, json=True)
+    def dumps(self, data, method, many=False):
+        return self.dump(data, method, many, json=True)
 
 
 class APIIndexResource(index.IndexResource, EndpointResource):

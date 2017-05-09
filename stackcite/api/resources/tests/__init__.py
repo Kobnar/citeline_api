@@ -1,6 +1,7 @@
 from marshmallow import Schema as _Schema, fields as _fields
 
 from stackcite.api import resources as _resources
+from stackcite.api import testing as _testing
 
 
 class MockEndpointResource(_resources.EndpointResource):
@@ -38,10 +39,7 @@ class MockValidatedResource(_resources.SerializableResource):
     validation.
     """
 
-    class MockSchema(_Schema):
-        fact = _fields.Bool()
-
-    _DEFAULT_SCHEMA = {'GET': MockSchema}
+    _DEFAULT_SCHEMA = _testing.mock.MockDocumentSchema
 
 
 class MockValidatedChildResource(MockValidatedResource):
@@ -50,7 +48,10 @@ class MockValidatedChildResource(MockValidatedResource):
     and child schema validation.
     """
 
-    class MockSchema(_Schema):
+    class MockSchema(_testing.mock.MockDocumentSchema):
         name = _fields.String(required=True)
 
-    _DEFAULT_SCHEMA = {'GET': MockSchema}
+    _DEFAULT_SCHEMA = _testing.mock.MockDocumentSchema
+    _SCHEMA = {
+        'GET': MockSchema
+    }

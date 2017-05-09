@@ -8,6 +8,7 @@ from .resources import (
     MockAPICollectionResource
 )
 from .schema import (
+    MockDocumentSchema,
     MockUpdateDocumentSchema,
     MockCreateDocumentSchema
 )

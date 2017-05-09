@@ -34,7 +34,7 @@ class SerializableResourceTests(unittest.TestCase):
         resource = MockValidatedResource()
         from marshmallow import ValidationError
         try:
-            resource.load('GET', {})
+            resource.load({}, 'GET')
         except ValidationError as err:
             msg = 'Validation failed somehow: {}'.format(err)
             self.fail(msg=msg)
@@ -47,7 +47,17 @@ class SerializableResourceTests(unittest.TestCase):
         data = {'fact': 'dogs'}
         from marshmallow import ValidationError
         with self.assertRaises(ValidationError):
-            resource.load('GET', data)
+            resource.load(data, 'GET')
+
+    def test_load_uses_default_schema_if_method_not_set(self):
+        """SerializableResource.load() uses a default schema if no method is set
+        """
+        from . import MockValidatedResource
+        resource = MockValidatedResource()
+        data = {'fact': 'dogs'}
+        from marshmallow import ValidationError
+        with self.assertRaises(ValidationError):
+            resource.load(data)
 
     def test_load_uses_overidden_schema(self):
         """SerializableResource.load() uses an overridden resource if one is defined
@@ -56,7 +66,7 @@ class SerializableResourceTests(unittest.TestCase):
         resource = MockValidatedChildResource()
         from marshmallow import ValidationError
         with self.assertRaises(ValidationError):
-            resource.load('GET', {})
+            resource.load({}, 'GET')
 
     def test_load_accepts_list_with_many_set(self):
         """SerializableResource.load() validates a list of objects if many=True
@@ -66,7 +76,7 @@ class SerializableResourceTests(unittest.TestCase):
         data = [{'fact': True}, {'fact': False}]
         from marshmallow import ValidationError
         try:
-            resource.load('GET', data, many=True)
+            resource.load(data, 'GET', many=True)
         except ValidationError as err:
             msg = 'List failed to load: {}'.format(err)
             self.fail(msg=msg)
@@ -78,7 +88,7 @@ class SerializableResourceTests(unittest.TestCase):
         resource = MockValidatedResource()
         from json import JSONDecodeError
         with self.assertRaises(JSONDecodeError):
-            resource.loads('GET', '{invalid:"JSON!')
+            resource.loads('{invalid:"JSON!', 'GET')
 
     def test_dump_serializes_object_correctly(self):
         """SerializableResource.dump() returns a dictionary with correct values
@@ -87,7 +97,7 @@ class SerializableResourceTests(unittest.TestCase):
         resource = MockValidatedResource()
         from stackcite.api import testing
         doc = testing.mock.MockDocument(fact=True)
-        data, errors = resource.dump('GET', doc)
+        data, errors = resource.dump(doc, 'GET')
         result = data['fact']
         self.assertTrue(result)
 
@@ -99,7 +109,7 @@ class SerializableResourceTests(unittest.TestCase):
         facts = (True, False, False, True)
         from stackcite.api import testing
         docs = [testing.mock.MockDocument(fact=f) for f in facts]
-        data, errors = resource.dump('GET', docs, many=True)
+        data, errors = resource.dump(docs, 'GET', many=True)
         for idx, doc in enumerate(data):
             expected = facts[idx]
             result = data[idx]['fact']
@@ -112,7 +122,7 @@ class SerializableResourceTests(unittest.TestCase):
         resource = MockValidatedResource()
         from stackcite.api import testing
         doc = testing.mock.MockDocument(fact=True)
-        result, errors = resource.dumps('GET', doc)
+        result, errors = resource.dumps(doc, 'GET')
         self.assertTrue(isinstance(result, str))
 
 
