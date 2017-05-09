@@ -20,9 +20,17 @@ class MockAPICollectionResourceTestCase(MockAPIMongoResourceTestCase):
         """MockAPICollectionResource.create() fails validation with invalid data
         """
         data = {'fact': 42}
-        from marshmallow import ValidationError
+        from mongoengine import ValidationError
         with self.assertRaises(ValidationError):
             self.test_col.create(data)
+
+    def test_load_fails_validation_with_invalid_data(self):
+        """MockAPICollectionResource.load() fails validation with invalid data
+        """
+        data = {'fact': 42}
+        from marshmallow import ValidationError
+        with self.assertRaises(ValidationError):
+            self.test_col.load(data)
 
     def test_getitem_returns_mock_api_document_resource(self):
         """MockAPICollectionResource.__getitem__() returns an instance of MockAPIDocumentResource
@@ -48,6 +56,14 @@ class MockAPIDocumentResourceTestCase(MockAPIMongoResourceTestCase):
         """MockAPIDocumentResource.update() fails validation with invalid data
         """
         data = {'fact': 42}
-        from marshmallow import ValidationError
+        from mongoengine import ValidationError
         with self.assertRaises(ValidationError):
             self.test_doc.update(data)
+
+    def test_load_fails_validation_with_invalid_data(self):
+        """MockAPICollectionResource.load() fails validation with invalid data
+        """
+        data = {'fact': 42}
+        from marshmallow import ValidationError
+        with self.assertRaises(ValidationError):
+            self.test_col.load(data)
