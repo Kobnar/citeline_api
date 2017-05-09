@@ -32,7 +32,10 @@ class MockAPIDocumentResource(resources.APIDocumentResource):
     'PUT' operations.
     """
     _DEFAULT_SCHEMA = schema.MockDocumentSchema
-    _SCHEMA = {'PUT': schema.MockUpdateDocumentSchema}
+    _SCHEMA = {
+        'PUT': schema.MockUpdateDocumentSchema,
+        'GET': schema.MockRetrieveDocumentSchema
+    }
 
 
 class MockAPICollectionResource(resources.APICollectionResource):

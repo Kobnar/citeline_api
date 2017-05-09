@@ -24,3 +24,7 @@ class MockRetrieveCollectionSchema(schema.forms.RetrieveCollection):
     name = fields.String()
     number = fields.Integer()
     fact = fields.Boolean()
+
+
+class MockRetrieveDocumentSchema(schema.forms.RetrieveDocument):
+    pass
