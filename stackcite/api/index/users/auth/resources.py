@@ -5,7 +5,7 @@ from stackcite.api import resources
 from . import schema, views
 
 
-class AuthResource(resources.APIIndexResource, resources.ValidatedResource):
+class AuthResource(resources.APIIndexResource, resources.SerializableResource):
 
     _VIEW_CLASS = views.AuthViews
 
@@ -27,7 +27,6 @@ class AuthResource(resources.APIIndexResource, resources.ValidatedResource):
         NOTE: "key" in  this context refers to a :class:`~ConfirmToken` key,
         not a :class:`~AuthToken` key.
         """
-        data, errors = self.validate('CREATE', data)
         email = data.get('email')
         password = data.get('password')
         user = db.User.authenticate(email, password)

@@ -20,6 +20,7 @@ class AuthViews(views.BaseView):
         try:
             auth_data = self.request.json_body
             self.request.response.status_code = 201
+            auth_data, errors = self.context.load('CREATE', auth_data)
             auth_token = self.context.create(auth_data)
             return auth_token.serialize()
 
