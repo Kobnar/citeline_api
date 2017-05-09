@@ -39,7 +39,10 @@ class MockValidatedResource(_resources.SerializableResource):
     validation.
     """
 
-    _DEFAULT_SCHEMA = _testing.mock.MockDocumentSchema
+    _DOCUMENT_SCHEMA = _testing.mock.MockDocumentSchema
+    _SCHEMA = {
+        'GET': _testing.mock.MockDocumentSchema
+    }
 
 
 class MockValidatedChildResource(MockValidatedResource):
@@ -51,7 +54,7 @@ class MockValidatedChildResource(MockValidatedResource):
     class MockSchema(_testing.mock.MockDocumentSchema):
         name = _fields.String(required=True)
 
-    _DEFAULT_SCHEMA = _testing.mock.MockDocumentSchema
+    _DOCUMENT_SCHEMA = _testing.mock.MockDocumentSchema
     _SCHEMA = {
         'GET': MockSchema
     }

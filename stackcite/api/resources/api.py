@@ -38,13 +38,17 @@ class SerializableResource(object):
     :class:`Resource`.
     """
 
+    _DOCUMENT_SCHEMA = NotImplemented
     _DEFAULT_SCHEMA = NotImplemented
     _SCHEMA = {}
 
     def _get_schema(self, method=None):
-        return self._SCHEMA.get(method) or self._DEFAULT_SCHEMA
+        if method:
+            return self._SCHEMA.get(method) or self._DEFAULT_SCHEMA.get(method)
+        return self._DOCUMENT_SCHEMA
 
-    def load(self, data, only=(), method=None, many=False, strict=True, json=False):
+    def load(self, data, only=(), method=None, many=False, strict=True,
+             json=False):
         """
         Loads (and validates) serialized data into a Python-compatible data
         structure.
