@@ -34,20 +34,21 @@ class ConfirmationResourceCreateTestCase(ConfirmationResourceTestCase):
         self.collection.create(data)
         import mongoengine
         try:
-            db.ConfirmToken.objects.get(_user=user.id)
+            db.ConfirmToken.objects.get(_user=user)
         except mongoengine.DoesNotExist as err:
             self.fail(err)
 
     def test_existing_token_replaced_in_db(self):
-        """ConfirmationResource.create() replaces an existing confirmation token
+        """ConfirmationResource.create() creates a new confirmation token if one exists
         """
         from stackcite import data as db
         user = db.User.new('test@email.com', 'T3stPa$$word', save=True)
         prev_key = db.ConfirmToken.new(user, save=True).key
         data = {'email': user.email}
-        self.collection.create(data)
-        result = db.ConfirmToken.objects.get(_user=user.id).key
-        self.assertNotEqual(prev_key, result)
+        new_key = self.collection.create(data).key
+        expected = [prev_key, new_key]
+        results = [t.key for t in db.ConfirmToken.objects(_user=user)]
+        self.assertEqual(expected, results)
 
     def test_returns_confirm_token(self):
         """ConfirmationResource.create() returns a ConfirmToken
@@ -57,14 +58,6 @@ class ConfirmationResourceCreateTestCase(ConfirmationResourceTestCase):
         data = {'email': user.email}
         result = self.collection.create(data)
         self.assertIsInstance(result, db.ConfirmToken)
-
-    def test_strict_schema(self):
-        """Confirmationresource.create() enforces a strict validation schema
-        """
-        data = {'email': 'bad_email'}
-        import marshmallow
-        with self.assertRaises(marshmallow.ValidationError):
-            self.collection.create(data)
 
 
 class ConfirmationResourceUpdateTestCase(ConfirmationResourceTestCase):
@@ -111,12 +104,4 @@ class ConfirmationResourceUpdateTestCase(ConfirmationResourceTestCase):
         data = {'key': key}
         result = self.collection.update(data)
         self.assertTrue(result)
-
-    def test_strict_schema(self):
-        """Confirmationresource.create() enforces a strict validation schema
-        """
-        data = {'key': 'bad_key'}
-        import marshmallow
-        with self.assertRaises(marshmallow.ValidationError):
-            self.collection.update(data)
 

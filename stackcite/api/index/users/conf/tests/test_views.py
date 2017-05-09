@@ -37,6 +37,15 @@ class ConfirmationViewsCreateTestCase(ConfirmationViewsTestCase):
             msg = 'ConfirmationToken does not exist: {}'.format(err)
             self.fail(msg=msg)
 
+    def test_strict_schema(self):
+        """ConfirmationViews.create() enforces a strict validation schema
+        """
+        view = self.get_view()
+        view.request.json_body = {'email': 'bad_email'}
+        from stackcite.api import exceptions as exc
+        with self.assertRaises(exc.APIValidationError):
+            view.create()
+
 
 class ConfirmationViewsUpdateTestCase(ConfirmationViewsTestCase):
 
@@ -65,3 +74,12 @@ class ConfirmationViewsUpdateTestCase(ConfirmationViewsTestCase):
         view.update()
         self.user.reload()
         self.assertIsNotNone(self.user.confirmed)
+
+    def test_strict_schema(self):
+        """ConfirmationViews.update() enforces a strict validation schema
+        """
+        view = self.get_view()
+        view.request.json_body = {'email': 'bad_email'}
+        from stackcite.api import exceptions as exc
+        with self.assertRaises(exc.APIValidationError):
+            view.update()

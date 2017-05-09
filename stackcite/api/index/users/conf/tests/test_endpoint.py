@@ -32,4 +32,4 @@ class ConfirmationAPIEndpointTests(testing.endpoint.APIEndpointTestCase):
             '/v0/users/conf/',
             params=json_data,
             expect_errors=False)
-        self.assertEqual(204, response.status_code)
+        self.assertEqual(200, response.status_code)

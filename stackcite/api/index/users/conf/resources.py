@@ -12,7 +12,7 @@ _LOG = logging.getLogger(__name__)
 
 
 class ConfirmationResource(
-        resources.APIIndexResource, resources.ValidatedResource):
+        resources.APIIndexResource, resources.SerializableResource):
 
     _VIEW_CLASS = views.ConfirmationViews
 
@@ -21,8 +21,8 @@ class ConfirmationResource(
     ]
 
     _SCHEMA = {
-        'create': schema.CreateConfirmationToken,
-        'update': schema.UpdateConfirmationToken
+        'CREATE': schema.CreateConfirmationToken,
+        'UPDATE': schema.UpdateConfirmationToken
     }
 
     def create(self, data):
@@ -30,7 +30,6 @@ class ConfirmationResource(
         Issues a new account confirmation token. Replaces an existing token if
         one already exists in the database.
         """
-        data, errors = self.validate('create', data)
         email = data['email']
         user = db.User.objects.get(email=email)
         token = db.ConfirmToken.new(user)
@@ -46,8 +45,8 @@ class ConfirmationResource(
         """
         Confirms a user's registration.
         """
-        data, errors = self.validate('update', data)
         key = data['key']
         token = db.ConfirmToken.objects.get(_key=key)
-        token.confirm_user()
+        user = token.confirm_user()
+        _LOG.info('Confirmation key: {} {}'.format(user.email, token.key))
         return token
