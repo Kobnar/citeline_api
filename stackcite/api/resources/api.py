@@ -44,7 +44,7 @@ class SerializableResource(object):
     def _get_schema(self, method=None):
         return self._SCHEMA.get(method) or self._DEFAULT_SCHEMA
 
-    def load(self, data, method=None, many=False, strict=True, json=False):
+    def load(self, data, only=(), method=None, many=False, strict=True, json=False):
         """
         Loads (and validates) serialized data into a Python-compatible data
         structure.
@@ -54,8 +54,9 @@ class SerializableResource(object):
         schema and validate the provided data. Otherwise, it will return the
         original data without performing any data validation.
 
+        :param data: A nested dictionary of request
+        :param only: A list of fields to include (e.g. `('birth', 'name.first')`)
         :param method: An HTTP request method name (e.g. `GET`)
-        :param data: A nested dictionary of request data
         :param many: Whether to deserialize data as a collection
         :param strict: Whether to raise an exception for validation errors
         :param json: Whether the input data is a JSON encoded string
@@ -63,37 +64,38 @@ class SerializableResource(object):
         """
         scheme = self._get_schema(method)
         if scheme:
-            scheme = scheme(many=many, strict=strict)
+            scheme = scheme(only=only, many=many, strict=strict)
             if json:
                 return scheme.loads(data)
             return scheme.load(data)
         return data, {}
 
-    def dump(self, data, method=None, many=False, json=False):
+    def dump(self, data, only=(), method=None, many=False, json=False):
         """
         Dumps (i.e. serializes) Python objects into a serialized data structure.
 
         (See docstring for `load()` above.)
 
-        :param method: An HTTP request method name (e.g. `GET`)
         :param data: A nested dictionary of request data
+        :param only: A list of fields to include (e.g. `('birth', 'name.first')`)
+        :param method: An HTTP request method name (e.g. `GET`)
         :param many: Whether to deserialize data as a collection
         :param json: Whether the output data should be a JSON encoded string
         :return: A tuple in the form of (``data``, ``errors``)
         """
         scheme = self._get_schema(method)
         if scheme:
-            scheme = scheme(many=many)
+            scheme = scheme(only=only, many=many)
             if json:
                 return scheme.dumps(data)
             return scheme.dump(data)
         return data, {}
 
-    def loads(self, data, method, many=False, strict=True):
-        return self.load(data, method, many, strict, json=True)
+    def loads(self, data, only=(), method=None, many=False, strict=True):
+        return self.load(data, only, method, many, strict, json=True)
 
-    def dumps(self, data, method, many=False):
-        return self.dump(data, method, many, json=True)
+    def dumps(self, data, only=(), method=None, many=False):
+        return self.dump(data, only, method, many, json=True)
 
 
 class APIIndexResource(index.IndexResource, EndpointResource):

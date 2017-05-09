@@ -118,10 +118,9 @@ class APICollectionViews(base.BaseView):
         """
         data = self.request.json_body
         self.request.response.status = 201
-        data = self.context.load(data, 'POST').data
+        data = self.context.load(data, method='POST').data
         result = self.context.create(data)
         result = self.context.dump(result).data
-        # TODO: Filter fields based on params['fields']
         return result
 
     @managed_view
@@ -132,16 +131,16 @@ class APICollectionViews(base.BaseView):
         :return: A list of serialized documents matching query parameters (if any)
         """
         query = self.request.params
-        query = self.context.load(query, 'GET').data
+        query = self.context.load(query, method='GET').data
         query, params = self.context.get_params(query)
+        fields = params['fields']
         results = self.context.retrieve(query)
         return {
             'count': results.count(),
             'limit': params['limit'],
             'skip': params['skip'],
-            'items': [self.context.dump(doc).data for doc in results]
+            'items': [self.context.dump(doc, fields).data for doc in results]
         }
-        # TODO: Filter fields based on params['fields']
 
 
 @view_defaults(renderer='json')
@@ -164,11 +163,11 @@ class APIDocumentViews(base.BaseView):
         :return: A serialized version of the document
         """
         query = self.request.params
-        query = self.context.load(query, 'GET').data
+        query = self.context.load(query, method='GET').data
         query, params = self.context.get_params(query)
+        fields = params['fields']
         result = self.context.retrieve(query)
-        result = self.context.dump(result).data
-        # TODO: Filter fields based on params['fields']
+        result = self.context.dump(result, fields).data
         return result
 
     @managed_view
@@ -183,10 +182,9 @@ class APIDocumentViews(base.BaseView):
         :return: A serialized version of the updated document
         """
         data = self.request.json_body
-        data = self.context.load(data, 'PUT').data
+        data = self.context.load(data, method='PUT').data
         result = self.context.update(data)
         result = self.context.dump(result).data
-        # TODO: Filter fields based on params['fields']
         return result
 
     @managed_view

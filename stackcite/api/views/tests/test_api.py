@@ -233,6 +233,18 @@ class APICollectionViewsRetrieveTestCase(APICollectionViewsIntegrationTestCase):
             expected['id'] = result['id']
             self.assertEqual(expected, result)
 
+    def test_retrieve_filters_fields(self):
+        """APICollectionViews.retrieve() filters explicitly named fields
+        """
+        testing.mock.utils.create_mock_data(save=True)
+        view = self.get_view()
+        view.request.params = {'fields': 'id,number'}
+        query_results = view.retrieve()['items']
+        expected = ['id', 'number']
+        for document_data in query_results:
+            result = [x for x in document_data.keys()]
+            self.assertCountEqual(expected, result)
+
     def test_retrieve_returns_200_OK(self):
         """APICollectionViews.retrieve() returns 200 OK if documents exist
         """
@@ -301,13 +313,13 @@ class APIDocumentViewsRetrieveTestCase(APIDocumentViewsIntegrationTestCase):
         """APIDocumentViews.retrieve() filters explicitly named fields
         """
         documents = testing.mock.utils.create_mock_data(save=True)
+        expected = ['id', 'number']
         for document in documents:
             view = self.get_view(document.id)
             view.request.params = {'fields': 'id,number'}
-            result = view.retrieve()
-            self.assertEqual(str(document.id), result['id'])
-            self.assertNotIn('name', result.keys())
-            self.assertEqual(document.number, result['number'])
+            query_result = view.retrieve()
+            result = [x for x in query_result.keys()]
+            self.assertCountEqual(expected, result)
 
     def test_existing_person_returns_200_OK(self):
         """APIDocumentViews.retrieve() returns 200 OK if found
