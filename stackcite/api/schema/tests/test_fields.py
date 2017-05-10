@@ -2,6 +2,21 @@ import unittest
 
 from stackcite.api import testing
 
+from marshmallow import Schema
+
+
+class _MockObj(object):
+    def __init__(self, object_id=None, password=None):
+        from bson import ObjectId
+        self.id = object_id or ObjectId()
+        self.password = password or 'T3stPa$$word'
+
+
+class _MockSchema(Schema):
+    from .. import fields
+    id = fields.ObjectIdField()
+    password = fields.PasswordField()
+
 
 class ObjectIdFieldTests(unittest.TestCase):
 
@@ -26,6 +41,16 @@ class ObjectIdFieldTests(unittest.TestCase):
         from marshmallow import ValidationError
         with self.assertRaises(ValidationError):
             self.field.deserialize(bad_id)
+
+    def test_dump_returns_string(self):
+        """ObjectIdField "dumps" to a string
+        """
+        obj = _MockObj()
+        expected = str(obj.id)
+        schema = _MockSchema()
+        data, errors = schema.dump(obj)
+        result = data['id']
+        self.assertEqual(expected, result)
 
 
 class PasswordFieldTests(unittest.TestCase):
@@ -53,6 +78,16 @@ class PasswordFieldTests(unittest.TestCase):
             msg = 'Invalid password passed validation: {}'.format(password)
             with self.assertRaises(ValidationError, msg=msg):
                 self.field.deserialize(password)
+
+    def test_dump_returns_string(self):
+        """PasswordField "dumps" to a string
+        """
+        expected = 'S0mePa$$word'
+        obj = _MockObj(password=expected)
+        schema = _MockSchema()
+        data, errors = schema.dump(obj)
+        result = data['password']
+        self.assertEqual(expected, result)
 
 
 class GroupFieldTests(unittest.TestCase):
