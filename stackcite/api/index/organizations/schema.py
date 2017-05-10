@@ -1,6 +1,20 @@
 from marshmallow import Schema, fields
 
-from stackcite.api.schema import forms as api_forms
+from stackcite.api.schema import (
+    fields as api_fields,
+    forms as api_forms
+)
+
+
+class Organization(Schema):
+    id = api_fields.ObjectIdField()
+    name = fields.String()
+    established = fields.Integer(allow_none=True)
+    description = fields.String()
+
+
+class Publisher(Organization):
+    region = fields.String(validate=lambda r: len(r) == 2)
 
 
 class UpdateOrganization(Schema):

@@ -8,6 +8,27 @@ from stackcite.api.schema import (
 )
 
 
+class Source(Schema):
+    id = api_fields.ObjectIdField()
+    source_type = fields.String(load_from='type')
+    title = fields.String()
+    description = fields.String(allow_none=True)
+
+
+class TextSource(Source):
+    authors = fields.List(api_fields.ObjectIdField())
+    editors = fields.List(api_fields.ObjectIdField())
+
+
+class BookSource(TextSource):
+    edition = fields.String(allow_none=True)
+    publisher = api_fields.ObjectIdField(allow_none=True)
+    published = fields.Integer(allow_none=True)
+    location = fields.String(allow_none=True)
+    isbn10 = api_fields.ISBN10Field(allow_none=True)
+    isbn13 = api_fields.ISBN13Field(allow_none=True)
+
+
 class _UpdateSource(object):
     source_type = fields.String(load_from='type')
     title = fields.String()

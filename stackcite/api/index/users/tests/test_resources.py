@@ -35,7 +35,7 @@ class UserDocumentTestCase(UserResourceTestCase):
         from stackcite import data as db
         from stackcite.data import AuthenticationError
         try:
-            db.User.authenticate(user.email, data['new_password'])
+            db.User.authenticate(user.email, 'N3wPa$$word')
         except AuthenticationError as err:
             msg = 'Unexpected exception raised: {}'.format(err)
             self.fail(msg)
@@ -45,7 +45,7 @@ class UserDocumentTestCase(UserResourceTestCase):
         """
         from stackcite import data as db
         db.AuthToken.drop_collection()
-        user, params = self.doc_rec.retrieve()
+        user = self.doc_rec.retrieve()
         token = db.AuthToken.new(user, save=True)
         self.doc_rec.delete()
         import mongoengine
@@ -57,7 +57,7 @@ class UserDocumentTestCase(UserResourceTestCase):
         """
         from stackcite import data as db
         db.ConfirmToken.drop_collection()
-        user, params = self.doc_rec.retrieve()
+        user = self.doc_rec.retrieve()
         token = db.ConfirmToken.new(user, save=True)
         self.doc_rec.delete()
         import mongoengine

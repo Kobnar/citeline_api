@@ -1,5 +1,6 @@
 from . import auth
 from . import conf
+from . import schema
 
 from .resources import (
     UserCollection,

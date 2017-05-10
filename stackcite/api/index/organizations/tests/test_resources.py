@@ -24,7 +24,7 @@ class PersonCollectionRetrieveTestCase(PersonCollectionIntegrationTestCase):
         for name in names:
             db.Organization(name=name).save()
         query = {'q': 'ook'}
-        items, params = self.collection.retrieve(query)
+        items = self.collection.retrieve(query)
         expected = {'Penguin Books', 'Maxwell Books'}
         results = {o.name for o in items}
         self.assertEqual(expected, results)

@@ -32,14 +32,6 @@ class PersonCollectionCreateTestCase(PersonCollectionIntegrationTestCase):
         result = self.collection.create(data)
         self.assertIsNotNone(result.id)
 
-    def test_create_invalid_person_raises_exception(self):
-        """PersonCollection.create() raises exception for invalid data
-        """
-        from marshmallow import ValidationError
-        data = {'name': {'first': 'John', 'full': 'John Nobody Doe'}}
-        with self.assertRaises(ValidationError):
-            self.collection.create(data)
-
 
 class PersonCollectionRetrieveTestCase(PersonCollectionIntegrationTestCase):
 
@@ -59,7 +51,7 @@ class PersonCollectionRetrieveTestCase(PersonCollectionIntegrationTestCase):
         """PersonCollection.retrieve() returns ObjectIds for everybody in the database
         """
         people = [make_person(p, save=True) for p in testing.data.people()]
-        results, params = self.collection.retrieve()
+        results = self.collection.retrieve()
         results = [str(r.id) for r in results]
         for pid in people:
             expected = str(pid.id)
@@ -75,7 +67,7 @@ class PersonCollectionRetrieveTestCase(PersonCollectionIntegrationTestCase):
             person.name.title = name
             person.save()
         query = {'q': 'arthur'}
-        items, params = self.collection.retrieve(query)
+        items = self.collection.retrieve(query)
         expected = {'Arthur Brooks', 'James McArthur'}
         results = {p.name.title for p in items}
         self.assertEqual(expected, results)
@@ -94,7 +86,7 @@ class PersonCollectionRetrieveTestCase(PersonCollectionIntegrationTestCase):
             person.name.full = full_name
             person.save()
         query = {'q': 'john'}
-        items, params = self.collection.retrieve(query)
+        items = self.collection.retrieve(query)
         expected = {'J.N. Doe', 'John Scott'}
         results = {p.name.title for p in items}
         self.assertEqual(expected, results)
@@ -129,7 +121,7 @@ class PersonDocumentRetrieveTestCase(PersonDocumentIntegrationTestCase):
         """PersonDocument.retrieve() returns data with the correct ObjectId
         """
         expected = str(self.document.id)
-        result, params = self.document.retrieve()
+        result = self.document.retrieve()
         result = str(result.id)
         self.assertEqual(expected, result)
 
@@ -144,11 +136,3 @@ class PersonDocumentUpdateTestCase(PersonDocumentIntegrationTestCase):
         result = self.document.update(data)
         result = result.name.title
         self.assertEqual(expected, result)
-
-    def test_update_with_invalid_data_raises_exception(self):
-        """PersonDocument.update() raises ValidationError with invalid data
-        """
-        from marshmallow import ValidationError
-        data = {'name': {'first': 'John', 'full': 'John Nobody Doe'}}
-        with self.assertRaises(ValidationError):
-            self.document.update(data)

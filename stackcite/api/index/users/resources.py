@@ -21,22 +21,27 @@ class UserDocument(resources.APIDocumentResource):
             sec.DENY_ALL
         ]
 
+    _DOCUMENT_SCHEMA = schema.User
     _SCHEMA = {
         'PUT': schema.UpdateUser
     }
 
-    def _update(self, data):
+    def update(self, data):
+        # TODO: Perform a deep copy instead of mutating existing data
         if data.get('new_password'):
-            user, params = self.retrieve()
+            user = self.retrieve()
             password = data.pop('password')
             if user.check_password(password):
                 data['password'] = data.pop('new_password')
+        print(data)
+        return super().update(data)
 
-    def _delete(self):
+    def delete(self):
         # Delete associated CachedReferenceFields
         with suppress(mongoengine.DoesNotExist):
             db.AuthToken.objects(_user__id=self.id).delete()
             db.ConfirmToken.objects(_user__id=self.id).delete()
+        return super().delete()
 
 
 class UserCollection(resources.APICollectionResource):
@@ -50,6 +55,7 @@ class UserCollection(resources.APICollectionResource):
     _COLLECTION = db.User
     _DOCUMENT_RESOURCE = UserDocument
 
+    _DOCUMENT_SCHEMA = schema.User
     _SCHEMA = {
         'POST': schema.CreateUser
     }

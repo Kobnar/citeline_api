@@ -1,6 +1,25 @@
 from marshmallow import Schema, fields, validates_schema, ValidationError
 
-from stackcite.api.schema import forms as api_forms
+from stackcite.api.schema import (
+    fields as api_fields,
+    forms as api_forms
+)
+
+
+class Name(Schema):
+    title = fields.String()
+    first = fields.String()
+    middle = fields.String()
+    last = fields.String()
+    full = fields.String()
+
+
+class Person(Schema):
+    id = api_fields.ObjectIdField()
+    name = fields.Nested(Name)
+    description = fields.String()
+    birth = fields.Integer(allow_none=True)
+    death = fields.Integer(allow_none=True)
 
 
 class UpdateName(Schema):

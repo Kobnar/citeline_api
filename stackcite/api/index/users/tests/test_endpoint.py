@@ -320,7 +320,6 @@ class UserDocumentAPIEndpointTests(UsersAPIEndpointTests):
 
         self.assertEqual(403, response.status_code)
 
-
     def test_authenticated_delete_returns_200(self):
         """Authenticated DELETE to 'users/{id}/' returns 204 NO CONTENT
         """

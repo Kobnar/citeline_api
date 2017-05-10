@@ -18,14 +18,14 @@ class ConfirmationViews(views.BaseView):
     @views.managed_view
     def create(self):
         data = self.request.json_body
-        data, errors = self.context.load('CREATE', data)
+        data, errors = self.context.load(data, method='CREATE')
         self.context.create(data)
         return exceptions.APINoContent()
 
     @views.managed_view
     def update(self):
         data = self.request.json_body
-        data, errors = self.context.load('UPDATE', data)
+        data, errors = self.context.load(data, method='UPDATE')
         conf_token = self.context.update(data)
         with context_managers.no_dereference(db.ConfirmToken):
             return {

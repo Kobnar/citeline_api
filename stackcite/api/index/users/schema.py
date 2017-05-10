@@ -6,13 +6,23 @@ from marshmallow import (
     ValidationError
 )
 
-from stackcite.data import User
+from stackcite import data as db
 
-from stackcite.api.schema import fields as api_fields
+from stackcite.api.schema import (
+    fields as api_fields
+)
+
+
+class User(Schema):
+    id = api_fields.ObjectIdField()
+    email = fields.Email()
+    password = api_fields.PasswordField()
+    groups = fields.List(api_fields.GroupField())
+    new_password = api_fields.PasswordField()
 
 
 def _validate_default_groups(value):
-    for default_group in User.DEFAULT_GROUPS:
+    for default_group in db.User.DEFAULT_GROUPS:
         if default_group not in value:
             msg = 'Default group missing: {} not in {}'.format(
                 default_group, value)

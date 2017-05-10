@@ -7,6 +7,7 @@ from . import schema
 
 class PublisherDocument(resources.APIDocumentResource):
 
+    _DOCUMENT_SCHEMA = schema.Publisher
     _SCHEMA = {
         'PUT': schema.UpdatePublisher
     }
@@ -17,6 +18,7 @@ class PublisherCollection(resources.APICollectionResource):
     _COLLECTION = db.Publisher
     _DOCUMENT_RESOURCE = PublisherDocument
 
+    _DOCUMENT_SCHEMA = schema.Publisher
     _SCHEMA = {
         'POST': schema.CreatePublisher
     }
@@ -24,6 +26,7 @@ class PublisherCollection(resources.APICollectionResource):
 
 class OrganizationDocument(resources.APIDocumentResource):
 
+    _DOCUMENT_SCHEMA = schema.Organization
     _SCHEMA = {
         'PUT': schema.UpdateOrganization
     }
@@ -34,6 +37,7 @@ class OrganizationCollection(resources.APICollectionResource):
     _COLLECTION = db.Organization
     _DOCUMENT_RESOURCE = OrganizationDocument
 
+    _DOCUMENT_SCHEMA = schema.Organization
     _SCHEMA = {
         'POST': schema.CreateOrganization,
         'GET': schema.RetrieveOrganizations

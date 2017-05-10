@@ -20,6 +20,7 @@ class ConfirmationResource(
         (sec.Allow, sec.Everyone, ('create', 'update'))
     ]
 
+    _DOCUMENT_SCHEMA = schema.ConfirmToken
     _SCHEMA = {
         'CREATE': schema.CreateConfirmationToken,
         'UPDATE': schema.UpdateConfirmationToken
