@@ -30,7 +30,6 @@ class SourceCollectionIntegrationTestCase(unittest.TestCase):
         from stackcite.data import BookSource
         self.assertIsInstance(result, BookSource)
 
-
     def test_retrieve_returns_results_matching_q_field(self):
         """SourceCollection.retrieve() returns results matching 'q' parameter
         """
@@ -42,6 +41,6 @@ class SourceCollectionIntegrationTestCase(unittest.TestCase):
             source.save()
         query = {'q': 'other'}
         expected = {'Some Other Source', 'Others: Another Source'}
-        items, params = self.collection.retrieve(query)
+        items = self.collection.retrieve(query)
         results = {s.title for s in items}
         self.assertEqual(expected, results)
