@@ -27,13 +27,12 @@ class UserDocument(resources.APIDocumentResource):
     }
 
     def update(self, data):
-        # TODO: Perform a deep copy instead of mutating existing data
+        data = data.copy()
         if data.get('new_password'):
             user = self.retrieve()
             password = data.pop('password')
             if user.check_password(password):
                 data['password'] = data.pop('new_password')
-        print(data)
         return super().update(data)
 
     def delete(self):

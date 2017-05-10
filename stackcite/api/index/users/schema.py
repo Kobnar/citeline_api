@@ -18,7 +18,6 @@ class User(Schema):
     email = fields.Email()
     password = api_fields.PasswordField()
     groups = fields.List(api_fields.GroupField())
-    new_password = api_fields.PasswordField()
 
 
 def _validate_default_groups(value):
