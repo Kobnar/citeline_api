@@ -1,3 +1,4 @@
 from . import fields
-from . import api
 from . import validators
+
+from .schema import (APISchema, RetrieveCollection, RetrieveDocument)

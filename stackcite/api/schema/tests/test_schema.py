@@ -10,18 +10,18 @@ class APISchemaStrictTests(unittest.TestCase):
     def test_method_parameter_sets_method_property(self):
         """APISchema.__init__() method parameter sets APISchema.method property
         """
-        from .. import api
+        from .. import schema
         expected = 'POST'
-        schema = api.APISchema(method=expected)
+        schema = schema.APISchema(method=expected)
         result = schema.method
         self.assertEqual(expected, result)
 
     def test_invalid_method_raises_exception(self):
         """APISchema.__init__() raises exception for an invalid method
         """
-        from .. import api
+        from .. import schema
         with self.assertRaises(AssertionError):
-            api.APISchema(method='invalid_method')
+            schema.APISchema(method='invalid_method')
 
 
 class CollectionStrictTests(unittest.TestCase):
@@ -29,8 +29,8 @@ class CollectionStrictTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
-        from .. import api
-        self.schema = api.RetrieveCollection(strict=True)
+        from .. import schema
+        self.schema = schema.RetrieveCollection(strict=True)
 
     def tearDown(self):
         pass

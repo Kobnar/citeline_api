@@ -2,7 +2,7 @@ from marshmallow import Schema, fields
 
 from stackcite.api.schema import (
     fields as api_fields,
-    api as api_forms
+    schema as api_forms
 )
 
 
