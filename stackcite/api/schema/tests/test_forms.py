@@ -3,6 +3,27 @@ import unittest
 from stackcite.api import testing
 
 
+class APISchemaStrictTests(unittest.TestCase):
+
+    layer = testing.layers.UnitTestLayer
+
+    def test_method_parameter_sets_method_property(self):
+        """APISchema.__init__() method parameter sets APISchema.method property
+        """
+        from .. import forms
+        expected = 'POST'
+        schema = forms.APISchema(method=expected)
+        result = schema.method
+        self.assertEqual(expected, result)
+
+    def test_invalid_method_raises_exception(self):
+        """APISchema.__init__() raises exception for an invalid method
+        """
+        from .. import forms
+        with self.assertRaises(AssertionError):
+            forms.APISchema(method='invalid_method')
+
+
 class CollectionStrictTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer

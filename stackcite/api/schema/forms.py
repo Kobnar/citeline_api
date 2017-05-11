@@ -3,6 +3,27 @@ from marshmallow import Schema, fields as mm_fields, validates, ValidationError
 from . import fields as api_fields
 
 
+API_METHODS = ('POST', 'GET', 'PUT', 'DELETE')
+
+
+class APISchema(Schema):
+    """
+    A default schema class that stores a "method" context, used to enforce
+    method-specific requirements on an API schema.
+    """
+
+    def __init__(self, method=None, *args, **kwargs):
+
+        assert not method or method in API_METHODS
+
+        super().__init__(*args, **kwargs)
+        self.context['method'] = method
+
+    @property
+    def method(self):
+        return self.context['method']
+
+
 class RetrieveCollection(Schema):
     """
     A default validation schema class to RETRIEVE documents from a MongoDB
