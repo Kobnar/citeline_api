@@ -2,7 +2,7 @@ from marshmallow import Schema, fields, validates_schema, ValidationError
 
 from stackcite.api.schema import (
     fields as api_fields,
-    forms as api_forms
+    api as api_forms
 )
 
 

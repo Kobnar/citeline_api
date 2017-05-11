@@ -20,11 +20,11 @@ class MockCreateDocumentSchema(MockUpdateDocumentSchema):
     name = fields.String(required=True)
 
 
-class MockRetrieveCollectionSchema(schema.forms.RetrieveCollection):
+class MockRetrieveCollectionSchema(schema.api.RetrieveCollection):
     name = fields.String()
     number = fields.Integer()
     fact = fields.Boolean()
 
 
-class MockRetrieveDocumentSchema(schema.forms.RetrieveDocument):
+class MockRetrieveDocumentSchema(schema.api.RetrieveDocument):
     pass
