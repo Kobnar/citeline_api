@@ -38,14 +38,7 @@ class SerializableResource(object):
     :class:`Resource`.
     """
 
-    _DOCUMENT_SCHEMA = NotImplemented
-    _DEFAULT_SCHEMA = NotImplemented
-    _SCHEMA = {}
-
-    def _get_schema(self, method=None):
-        if method:
-            return self._SCHEMA.get(method) or self._DEFAULT_SCHEMA.get(method)
-        return self._DOCUMENT_SCHEMA
+    _SCHEMA = NotImplemented
 
     def load(self, data, only=(), method=None, many=False, strict=True,
              json=False):
@@ -66,9 +59,9 @@ class SerializableResource(object):
         :param json: Whether the input data is a JSON encoded string
         :return: A tuple in the form of (``data``, ``errors``)
         """
-        scheme = self._get_schema(method)
-        if scheme:
-            scheme = scheme(only=only, many=many, strict=strict)
+        if self._SCHEMA:
+            scheme = self._SCHEMA(
+                method=method, only=only, many=many, strict=strict)
             if json:
                 return scheme.loads(data)
             return scheme.load(data)
@@ -87,9 +80,8 @@ class SerializableResource(object):
         :param json: Whether the output data should be a JSON encoded string
         :return: A tuple in the form of (``data``, ``errors``)
         """
-        scheme = self._get_schema(method)
-        if scheme:
-            scheme = scheme(only=only, many=many)
+        if self._SCHEMA:
+            scheme = self._SCHEMA(method=method, only=only, many=many)
             if json:
                 return scheme.dumps(data)
             return scheme.dump(data)
@@ -143,7 +135,7 @@ class APIDocumentResource(
     ]
 
     _DEFAULT_SCHEMA = {
-        'GET': schema.forms.RetrieveDocument
+        'GET': schema.schema.RetrieveDocument
     }
 
     @staticmethod
@@ -178,7 +170,7 @@ class APICollectionResource(
     ]
 
     _DEFAULT_SCHEMA = {
-        'GET': schema.forms.RetrieveCollection
+        'GET': schema.schema.RetrieveCollection
     }
 
     # TODO: Find a better pattern to inject custom raw queries

@@ -28,9 +28,6 @@ class MockEndpointResource(_resources.EndpointResource):
                 'context': context})
 
     _VIEW_CLASS = MockViewClass
-    _OFFSPRING = {
-        'route_0': MockOffspring,
-        'route_1': MockOffspring}
 
 
 class MockValidatedResource(_resources.SerializableResource):
@@ -39,22 +36,4 @@ class MockValidatedResource(_resources.SerializableResource):
     validation.
     """
 
-    _DOCUMENT_SCHEMA = _testing.mock.MockDocumentSchema
-    _SCHEMA = {
-        'GET': _testing.mock.MockDocumentSchema
-    }
-
-
-class MockValidatedChildResource(MockValidatedResource):
-    """
-    A "mock" :class:~`SerializableResource` used specifically to test overridden
-    and child schema validation.
-    """
-
-    class MockSchema(_testing.mock.MockDocumentSchema):
-        name = _fields.String(required=True)
-
-    _DOCUMENT_SCHEMA = _testing.mock.MockDocumentSchema
-    _SCHEMA = {
-        'GET': MockSchema
-    }
+    _SCHEMA = _testing.mock.MockDocumentSchema

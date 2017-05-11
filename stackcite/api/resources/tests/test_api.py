@@ -25,19 +25,13 @@ class SerializableResourceTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
-    def test_missing_schema_does_not_load(self):
-        """ValidatedResource.load() does nothing if no schema is set
+    def test_missing_schema_raises_exception(self):
+        """ValidatedResource.load() raises exception if no schema is set
         """
         from ..api import SerializableResource
-        class MockValidatedResource(SerializableResource):
-            _DEFAULT_SCHEMA = {}
-        resource = MockValidatedResource()
-        from marshmallow import ValidationError
-        try:
+        resource = SerializableResource()
+        with self.assertRaises(TypeError):
             resource.load({}, method='GET')
-        except ValidationError as err:
-            msg = 'Validation failed somehow: {}'.format(err)
-            self.fail(msg=msg)
 
     def test_validation_default_is_strict(self):
         """SerializableResource.load() default is set to 'strict=True'
@@ -58,15 +52,6 @@ class SerializableResourceTests(unittest.TestCase):
         from marshmallow import ValidationError
         with self.assertRaises(ValidationError):
             resource.load(data)
-
-    def test_load_uses_overidden_schema(self):
-        """SerializableResource.load() uses an overridden resource if one is defined
-        """
-        from . import MockValidatedChildResource
-        resource = MockValidatedChildResource()
-        from marshmallow import ValidationError
-        with self.assertRaises(ValidationError):
-            resource.load({}, method='GET')
 
     def test_load_accepts_list_with_many_set(self):
         """SerializableResource.load() validates a list of objects if many=True
