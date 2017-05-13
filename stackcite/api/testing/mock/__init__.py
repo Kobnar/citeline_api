@@ -7,9 +7,5 @@ from .resources import (
     MockAPIDocumentResource,
     MockAPICollectionResource
 )
-from .schema import (
-    MockDocumentSchema,
-    MockUpdateDocumentSchema,
-    MockCreateDocumentSchema
-)
+from .schema import MockDocumentSchema
 from .utils import create_mock_data

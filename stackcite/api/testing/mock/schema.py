@@ -1,30 +1,22 @@
-from marshmallow import fields
+from marshmallow import fields, validates_schema, ValidationError
 
 from stackcite.api import schema
 
 
-class MockDocumentSchema(schema.APISchema):
+class MockDocumentSchema(schema.APICollectionSchema):
     id = schema.fields.ObjectIdField()
     name = fields.String()
     number = fields.Integer()
     fact = fields.Boolean()
 
+    @validates_schema
+    def route_methods(self, data):
+        if self.method:
+            if self.method is 'POST':
+                self._validate_required_name_field(data)
 
-class MockUpdateDocumentSchema(schema.APISchema):
-    name = fields.String()
-    number = fields.Integer()
-    fact = fields.Boolean()
-
-
-class MockCreateDocumentSchema(MockUpdateDocumentSchema):
-    name = fields.String(required=True)
-
-
-class MockRetrieveCollectionSchema(schema.RetrieveCollection):
-    name = fields.String()
-    number = fields.Integer()
-    fact = fields.Boolean()
-
-
-class MockRetrieveDocumentSchema(schema.RetrieveDocument):
-    pass
+    @staticmethod
+    def _validate_required_name_field(data):
+        if 'name' not in data:
+            msg = 'Missing data for required field.'
+            raise ValidationError(msg, ['name'])

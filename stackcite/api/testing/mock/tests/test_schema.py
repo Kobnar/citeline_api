@@ -1,40 +1,42 @@
 import unittest
 
 
-class MockUpdateDocumentSchemaTestCase(unittest.TestCase):
+class MockDocumentSchemaTests(unittest.TestCase):
+
+    def make_schema(self, method=None):
+        from .. import MockDocumentSchema
+        return MockDocumentSchema(method=method)
+
+
+class CreateMockDocumentSchema(MockDocumentSchemaTests):
 
     def setUp(self):
-        from .. import MockUpdateDocumentSchema
-        self.test_schema = MockUpdateDocumentSchema()
+        self.schema = self.make_schema(method='POST')
+
+    def test_name_required(self):
+        """MockDocumentSchema validation requires 'name' field for POST
+        """
+        data = {'number': 42}
+        result, errors = self.schema.load(data)
+        self.assertIn('name', errors.keys())
+
+
+class RetrieveMockDocumentSchema(MockDocumentSchemaTests):
+
+    def setUp(self):
+        self.schema = self.make_schema(method='GET')
+
+
+class UpdateMockDocumentSchema(MockDocumentSchemaTests):
+
+    def setUp(self):
+        self.schema = self.make_schema(method='PUT')
 
     def test_unknown_field_dropped(self):
-        """MockUpdateDocumentSchema validation drops an unknown field
+        """MockDocumentSchema validation drops an unknown field for PUT
         """
         data = {
             'name': 'Document',
             'unknown': 'field'}
-        result, errors = self.test_schema.load(data)
+        result, errors = self.schema.load(data)
         self.assertNotIn('unknown', result.keys())
-
-
-class MockCreateDocumentSchemaTestCase(unittest.TestCase):
-
-    def setUp(self):
-        from .. import MockCreateDocumentSchema
-        self.test_schema = MockCreateDocumentSchema()
-
-    def test_fact_accepted(self):
-        """MockCreateDocumentSchema inherits 'fact' field from MockUpdateDocumentSchema
-        """
-        data = {
-            'name': 'Document',
-            'fact': True}
-        result, errors = self.test_schema.load(data)
-        self.assertIn('fact', result.keys())
-
-    def test_name_required(self):
-        """MockCreateDocumentSchema validation requires 'name' field
-        """
-        data = {'number': 42}
-        result, errors = self.test_schema.load(data)
-        self.assertIn('name', errors.keys())

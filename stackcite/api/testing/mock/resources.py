@@ -31,11 +31,6 @@ class MockAPIDocumentResource(resources.APIDocumentResource):
     :class:`~MockUpdateDocumentSchema` defined as a validation schema for
     'PUT' operations.
     """
-    _DOCUMENT_SCHEMA = schema.MockDocumentSchema
-    _SCHEMA = {
-        'PUT': schema.MockUpdateDocumentSchema,
-        'GET': schema.MockRetrieveDocumentSchema
-    }
 
 
 class MockAPICollectionResource(resources.APICollectionResource):
@@ -48,10 +43,7 @@ class MockAPICollectionResource(resources.APICollectionResource):
     """
     _COLLECTION = models.MockDocument
     _DOCUMENT_RESOURCE = MockAPIDocumentResource
-    _DOCUMENT_SCHEMA = schema.MockDocumentSchema
-    _SCHEMA = {
-        'POST': schema.MockCreateDocumentSchema,
-        'GET': schema.MockRetrieveCollectionSchema}
+    _SCHEMA = schema.MockDocumentSchema
 
 
 class MockAPIIndexResource(resources.APIIndexResource):
