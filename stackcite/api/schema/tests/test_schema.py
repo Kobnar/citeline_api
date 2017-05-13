@@ -3,7 +3,7 @@ import unittest
 from stackcite.api import testing
 
 
-class APISchemaStrictTests(unittest.TestCase):
+class APISchemaTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
@@ -42,6 +42,25 @@ class APISchemaStrictTests(unittest.TestCase):
             except ValueError as err:
                 msg = 'Unexpected exception raised: {}'.format(err)
                 self.fail(msg=msg)
+
+    def test_nexted_schema_recieves_method_context(self):
+        """APISchema passes method context to a nested schema
+        """
+        expected = 'POST'
+        from .. import schema
+        class ParentSchema(schema.APISchema):
+            from marshmallow import fields, validates_schema
+            child = fields.Nested(schema.APISchema)
+            @validates_schema
+            def validate_method(self, data):
+                if self.method is not expected:
+                    msg = 'Method context not passed to nested schema: {} != {}'
+                    raise ValueError(msg.format(expected, self.method))
+        scheme = ParentSchema(method='POST', strict=True)
+        try:
+            scheme.load({'child': {}})
+        except ValueError as err:
+            self.fail(err)
 
 
 class CollectionStrictTests(unittest.TestCase):

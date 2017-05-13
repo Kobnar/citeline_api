@@ -14,7 +14,9 @@ class APISchema(Schema):
 
     def __init__(self, method=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.method = method
+        # TODO: Depreciate this pattern (might mess with nested schemas) (?)
+        if method:
+            self.method = method
 
     @property
     def method(self):
