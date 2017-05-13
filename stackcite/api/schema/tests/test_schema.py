@@ -16,12 +16,32 @@ class APISchemaStrictTests(unittest.TestCase):
         result = schema.method
         self.assertEqual(expected, result)
 
-    def test_invalid_method_raises_exception(self):
+    def test_invalid_method_parameter_raises_exception(self):
         """APISchema.__init__() raises exception for an invalid method
         """
         from .. import schema
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ValueError):
             schema.APISchema(method='invalid_method')
+
+    def test_invalid_method_raises_exception(self):
+        """APISchema.method raises exception for an invalid method
+        """
+        from .. import schema
+        scheme = schema.APISchema()
+        with self.assertRaises(ValueError):
+            scheme.method = 'invalid_method'
+
+    def test_valid_methods_do_not_raise_exception(self):
+        """APISchema.method does not raise exceptions for valid schemas
+        """
+        from .. import schema
+        scheme = schema.APISchema()
+        for method in schema.API_METHODS:
+            try:
+                scheme.method = method
+            except ValueError as err:
+                msg = 'Unexpected exception raised: {}'.format(err)
+                self.fail(msg=msg)
 
 
 class CollectionStrictTests(unittest.TestCase):

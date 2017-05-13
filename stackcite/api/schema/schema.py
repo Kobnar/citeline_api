@@ -13,15 +13,19 @@ class APISchema(Schema):
     """
 
     def __init__(self, method=None, *args, **kwargs):
-
-        assert not method or method in API_METHODS
-
         super().__init__(*args, **kwargs)
-        self.context['method'] = method
+        self.method = method
 
     @property
     def method(self):
         return self.context['method']
+
+    @method.setter
+    def method(self, value):
+        if value and value not in API_METHODS:
+            msg = 'Invalid request method: {}'.format(value)
+            raise ValueError(msg)
+        self.context['method'] = value
 
 
 class RetrieveCollection(Schema):
