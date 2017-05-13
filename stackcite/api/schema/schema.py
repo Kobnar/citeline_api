@@ -1,4 +1,7 @@
-from marshmallow import Schema, fields as mm_fields, validates, ValidationError
+from marshmallow import (
+    Schema,
+    fields as mm_fields
+)
 
 from . import fields as api_fields
 
@@ -20,7 +23,7 @@ class APISchema(Schema):
 
     @property
     def method(self):
-        return self.context['method']
+        return self.context.get('method')
 
     @method.setter
     def method(self, value):
@@ -30,32 +33,24 @@ class APISchema(Schema):
         self.context['method'] = value
 
 
-class RetrieveCollection(Schema):
+class APICollectionSchema(APISchema):
     """
-    A default validation schema class to RETRIEVE documents from a MongoDB
-    collection
+    A default validation schema to query operations for a MongoDB collection.
+    The fields in this schema only apply to "loading" request data and should
+    only be used for retrieving a collection or individual documents.
 
     By default, schema sets both `limit=100` and `skip=0` to avoid massive
     database dumps.
     """
 
-    ids = api_fields.ListField(api_fields.ObjectIdField)
-    fields = api_fields.FieldsField()
-    limit = mm_fields.Integer(missing=100)
-    skip = mm_fields.Integer(missing=0)
-
-    @validates('limit')
-    def validate_limit(self, value):
-        if value < 1:
-            msg = '"limit" must be >= 1 ({})'.format(value)
-            raise ValidationError(msg)
-
-    @validates('skip')
-    def validate_skip(self, value):
-        if value < 0:
-            msg = '"skip" must be >= 0 ({})'.format(value)
-            raise ValidationError(msg)
-
-
-class RetrieveDocument(Schema):
-    fields = api_fields.FieldsField()
+    q = mm_fields.String(load_only=True)
+    ids = api_fields.ListField(api_fields.ObjectIdField, load_only=True)
+    fields = api_fields.FieldsField(load_only=True)
+    limit = mm_fields.Integer(
+        missing=100,
+        validate=mm_fields.validate.Range(min=1),
+        load_only=True)
+    skip = mm_fields.Integer(
+        missing=0,
+        validate=mm_fields.validate.Range(min=0),
+        load_only=True)
