@@ -26,7 +26,7 @@ class SerializableResourceTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     def test_missing_schema_raises_exception(self):
-        """ValidatedResource.load() raises exception if no schema is set
+        """SerializableResource.load() raises exception if no schema is set
         """
         from ..api import SerializableResource
         resource = SerializableResource()
@@ -36,8 +36,8 @@ class SerializableResourceTests(unittest.TestCase):
     def test_validation_default_is_strict(self):
         """SerializableResource.load() default is set to 'strict=True'
         """
-        from . import MockValidatedResource
-        resource = MockValidatedResource()
+        from . import MockSerializableResource
+        resource = MockSerializableResource()
         data = {'fact': 'dogs'}
         from marshmallow import ValidationError
         with self.assertRaises(ValidationError):
@@ -46,8 +46,8 @@ class SerializableResourceTests(unittest.TestCase):
     def test_load_uses_default_schema_if_method_not_set(self):
         """SerializableResource.load() uses a default schema if no method is set
         """
-        from . import MockValidatedResource
-        resource = MockValidatedResource()
+        from . import MockSerializableResource
+        resource = MockSerializableResource()
         data = {'fact': 'dogs'}
         from marshmallow import ValidationError
         with self.assertRaises(ValidationError):
@@ -56,8 +56,8 @@ class SerializableResourceTests(unittest.TestCase):
     def test_load_accepts_list_with_many_set(self):
         """SerializableResource.load() validates a list of objects if many=True
         """
-        from . import MockValidatedResource
-        resource = MockValidatedResource()
+        from . import MockSerializableResource
+        resource = MockSerializableResource()
         data = [{'fact': True}, {'fact': False}]
         from marshmallow import ValidationError
         try:
@@ -69,8 +69,8 @@ class SerializableResourceTests(unittest.TestCase):
     def test_loads_raises_exception_for_invalid_json(self):
         """SerializableResource.loads() raises an exception for invalid JSON data
         """
-        from . import MockValidatedResource
-        resource = MockValidatedResource()
+        from . import MockSerializableResource
+        resource = MockSerializableResource()
         from json import JSONDecodeError
         with self.assertRaises(JSONDecodeError):
             resource.loads('{invalid:"JSON!', method='GET')
@@ -78,8 +78,8 @@ class SerializableResourceTests(unittest.TestCase):
     def test_dump_serializes_object_correctly(self):
         """SerializableResource.dump() returns a dictionary with correct values
         """
-        from . import MockValidatedResource
-        resource = MockValidatedResource()
+        from . import MockSerializableResource
+        resource = MockSerializableResource()
         from stackcite.api import testing
         doc = testing.mock.MockDocument(fact=True)
         data, errors = resource.dump(doc, method='GET')
@@ -89,8 +89,8 @@ class SerializableResourceTests(unittest.TestCase):
     def test_dump_serializes_list_with_many_set(self):
         """SerializableResource.dump() returns a list with correct values
         """
-        from . import MockValidatedResource
-        resource = MockValidatedResource()
+        from . import MockSerializableResource
+        resource = MockSerializableResource()
         facts = (True, False, False, True)
         from stackcite.api import testing
         docs = [testing.mock.MockDocument(fact=f) for f in facts]
@@ -103,12 +103,31 @@ class SerializableResourceTests(unittest.TestCase):
     def test_dumps_returns_str(self):
         """SerializableResource.dumps() returns a string
         """
-        from . import MockValidatedResource
-        resource = MockValidatedResource()
+        from . import MockSerializableResource
+        resource = MockSerializableResource()
         from stackcite.api import testing
         doc = testing.mock.MockDocument(fact=True)
         result, errors = resource.dumps(doc)
         self.assertTrue(isinstance(result, str))
+
+    def test_schema_property_returns_not_implemented_if_not_set(self):
+        """SerializableResource.schema property returns not implemented if not set
+        """
+        from .. import api
+        resource = api.SerializableResource()
+        expected = NotImplemented
+        result = resource.schema
+        self.assertEqual(expected, result)
+
+    def test_schema_property_returns_schema_if_set(self):
+        """SerializableResource.schema property returns schema if set
+        """
+        from . import MockSerializableResource
+        resource = MockSerializableResource()
+        from stackcite.api import testing
+        expected = testing.mock.MockDocumentSchema
+        result = resource.schema
+        self.assertEqual(expected, result)
 
 
 class APIResourceTests(unittest.TestCase):
@@ -377,3 +396,10 @@ class APIDocumentTests(APIResourceTests):
         from mongoengine import DoesNotExist
         with self.assertRaises(DoesNotExist):
             testing.mock.MockDocument.objects.get(id=self.doc.id)
+
+    def test_schema_returns_parent_schema_if_not_set(self):
+        """APIDocument.schema returns parent schema if not set
+        """
+        expected = self.col_resource.schema
+        result = self.doc_resource.schema
+        self.assertEqual(expected, result)

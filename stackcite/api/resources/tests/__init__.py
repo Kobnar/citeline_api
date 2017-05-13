@@ -30,7 +30,7 @@ class MockEndpointResource(_resources.EndpointResource):
     _VIEW_CLASS = MockViewClass
 
 
-class MockValidatedResource(_resources.SerializableResource):
+class MockSerializableResource(_resources.SerializableResource):
     """
     A "mock" :class:~`SerializableResource` used specifically to test shema
     validation.

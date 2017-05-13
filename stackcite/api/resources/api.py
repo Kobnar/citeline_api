@@ -40,6 +40,10 @@ class SerializableResource(object):
 
     _SCHEMA = NotImplemented
 
+    @property
+    def schema(self):
+        return self._SCHEMA
+
     def load(self, data, only=(), method=None, many=False, strict=True,
              json=False):
         """
@@ -134,9 +138,12 @@ class APIDocumentResource(
         psec.DENY_ALL
     ]
 
-    _DEFAULT_SCHEMA = {
-        'GET': schema.schema.RetrieveDocument
-    }
+    @property
+    def schema(self):
+        if self._SCHEMA is NotImplemented:
+            return self.__parent__.schema
+        else:
+            return self._SCHEMA
 
     @staticmethod
     def get_params(query):
@@ -169,9 +176,8 @@ class APICollectionResource(
         psec.DENY_ALL
     ]
 
-    _DEFAULT_SCHEMA = {
-        'GET': schema.schema.RetrieveCollection
-    }
+    _DOCUMENT_RESOURCE = APIDocumentResource
+    _SCHEMA = schema.APICollectionSchema
 
     # TODO: Find a better pattern to inject custom raw queries
     def retrieve(self, query=None, fields=None, limit=100, skip=0):
