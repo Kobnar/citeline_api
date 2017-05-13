@@ -30,7 +30,7 @@ class SerializableResourceTests(unittest.TestCase):
         """
         from ..api import SerializableResource
         resource = SerializableResource()
-        with self.assertRaises(TypeError):
+        with self.assertRaises(NotImplementedError):
             resource.load({}, method='GET')
 
     def test_validation_default_is_strict(self):
@@ -110,14 +110,13 @@ class SerializableResourceTests(unittest.TestCase):
         result, errors = resource.dumps(doc)
         self.assertTrue(isinstance(result, str))
 
-    def test_schema_property_returns_not_implemented_if_not_set(self):
-        """SerializableResource.schema property returns not implemented if not set
+    def test_schema_property_raises_exception_if_not_set(self):
+        """SerializableResource.schema property raises exception if not set
         """
         from .. import api
         resource = api.SerializableResource()
-        expected = NotImplemented
-        result = resource.schema
-        self.assertEqual(expected, result)
+        with self.assertRaises(NotImplementedError):
+            resource.schema
 
     def test_schema_property_returns_schema_if_set(self):
         """SerializableResource.schema property returns schema if set

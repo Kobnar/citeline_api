@@ -42,6 +42,8 @@ class SerializableResource(object):
 
     @property
     def schema(self):
+        if self._SCHEMA is NotImplemented:
+            raise NotImplementedError()
         return self._SCHEMA
 
     def load(self, data, only=(), method=None, many=False, strict=True,
@@ -63,8 +65,8 @@ class SerializableResource(object):
         :param json: Whether the input data is a JSON encoded string
         :return: A tuple in the form of (``data``, ``errors``)
         """
-        if self._SCHEMA:
-            scheme = self._SCHEMA(
+        if self.schema:
+            scheme = self.schema(
                 method=method, only=only, many=many, strict=strict)
             if json:
                 return scheme.loads(data)
@@ -84,8 +86,8 @@ class SerializableResource(object):
         :param json: Whether the output data should be a JSON encoded string
         :return: A tuple in the form of (``data``, ``errors``)
         """
-        if self._SCHEMA:
-            scheme = self._SCHEMA(method=method, only=only, many=many)
+        if self.schema:
+            scheme = self.schema(method=method, only=only, many=many)
             if json:
                 return scheme.dumps(data)
             return scheme.dump(data)
@@ -140,10 +142,10 @@ class APIDocumentResource(
 
     @property
     def schema(self):
-        if self._SCHEMA is NotImplemented:
+        try:
+            return super().schema
+        except NotImplementedError:
             return self.__parent__.schema
-        else:
-            return self._SCHEMA
 
     @staticmethod
     def get_params(query):
