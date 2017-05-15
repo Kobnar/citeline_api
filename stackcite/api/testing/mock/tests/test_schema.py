@@ -5,7 +5,9 @@ class MockDocumentSchemaTests(unittest.TestCase):
 
     def make_schema(self, method=None):
         from .. import MockDocumentSchema
-        return MockDocumentSchema(method=method)
+        schema = MockDocumentSchema()
+        schema.method = method
+        return schema
 
 
 class CreateMockDocumentSchema(MockDocumentSchemaTests):
