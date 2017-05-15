@@ -133,14 +133,13 @@ class APIDocumentResource(
     The API-level traversal resource.
     """
 
-    _VIEW_CLASS = views.APIDocumentViews
-
     __acl__ = [
         (psec.Allow, psec.Authenticated, ('update', 'delete')),
         (psec.Allow, psec.Everyone, 'retrieve'),
         psec.DENY_ALL
     ]
 
+    _VIEW_CLASS = views.APIDocumentViews
     _SCHEMA = schema.APIDocumentSchema
 
     @staticmethod
@@ -166,14 +165,13 @@ class APICollectionResource(
     The API-level traversal resource.
     """
 
-    _VIEW_CLASS = views.APICollectionViews
-
     __acl__ = [
         (psec.Allow, psec.Authenticated, 'create'),
         (psec.Allow, psec.Everyone, 'retrieve'),
         psec.DENY_ALL
     ]
 
+    _VIEW_CLASS = views.APICollectionViews
     _DOCUMENT_RESOURCE = APIDocumentResource
     _SCHEMA = schema.APICollectionSchema
 
