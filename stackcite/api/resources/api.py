@@ -66,8 +66,8 @@ class SerializableResource(object):
         :return: A tuple in the form of (``data``, ``errors``)
         """
         if self.schema:
-            scheme = self.schema(
-                method=method, only=only, many=many, strict=strict)
+            scheme = self.schema(only=only, many=many, strict=strict)
+            scheme.method = method
             if json:
                 return scheme.loads(data)
             return scheme.load(data)
@@ -87,7 +87,8 @@ class SerializableResource(object):
         :return: A tuple in the form of (``data``, ``errors``)
         """
         if self.schema:
-            scheme = self.schema(method=method, only=only, many=many)
+            scheme = self.schema(only=only, many=many)
+            scheme.method = method
             if json:
                 return scheme.dumps(data)
             return scheme.dump(data)

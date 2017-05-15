@@ -15,12 +15,6 @@ class APISchema(Schema):
     method-specific requirements on an API schema.
     """
 
-    def __init__(self, method=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # TODO: Depreciate this pattern (might mess with nested schemas) (?)
-        if method:
-            self.method = method
-
     @property
     def method(self):
         return self.context.get('method')

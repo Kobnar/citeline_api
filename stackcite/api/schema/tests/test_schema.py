@@ -7,22 +7,6 @@ class APISchemaTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
-    def test_method_parameter_sets_method_property(self):
-        """APISchema.__init__() method parameter sets APISchema.method property
-        """
-        from .. import schema
-        expected = 'POST'
-        schema = schema.APISchema(method=expected)
-        result = schema.method
-        self.assertEqual(expected, result)
-
-    def test_invalid_method_parameter_raises_exception(self):
-        """APISchema.__init__() raises exception for an invalid method
-        """
-        from .. import schema
-        with self.assertRaises(ValueError):
-            schema.APISchema(method='invalid_method')
-
     def test_invalid_method_raises_exception(self):
         """APISchema.method raises exception for an invalid method
         """
@@ -56,7 +40,8 @@ class APISchemaTests(unittest.TestCase):
                 if self.method is not expected:
                     msg = 'Method context not passed to nested schema: {} != {}'
                     raise ValueError(msg.format(expected, self.method))
-        scheme = ParentSchema(method='POST', strict=True)
+        scheme = ParentSchema(strict=True)
+        scheme.method = 'POST'
         try:
             scheme.load({'child': {}})
         except ValueError as err:
