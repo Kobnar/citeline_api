@@ -33,11 +33,18 @@ class APISchema(Schema):
         self.context['method'] = value
 
 
-class APICollectionSchema(APISchema):
+class APIDocumentSchema(APISchema):
     """
-    A default validation schema to query operations for a MongoDB collection.
-    The fields in this schema only apply to "loading" request data and should
-    only be used for retrieving a collection or individual documents.
+    A default validation schema to perform CRUD operations on a document
+    resource.
+    """
+    fields = api_fields.FieldsField(load_only=True)
+
+
+class APICollectionSchema(APIDocumentSchema):
+    """
+    A default validation schema to perform CRUD operations on a collection
+    resource.
 
     By default, schema sets both `limit=100` and `skip=0` to avoid massive
     database dumps.
@@ -45,7 +52,6 @@ class APICollectionSchema(APISchema):
 
     q = mm_fields.String(load_only=True)
     ids = api_fields.ListField(api_fields.ObjectIdField, load_only=True)
-    fields = api_fields.FieldsField(load_only=True)
     limit = mm_fields.Integer(
         missing=100,
         validate=mm_fields.validate.Range(min=1),
@@ -54,3 +60,5 @@ class APICollectionSchema(APISchema):
         missing=0,
         validate=mm_fields.validate.Range(min=0),
         load_only=True)
+
+    # TODO: Filter out collection-level fields for non-collection items

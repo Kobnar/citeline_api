@@ -63,6 +63,38 @@ class APISchemaTests(unittest.TestCase):
             self.fail(err)
 
 
+class APIDocumentSchemaTests(unittest.TestCase):
+
+    layer = testing.layers.UnitTestLayer
+
+    def setUp(self):
+        from .. import schema
+        self.schema = schema.APIDocumentSchema(strict=True)
+
+    def test_fields_loads(self):
+        """APIDocumentSchema.fields loads data
+        """
+        payload = {'fields': 'name,number'}
+        data, errors = self.schema.load(payload)
+        self.assertIn('fields', data)
+
+    def test_fields_does_not_dump(self):
+        """APIDocumentSchema.fields does not dump data
+        """
+        payload = {'fields': ['name', 'number']}
+        data, errors = self.schema.dump(payload)
+        self.assertNotIn('fields', data)
+
+    def test_fields_loads_list_of_strings(self):
+        """APIDocumentSchema.fields parses a string of field names into a list
+        """
+        payload = {'fields': 'name,number'}
+        data, errors = self.schema.load(payload)
+        expected = ['name', 'number']
+        result = data['fields']
+        self.assertListEqual(expected, result)
+
+
 class APICollectionSchemaTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
@@ -70,6 +102,64 @@ class APICollectionSchemaTests(unittest.TestCase):
     def setUp(self):
         from .. import schema
         self.schema = schema.APICollectionSchema(strict=True)
+
+    def test_q_loads(self):
+        """APICollectionSchema.q loads data
+        """
+        payload = {'q': 'some query'}
+        data, errors = self.schema.load(payload)
+        self.assertIn('q', data)
+
+    def test_q_does_not_dump(self):
+        """APICollectionSchema.q does not dump data
+        """
+        payload = {'q': 'some query'}
+        data, errors = self.schema.dump(payload)
+        self.assertNotIn('q', data)
+
+    def test_ids_loads(self):
+        """APICollectionSchema.ids loads data
+        """
+        from bson import ObjectId
+        payload = {'ids': str(ObjectId())}
+        data, errors = self.schema.load(payload)
+        self.assertIn('ids', data)
+
+    def test_ids_does_not_dump(self):
+        """APICollectionSchema.ids does not dump data
+        """
+        from bson import ObjectId
+        payload = {'ids': [str(ObjectId())]}
+        data, errors = self.schema.dump(payload)
+        self.assertNotIn('ids', data)
+
+    def test_limit_loads(self):
+        """APICollectionSchema.limit loads data
+        """
+        payload = {'limit': 120}
+        data, errors = self.schema.load(payload)
+        self.assertIn('limit', data)
+
+    def test_limit_does_not_dump(self):
+        """APICollectionSchema.limit does not dump data
+        """
+        payload = {'limit': 120}
+        data, errors = self.schema.dump(payload)
+        self.assertNotIn('limit', data)
+
+    def test_skip_loads(self):
+        """APICollectionSchema.skip loads data
+        """
+        payload = {'skip': 120}
+        data, errors = self.schema.load(payload)
+        self.assertIn('skip', data)
+
+    def test_skip_does_not_dump(self):
+        """APICollectionSchema.skip does not dump data
+        """
+        payload = {'skip': 120}
+        data, errors = self.schema.dump(payload)
+        self.assertNotIn('skip', data)
 
     def test_ids_deserializes_list_of_ids(self):
         """APICollectionSchema.ids deserializes a list of valid ObjectId strings
