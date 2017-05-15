@@ -396,9 +396,10 @@ class APIDocumentTests(APIResourceTests):
         with self.assertRaises(DoesNotExist):
             testing.mock.MockDocument.objects.get(id=self.doc.id)
 
-    def test_schema_returns_parent_schema_if_not_set(self):
-        """APIDocument.schema returns parent schema if not set
+    def test_schema_returns_document_schema_if_not_set(self):
+        """APIDocument.schema returns APIDocumentSchema if not set
         """
-        expected = self.col_resource.schema
+        from stackcite.api import schema
+        expected = schema.APIDocumentSchema
         result = self.doc_resource.schema
         self.assertEqual(expected, result)

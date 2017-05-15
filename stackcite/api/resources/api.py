@@ -140,12 +140,7 @@ class APIDocumentResource(
         psec.DENY_ALL
     ]
 
-    @property
-    def schema(self):
-        try:
-            return super().schema
-        except NotImplementedError:
-            return self.__parent__.schema
+    _SCHEMA = schema.APIDocumentSchema
 
     @staticmethod
     def get_params(query):
