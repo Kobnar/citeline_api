@@ -18,6 +18,7 @@ requires = [
     'marshmallow',
     'WebTest >= 1.3.1',  # py3 compat
     'nose2',
+    'nose2-cov',
     'cov-core'
 ]
 
