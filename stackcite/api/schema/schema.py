@@ -6,13 +6,17 @@ from marshmallow import (
 from . import fields as api_fields
 
 
-API_METHODS = ('POST', 'GET', 'PUT', 'DELETE')
+POST = 'POST'
+GET = 'GET'
+PUT = 'PUT'
+DELETE = 'DELETE'
+API_METHODS = (POST, GET, PUT, DELETE)
 
 
 class APISchema(Schema):
     """
-    A default schema class that stores a "method" context, used to enforce
-    method-specific requirements on an API schema.
+    Provides helper setters/getters for common schema contexts (e.g. request
+    method).
     """
 
     @property
@@ -32,18 +36,26 @@ class APIDocumentSchema(APISchema):
     A default validation schema to perform CRUD operations on a document
     resource.
     """
+
+    # Query request fields
     fields = api_fields.FieldsField(load_only=True)
 
+    # Document response fields
+    id = api_fields.ObjectIdField(dump_only=True)
 
-class APICollectionSchema(APIDocumentSchema):
+
+class APICollectionSchema(APISchema):
     """
-    A default validation schema to perform CRUD operations on a collection
-    resource.
+    A schema designed to coordinate (de)serializing collections of documents,
+    based on the context of the request (e.g. method).
 
-    By default, schema sets both `limit=100` and `skip=0` to avoid massive
-    database dumps.
+    The `load` and `dump` methods of this schema are designed to handle the
+    data differently if it is a collection or a single document. If it is a
+    single document, both methods will bypass collection-level
+    (de)serialization.
     """
 
+    # Query request fields
     q = mm_fields.String(load_only=True)
     ids = api_fields.ListField(api_fields.ObjectIdField, load_only=True)
     limit = mm_fields.Integer(
@@ -54,5 +66,37 @@ class APICollectionSchema(APIDocumentSchema):
         missing=0,
         validate=mm_fields.validate.Range(min=0),
         load_only=True)
+    fields = api_fields.FieldsField(load_only=True)
 
-    # TODO: Filter out collection-level fields for non-collection items
+    # Collection response fields
+    # count = mm_fields.Integer(
+    #     validate=mm_fields.validate.Range(min=0),
+    #     dump_only=True)
+
+    @property
+    def document_schema(self):
+        return self.context.get('document_schema')
+
+    @document_schema.setter
+    def document_schema(self, value):
+        if isinstance(value, Schema):
+            self.context['document_schema'] = value
+        else:
+            msg = 'Invalid schema: {}'.format(value)
+            raise TypeError(msg)
+
+    def load(self, query, single=None, **kwargs):
+        if single:
+            return self.document_schema.load(query)
+        else:
+            return super().load(query)
+
+    def dump(self, data, single=None, **kwargs):
+        if single:
+            return self.document_schema.dump(data)
+        else:
+            return super().dump(data)
+
+
+class RetrieveCollection(Schema):
+    pass

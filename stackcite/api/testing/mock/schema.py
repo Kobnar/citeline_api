@@ -3,8 +3,7 @@ from marshmallow import fields, validates_schema, ValidationError
 from stackcite.api import schema
 
 
-class MockDocumentSchema(schema.APICollectionSchema):
-    id = schema.fields.ObjectIdField()
+class MockDocumentSchema(schema.APIDocumentSchema):
     name = fields.String()
     number = fields.Integer()
     fact = fields.Boolean()

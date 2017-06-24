@@ -1,4 +1,8 @@
 from . import fields
 from . import validators
 
-from .schema import APISchema, APIDocumentSchema, APICollectionSchema
+from .schema import (
+    APISchema,
+    APIDocumentSchema,
+    APICollectionSchema
+)

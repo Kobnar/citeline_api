@@ -7,19 +7,25 @@ class APISchemaTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
+    def setUp(self):
+        from .. import APISchema
+        self.schema = APISchema()
+        document_schema = testing.mock.MockDocumentSchema
+        self.schema.context['document_schema'] = document_schema
+
     def test_invalid_method_raises_exception(self):
-        """APISchema.method raises exception for an invalid method
+        """APICollectionSchema.method raises exception for an invalid method
         """
         from .. import schema
-        scheme = schema.APISchema()
+        scheme = schema.APICollectionSchema()
         with self.assertRaises(ValueError):
             scheme.method = 'invalid_method'
 
     def test_valid_methods_do_not_raise_exception(self):
-        """APISchema.method does not raise exceptions for valid schemas
+        """APICollectionSchema.method does not raise exceptions for valid schemas
         """
         from .. import schema
-        scheme = schema.APISchema()
+        scheme = schema.APICollectionSchema()
         for method in schema.API_METHODS:
             try:
                 scheme.method = method
@@ -27,14 +33,14 @@ class APISchemaTests(unittest.TestCase):
                 msg = 'Unexpected exception raised: {}'.format(err)
                 self.fail(msg=msg)
 
-    def test_nexted_schema_recieves_method_context(self):
-        """APISchema passes method context to a nested schema
+    def test_nested_schema_recieves_method_context(self):
+        """APICollectionSchema passes method context to a nested schema
         """
         expected = 'POST'
         from .. import schema
-        class ParentSchema(schema.APISchema):
+        class ParentSchema(schema.APICollectionSchema):
             from marshmallow import fields, validates_schema
-            child = fields.Nested(schema.APISchema)
+            child = fields.Nested(schema.APICollectionSchema)
             @validates_schema
             def validate_method(self, data):
                 if self.method is not expected:
@@ -85,108 +91,94 @@ class APICollectionSchemaTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
-        from .. import schema
-        self.schema = schema.APICollectionSchema(strict=True)
+        from .. import APICollectionSchema
+        self.schema = APICollectionSchema()
+        document_schema = testing.mock.MockDocumentSchema()
+        self.schema.context['document_schema'] = document_schema
 
-    def test_q_loads(self):
-        """APICollectionSchema.q loads data
-        """
-        payload = {'q': 'some query'}
-        data, errors = self.schema.load(payload)
-        self.assertIn('q', data)
 
-    def test_q_does_not_dump(self):
-        """APICollectionSchema.q does not dump data
-        """
-        payload = {'q': 'some query'}
-        data, errors = self.schema.dump(payload)
-        self.assertNotIn('q', data)
+class APICollectionSchemaLoadTests(APICollectionSchemaTests):
 
-    def test_ids_loads(self):
-        """APICollectionSchema.ids loads data
+    def test_returns_q(self):
+        """APICollectionSchema.q loads a query string
         """
-        from bson import ObjectId
-        payload = {'ids': str(ObjectId())}
-        data, errors = self.schema.load(payload)
-        self.assertIn('ids', data)
-
-    def test_ids_does_not_dump(self):
-        """APICollectionSchema.ids does not dump data
-        """
-        from bson import ObjectId
-        payload = {'ids': [str(ObjectId())]}
-        data, errors = self.schema.dump(payload)
-        self.assertNotIn('ids', data)
-
-    def test_limit_loads(self):
-        """APICollectionSchema.limit loads data
-        """
-        payload = {'limit': 120}
-        data, errors = self.schema.load(payload)
-        self.assertIn('limit', data)
-
-    def test_limit_does_not_dump(self):
-        """APICollectionSchema.limit does not dump data
-        """
-        payload = {'limit': 120}
-        data, errors = self.schema.dump(payload)
-        self.assertNotIn('limit', data)
-
-    def test_skip_loads(self):
-        """APICollectionSchema.skip loads data
-        """
-        payload = {'skip': 120}
-        data, errors = self.schema.load(payload)
-        self.assertIn('skip', data)
-
-    def test_skip_does_not_dump(self):
-        """APICollectionSchema.skip does not dump data
-        """
-        payload = {'skip': 120}
-        data, errors = self.schema.dump(payload)
-        self.assertNotIn('skip', data)
-
-    def test_ids_deserializes_list_of_ids(self):
-        """APICollectionSchema.ids deserializes a list of valid ObjectId strings
-        """
-        import bson
-        expected = [str(bson.ObjectId()) for n in range(3)]
-        query = {'ids': ','.join(expected)}
-        result = self.schema.load(query).data['ids']
+        query = {'q': 'some query'}
+        data, errors = self.schema.load(query)
+        expected = 'some query'
+        result = data['q']
         self.assertEqual(expected, result)
 
+    def test_returns_tokenized_ids(self):
+        """APICollectionSchema.ids loads a tokenized list of ObjectId strings
+        """
+        query = {'ids': '594e050330f19315e6ceff4a,594e050330f19315e6ceff4b'}
+        data, errors = self.schema.load(query)
+        expected = ['594e050330f19315e6ceff4a', '594e050330f19315e6ceff4b']
+        result = data['ids']
+        self.assertListEqual(expected, result)
+
     def test_ids_must_be_valid_ids(self):
-        """APICollectionSchema.ids must be a list of valid ObjectId strings
+        """APICollectionSchema.ids logs error loading invalid ObjectId strings
         """
         query = {'ids': 'badid,AnotherBadId,576a6d7530f1936f09e5'}
-        from marshmallow import ValidationError
-        with self.assertRaises(ValidationError):
-            self.schema.load(query)
+        data, errors = self.schema.load(query)
+        self.assertIn('ids', errors)
+
+    def test_returns_tokenized_fields(self):
+        """APICollectionSchema.fields loads a tokenized list of field names
+        """
+        query = {'fields': 'id,name,number'}
+        data, errors = self.schema.load(query)
+        expected = ['id', 'name', 'number']
+        result = data['fields']
+        self.assertListEqual(expected, result)
 
     def test_default_limit(self):
-        """APICollectionSchema.limit defaults to 100 without being set
+        """APICollectionSchema.limit defaults to loading 100 without being set
         """
         result = self.schema.load({})
         self.assertEqual(result.data['limit'], 100)
 
+    def test_limit_must_be_gte_1(self):
+        """APICollectionSchema.limit must be greater than or equal to 1
+        """
+        query = {'limit': 0}
+        data, errors = self.schema.load(query)
+        self.assertIn('limit', errors)
+
     def test_default_skip(self):
-        """APICollectionSchema.skip defaults to 0 without being set
+        """APICollectionSchema.skip defaults to loading 0 without being set
         """
         result = self.schema.load({})
         self.assertEqual(result.data['skip'], 0)
 
-    def test_limit_must_be_greater_than_zero(self):
-        """APICollectionSchema.limit must be greater than 0
-        """
-        query = {'limit': 0}
-        from marshmallow import ValidationError
-        with self.assertRaises(ValidationError):
-            self.schema.load(query)
-
-    def test_skip_must_be_greater_than_negative_one(self):
-        """APICollectionSchema.skip must be greater than -1
+    def test_skip_must_be_gte_0(self):
+        """APICollectionSchema.skip must be greater than or equal to 0
         """
         query = {'skip': -1}
-        from marshmallow import ValidationError
-        with self.assertRaises(ValidationError):
-            self.schema.load(query)
+        data, errors = self.schema.load(query)
+        self.assertIn('skip', errors)
+
+    def test_single_returns_tokenized_fields(self):
+        """APICollectionSchema.load() returns fields from component schema
+        """
+        query = {'fields': 'id,name,number'}
+        data, errors = self.schema.load(query, single=True)
+        expected = ['id', 'name', 'number']
+        result = data['fields']
+        self.assertListEqual(expected, result)
+
+
+class APICollectionSchemaDumpTests(APICollectionSchemaTests):
+
+    @staticmethod
+    def make_docs(count=8):
+        return [testing.mock.MockDocument(
+                name='Document {}'.format(idx),
+                number=idx,
+                fact=bool(idx % 2)) for idx in range(count)]
+
+    # def test_many_returns_count(self):
+    #     docs = self.make_docs()
+    #     data, errors = self.schema.dump(docs)
+    #     self.assertIn('count', data)
