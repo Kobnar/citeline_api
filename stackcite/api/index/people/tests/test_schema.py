@@ -3,16 +3,23 @@ import unittest
 from stackcite.api import testing
 
 
-class UpdateNameUnitTests(unittest.TestCase):
+class NameSchemaTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
-        from ..schema import UpdateName
-        self.schema = UpdateName(strict=True)
+        from ..schema import Name
+        self.schema = Name(strict=True)
 
-    def test_validate_names_raises_exception_if_full_name_and_sub_names_set(self):
-        """UpdateName.validate_names() raises ValidationError if full name and sub-names are set
+
+class NameSchemaCreateTests(NameSchemaTests):
+
+    def setUp(self):
+        super().setUp()
+        self.schema.method = 'POST'
+
+    def test_load_raises_exception_if_full_name_and_sub_names_set(self):
+        """Name.load() raises ValidationError when creating conflicting names
         """
         from marshmallow import ValidationError
         data = {
@@ -21,37 +28,8 @@ class UpdateNameUnitTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             self.schema.load(data)
 
-    def test_validate_names_accepts_full_name_only(self):
-        """UpdateName.validate_names() does not raise ValidationError if only a full name is set
-        """
-        from marshmallow import ValidationError
-        data = {'full': 'John Nobody Doe'}
-        try:
-            self.schema.load(data)
-        except ValidationError as err:
-            self.fail(err)
-
-
-class CreateNameUnitTests(unittest.TestCase):
-
-    layer = testing.layers.UnitTestLayer
-
-    def setUp(self):
-        from ..schema import CreateName
-        self.schema = CreateName(strict=True)
-
-    def test_validate_names_raises_exception_if_full_name_and_sub_names_set(self):
-        """CreateName.validate_names() raises ValidationError if full name and sub-names are set
-        """
-        from marshmallow import ValidationError
-        data = {
-            'middle': 'Nobody',
-            'full': 'John Nobody Doe'}
-        with self.assertRaises(ValidationError):
-            self.schema.load(data)
-
-    def test_validate_names_raises_exception_if_critical_names_missing(self):
-        """CreateName.validate_names() raises ValidationError if neither title, last or full are set
+    def test_load_raises_exception_if_critical_names_missing(self):
+        """Name.load() raises ValidationError when creating missing names
         """
         from marshmallow import ValidationError
         data = {
@@ -60,8 +38,8 @@ class CreateNameUnitTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             self.schema.load(data)
 
-    def test_validate_names_accepts_full_name_only(self):
-        """UpdateName.validate_names() does not raise ValidationError if only a full name is set
+    def test_load_full_name_only(self):
+        """Name.load() does not raise exception when creating full name only
         """
         from marshmallow import ValidationError
         data = {'full': 'John Nobody Doe'}
@@ -71,50 +49,50 @@ class CreateNameUnitTests(unittest.TestCase):
             self.fail(err)
 
 
-class UpdatePersonUnitTests(unittest.TestCase):
-
-    layer = testing.layers.UnitTestLayer
+class NameSchemaUpdateTests(NameSchemaTests):
 
     def setUp(self):
-        from ..schema import UpdatePerson
-        self.schema = UpdatePerson(strict=True)
+        super().setUp()
+        self.schema.method = 'PUT'
 
-    def test_nested_update_name_schema_validates(self):
-        """UpdatePerson.name validates an invalid name condition
+    def test_load_raises_exception_if_full_name_and_sub_names_set(self):
+        """Name.load() raises ValidationError when updating conflicting names
         """
         from marshmallow import ValidationError
         data = {
-            'name': {
-                'first': 'John',
-                'full': 'John Nobody Doe'}}
+            'middle': 'Nobody',
+            'full': 'John Nobody Doe'}
         with self.assertRaises(ValidationError):
             self.schema.load(data)
 
-    def test_birth_allows_none(self):
-        """UpdatePerson.birth accepts None value
+    def test_load_full_name_only(self):
+        """Name.load() does not raise exception when updating full name only
         """
-        data = {'birth': None}
-        result = self.schema.load(data).errors.keys()
-        self.assertNotIn('birth', result)
-
-    def test_death_allows_none(self):
-        """UpdatePerson.death accepts None value
-        """
-        data = {'death': None}
-        result = self.schema.load(data).errors.keys()
-        self.assertNotIn('death', result)
+        from marshmallow import ValidationError
+        data = {'full': 'John Nobody Doe'}
+        try:
+            self.schema.load(data)
+        except ValidationError as err:
+            self.fail(err)
 
 
-class CreatePersonUnitTests(unittest.TestCase):
+class PersonSchemaTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
-        from ..schema import CreatePerson
-        self.schema = CreatePerson(strict=True)
+        from ..schema import Person
+        self.schema = Person(strict=True)
+
+
+class PersonSchemaCreateTests(PersonSchemaTests):
+
+    def setUp(self):
+        super().setUp()
+        self.schema.method = 'POST'
 
     def test_name_required(self):
-        """CreatePerson requires a name field to be set
+        """Person.load() requires a name field to be set on POST
         """
         from marshmallow import ValidationError
         data = {'description': 'A man with no name.'}
@@ -122,7 +100,7 @@ class CreatePersonUnitTests(unittest.TestCase):
             self.schema.load(data)
 
     def test_nested_update_name_schema_validates(self):
-        """CreatePerson.name validates an invalid name condition
+        """CreatePerson.name validates an invalid name condition on POST
         """
         from marshmallow import ValidationError
         data = {
@@ -133,7 +111,7 @@ class CreatePersonUnitTests(unittest.TestCase):
             self.schema.load(data)
 
     def test_birth_allows_none(self):
-        """CreatePerson.birth accepts None value
+        """CreatePerson.birth accepts None value on POST
         """
         data = {
             'name': {'title': 'J.N. Doe'},
@@ -142,7 +120,7 @@ class CreatePersonUnitTests(unittest.TestCase):
         self.assertNotIn('birth', result)
 
     def test_death_allows_none(self):
-        """CreatePerson.death accepts None value
+        """CreatePerson.death accepts None value on POST
         """
         data = {
             'name': {'title': 'J.N. Doe'},
@@ -151,17 +129,33 @@ class CreatePersonUnitTests(unittest.TestCase):
         self.assertNotIn('death', result)
 
 
-class RetrievePeopleUnitTests(unittest.TestCase):
-
-    layer = testing.layers.UnitTestLayer
+class PersonSchemaUpdateTests(PersonSchemaTests):
 
     def setUp(self):
-        from ..schema import RetrievePeople
-        self.schema = RetrievePeople(strict=True)
+        super().setUp()
+        self.schema.method = 'PUT'
 
-    def test_accepts_q_field(self):
-        """RetrievePeople accepts "q" field
+    def test_nested_update_name_schema_validates(self):
+        """Person.name validates an invalid name condition on PUT
         """
-        data = {'q': 'Some query string.'}
-        result, errors = self.schema.load(data)
-        self.assertIn('q', result)
+        from marshmallow import ValidationError
+        data = {
+            'name': {
+                'first': 'John',
+                'full': 'John Nobody Doe'}}
+        with self.assertRaises(ValidationError):
+            self.schema.load(data)
+
+    def test_birth_allows_none(self):
+        """UpdatePerson.birth accepts None value on PUT
+        """
+        data = {'birth': None}
+        result = self.schema.load(data).errors.keys()
+        self.assertNotIn('birth', result)
+
+    def test_death_allows_none(self):
+        """UpdatePerson.death accepts None value on PUT
+        """
+        data = {'death': None}
+        result = self.schema.load(data).errors.keys()
+        self.assertNotIn('death', result)

@@ -1,29 +1,9 @@
 from marshmallow import Schema, fields, validates_schema, ValidationError
 
-from stackcite.api.schema import (
-    fields as api_fields,
-    schema as api_forms
-)
+from stackcite.api.schema import schema as api_schema
 
 
-class Name(Schema):
-    title = fields.String()
-    first = fields.String()
-    middle = fields.String()
-    last = fields.String()
-    full = fields.String()
-
-
-class Person(Schema):
-    id = api_fields.ObjectIdField()
-    name = fields.Nested(Name)
-    description = fields.String()
-    birth = fields.Integer(allow_none=True)
-    death = fields.Integer(allow_none=True)
-
-
-class UpdateName(Schema):
-
+class Name(api_schema.APISchema):
     title = fields.String()
     first = fields.String()
     middle = fields.String()
@@ -31,7 +11,16 @@ class UpdateName(Schema):
     full = fields.String()
 
     @validates_schema
-    def validate_names(self, data):
+    def validate_schema(self, data):
+        if self.method is 'POST':
+            self.validate_mutually_exclusive_names(data)
+            self.validate_required_names(data)
+
+        elif self.method is 'PUT':
+            self.validate_mutually_exclusive_names(data)
+
+    @staticmethod
+    def validate_mutually_exclusive_names(data):
         """
         Requires either `full` or individual names may be set, but not both.
         """
@@ -41,16 +30,12 @@ class UpdateName(Schema):
             msg = 'Cannot set "first", "middle", or "last" if "full" is set'
             raise ValidationError(msg, ['full'])
 
-
-class CreateName(UpdateName):
-
-    @validates_schema
-    def validate_names(self, data):
+    @staticmethod
+    def validate_required_names(data):
         """
         Requires one of `title`, `last`, or `full` must be set in addition to
         :class:`~UpdateName` validation.
         """
-        super().validate_names(data)
         title = data.get('title')
         last_name = data.get('last')
         full_name = data.get('full')
@@ -59,16 +44,14 @@ class CreateName(UpdateName):
             raise ValidationError(msg, ['title', 'last', 'full'])
 
 
-class UpdatePerson(Schema):
-    name = fields.Nested(UpdateName)
+class Person(api_schema.APIDocumentSchema):
+    name = fields.Nested(Name)
     description = fields.String()
     birth = fields.Integer(allow_none=True)
     death = fields.Integer(allow_none=True)
 
-
-class CreatePerson(UpdatePerson):
-    name = fields.Nested(CreateName, required=True)
-
-
-class RetrievePeople(api_forms.RetrieveCollection):
-    q = fields.String()
+    @validates_schema
+    def validate_schema(self, data):
+        if self.method is 'POST' and 'name' not in data:
+            msg = 'Missing data for required field.'
+            raise ValidationError(msg, ['name'])
