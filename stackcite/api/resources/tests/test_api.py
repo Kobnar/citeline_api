@@ -21,114 +21,6 @@ class EndpointResourceTests(unittest.TestCase):
         self.assertIn(MockEndpointResource, results)
 
 
-class SerializableResourceTests(unittest.TestCase):
-
-    layer = testing.layers.UnitTestLayer
-
-    def test_missing_schema_raises_exception(self):
-        """SerializableResource.load() raises exception if no schema is set
-        """
-        from ..api import SerializableResource
-        resource = SerializableResource()
-        with self.assertRaises(NotImplementedError):
-            resource.load({}, method='GET')
-
-    def test_validation_default_is_strict(self):
-        """SerializableResource.load() default is set to 'strict=True'
-        """
-        from . import MockSerializableResource
-        resource = MockSerializableResource()
-        data = {'fact': 'dogs'}
-        from marshmallow import ValidationError
-        with self.assertRaises(ValidationError):
-            resource.load(data, method='GET')
-
-    def test_load_uses_default_schema_if_method_not_set(self):
-        """SerializableResource.load() uses a default schema if no method is set
-        """
-        from . import MockSerializableResource
-        resource = MockSerializableResource()
-        data = {'fact': 'dogs'}
-        from marshmallow import ValidationError
-        with self.assertRaises(ValidationError):
-            resource.load(data)
-
-    def test_load_accepts_list_with_many_set(self):
-        """SerializableResource.load() validates a list of objects if many=True
-        """
-        from . import MockSerializableResource
-        resource = MockSerializableResource()
-        data = [{'fact': True}, {'fact': False}]
-        from marshmallow import ValidationError
-        try:
-            resource.load(data, method='GET', many=True)
-        except ValidationError as err:
-            msg = 'List failed to load: {}'.format(err)
-            self.fail(msg=msg)
-
-    def test_loads_raises_exception_for_invalid_json(self):
-        """SerializableResource.loads() raises an exception for invalid JSON data
-        """
-        from . import MockSerializableResource
-        resource = MockSerializableResource()
-        from json import JSONDecodeError
-        with self.assertRaises(JSONDecodeError):
-            resource.loads('{invalid:"JSON!', method='GET')
-
-    def test_dump_serializes_object_correctly(self):
-        """SerializableResource.dump() returns a dictionary with correct values
-        """
-        from . import MockSerializableResource
-        resource = MockSerializableResource()
-        from stackcite.api import testing
-        doc = testing.mock.MockDocument(fact=True)
-        data, errors = resource.dump(doc, method='GET')
-        result = data['fact']
-        self.assertTrue(result)
-
-    def test_dump_serializes_list_with_many_set(self):
-        """SerializableResource.dump() returns a list with correct values
-        """
-        from . import MockSerializableResource
-        resource = MockSerializableResource()
-        facts = (True, False, False, True)
-        from stackcite.api import testing
-        docs = [testing.mock.MockDocument(fact=f) for f in facts]
-        data, errors = resource.dump(docs, method='GET', many=True)
-        for idx, doc in enumerate(data):
-            expected = facts[idx]
-            result = data[idx]['fact']
-            self.assertEqual(expected, result)
-
-    def test_dumps_returns_str(self):
-        """SerializableResource.dumps() returns a string
-        """
-        from . import MockSerializableResource
-        resource = MockSerializableResource()
-        from stackcite.api import testing
-        doc = testing.mock.MockDocument(fact=True)
-        result, errors = resource.dumps(doc)
-        self.assertTrue(isinstance(result, str))
-
-    def test_schema_property_raises_exception_if_not_set(self):
-        """SerializableResource.schema property raises exception if not set
-        """
-        from .. import api
-        resource = api.SerializableResource()
-        with self.assertRaises(NotImplementedError):
-            resource.schema
-
-    def test_schema_property_returns_schema_if_set(self):
-        """SerializableResource.schema property returns schema if set
-        """
-        from . import MockSerializableResource
-        resource = MockSerializableResource()
-        from stackcite.api import testing
-        expected = testing.mock.MockDocumentSchema
-        result = resource.schema
-        self.assertEqual(expected, result)
-
-
 class APIResourceTests(unittest.TestCase):
 
     layer = testing.layers.MongoIntegrationTestLayer
@@ -137,6 +29,85 @@ class APIResourceTests(unittest.TestCase):
         testing.mock.MockDocument.drop_collection()
         self.col_resource = testing.mock.MockAPICollectionResource(
                 None, 'mock_collection')
+
+
+class APIDocumentTests(APIResourceTests):
+
+    layer = testing.layers.MongoIntegrationTestLayer
+
+    def setUp(self):
+        super(APIDocumentTests, self).setUp()
+        docs = testing.mock.utils.create_mock_data(save=True)
+        self.doc = docs[8]
+        self.doc_resource = self.col_resource[self.doc.id]
+
+    def test_retrieve_raises_exeption_if_does_not_exist(self):
+        """APIDocument.retrieve() raises exception if document does not exist
+        """
+        from bson import ObjectId
+        doc_resource = self.col_resource[ObjectId()]
+        from mongoengine import DoesNotExist
+        with self.assertRaises(DoesNotExist):
+            doc_resource.retrieve()
+
+    def test_retrieve_returns_obj(self):
+        """APIDocument.retrieve() returns a document object
+        """
+        result = self.doc_resource.retrieve()
+        self.assertIsInstance(result, testing.mock.MockDocument)
+
+    def test_retrieve_returns_serialized_data(self):
+        """APIDocument.retrieve() returns correct document
+        """
+        expected = self.doc.id
+        result = self.doc_resource.retrieve()
+        result = result.id
+        self.assertEqual(expected, result)
+
+    def test_retrieve_filters_fields(self):
+        """APIDocument.retrieve() filters explicitly named fields on document
+        """
+        fields = ['name', 'fact']
+        result = self.doc_resource.retrieve(fields)
+        self.assertIsNone(result.number)
+
+    def test_update_returns_updated_data(self):
+        """APIDocument.update() returns document with updated data
+        """
+        data = {'name': 'Updated Document'}
+        result = self.doc_resource.update(data)
+        self.assertEqual(result.name, data['name'])
+
+    def test_update_updates_document_in_mongodb(self):
+        """APIDocument.update() updates document in MongoDB
+        """
+        data = {'name': 'Updated Document'}
+        self.doc_resource.update(data)
+        result = testing.mock.MockDocument.objects.get(id=self.doc.id)
+        self.assertEqual(result.name, data['name'])
+
+    def test_delete_returns_true_if_successful(self):
+        """APIDocument.delete() returns True if successful
+        """
+        result = self.doc_resource.delete()
+        self.assertTrue(result)
+
+    def test_delete_returns_false_if_document_does_not_exist(self):
+        """APIDocument.delete() raises exception if document does not exist
+        """
+        from bson import ObjectId
+        doc_resource = self.col_resource[ObjectId()]
+        from mongoengine import DoesNotExist
+        with self.assertRaises(DoesNotExist):
+            doc_resource.delete()
+
+    def test_delete_deletes_document_in_mongodb(self):
+        """APIDocument.delete() deletes document in MongoDB
+        """
+        self.doc_resource.delete()
+        from mongoengine import DoesNotExist
+        with self.assertRaises(DoesNotExist):
+            testing.mock.MockDocument.objects.get(id=self.doc.id)
 
 
 class APICollectionTests(APIResourceTests):
@@ -316,90 +287,3 @@ class APICollectionTests(APIResourceTests):
             'skip': 13}
         query, result = self.col_resource.get_params(source)
         self.assertEqual(13, result['skip'])
-
-
-class APIDocumentTests(APIResourceTests):
-
-    layer = testing.layers.MongoIntegrationTestLayer
-
-    def setUp(self):
-        super(APIDocumentTests, self).setUp()
-        docs = testing.mock.utils.create_mock_data(save=True)
-        self.doc = docs[8]
-        self.doc_resource = self.col_resource[self.doc.id]
-
-    def test_retrieve_raises_exeption_if_does_not_exist(self):
-        """APIDocument.retrieve() raises exception if document does not exist
-        """
-        from bson import ObjectId
-        doc_resource = self.col_resource[ObjectId()]
-        from mongoengine import DoesNotExist
-        with self.assertRaises(DoesNotExist):
-            doc_resource.retrieve()
-
-    def test_retrieve_returns_obj(self):
-        """APIDocument.retrieve() returns a document object
-        """
-        result = self.doc_resource.retrieve()
-        self.assertIsInstance(result, testing.mock.MockDocument)
-
-    def test_retrieve_returns_serialized_data(self):
-        """APIDocument.retrieve() returns correct document
-        """
-        expected = self.doc.id
-        result = self.doc_resource.retrieve()
-        result = result.id
-        self.assertEqual(expected, result)
-
-    def test_retrieve_filters_fields(self):
-        """APIDocument.retrieve() filters explicitly named fields on document
-        """
-        fields = ['name', 'fact']
-        result = self.doc_resource.retrieve(fields)
-        self.assertIsNone(result.number)
-
-    def test_update_returns_updated_data(self):
-        """APIDocument.update() returns document with updated data
-        """
-        data = {'name': 'Updated Document'}
-        result = self.doc_resource.update(data)
-        self.assertEqual(result.name, data['name'])
-
-    def test_update_updates_document_in_mongodb(self):
-        """APIDocument.update() updates document in MongoDB
-        """
-        data = {'name': 'Updated Document'}
-        self.doc_resource.update(data)
-        result = testing.mock.MockDocument.objects.get(id=self.doc.id)
-        self.assertEqual(result.name, data['name'])
-
-    def test_delete_returns_true_if_successful(self):
-        """APIDocument.delete() returns True if successful
-        """
-        result = self.doc_resource.delete()
-        self.assertTrue(result)
-
-    def test_delete_returns_false_if_document_does_not_exist(self):
-        """APIDocument.delete() raises exception if document does not exist
-        """
-        from bson import ObjectId
-        doc_resource = self.col_resource[ObjectId()]
-        from mongoengine import DoesNotExist
-        with self.assertRaises(DoesNotExist):
-            doc_resource.delete()
-
-    def test_delete_deletes_document_in_mongodb(self):
-        """APIDocument.delete() deletes document in MongoDB
-        """
-        self.doc_resource.delete()
-        from mongoengine import DoesNotExist
-        with self.assertRaises(DoesNotExist):
-            testing.mock.MockDocument.objects.get(id=self.doc.id)
-
-    def test_schema_returns_document_schema_if_not_set(self):
-        """APIDocument.schema returns APIDocumentSchema if not set
-        """
-        from stackcite.api import schema
-        expected = schema.APIDocumentSchema
-        result = self.doc_resource.schema
-        self.assertEqual(expected, result)

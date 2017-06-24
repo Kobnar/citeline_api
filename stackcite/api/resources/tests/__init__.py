@@ -28,12 +28,3 @@ class MockEndpointResource(_resources.EndpointResource):
                 'context': context})
 
     _VIEW_CLASS = MockViewClass
-
-
-class MockSerializableResource(_resources.SerializableResource):
-    """
-    A "mock" :class:~`SerializableResource` used specifically to test shema
-    validation.
-    """
-
-    _SCHEMA = _testing.mock.MockDocumentSchema

@@ -1,6 +1,5 @@
 from .api import (
     EndpointResource,
-    SerializableResource,
     APIIndexResource,
     APICollectionResource,
     APIDocumentResource

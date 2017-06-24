@@ -32,75 +32,6 @@ class EndpointResource(object):
                 permission=attr)
 
 
-class SerializableResource(object):
-    """
-    An abstract class providing a basic schema loading and validation
-    :class:`Resource`.
-    """
-
-    _SCHEMA = NotImplemented
-
-    @property
-    def schema(self):
-        if self._SCHEMA is NotImplemented:
-            raise NotImplementedError()
-        return self._SCHEMA
-
-    def load(self, data, only=(), method=None, many=False, strict=True,
-             json=False):
-        """
-        Loads (and validates) serialized data into a Python-compatible data
-        structure.
-
-        If the `method` provided has an associated data validation schema
-        defined in `_schema`, this method will instantiate the associated
-        schema and validate the provided data. Otherwise, it will return the
-        original data without performing any data validation.
-
-        :param data: A nested dictionary of request
-        :param only: A list of fields to include (e.g. `('birth', 'name.first')`)
-        :param method: An HTTP request method name (e.g. `GET`)
-        :param many: Whether to deserialize data as a collection
-        :param strict: Whether to raise an exception for validation errors
-        :param json: Whether the input data is a JSON encoded string
-        :return: A tuple in the form of (``data``, ``errors``)
-        """
-        if self.schema:
-            scheme = self.schema(only=only, many=many, strict=strict)
-            scheme.method = method
-            if json:
-                return scheme.loads(data)
-            return scheme.load(data)
-        return data, {}
-
-    def dump(self, data, only=(), method=None, many=False, json=False):
-        """
-        Dumps (i.e. serializes) Python objects into a serialized data structure.
-
-        (See docstring for `load()` above.)
-
-        :param data: A nested dictionary of request data
-        :param only: A list of fields to include (e.g. `('birth', 'name.first')`)
-        :param method: An HTTP request method name (e.g. `GET`)
-        :param many: Whether to deserialize data as a collection
-        :param json: Whether the output data should be a JSON encoded string
-        :return: A tuple in the form of (``data``, ``errors``)
-        """
-        if self.schema:
-            scheme = self.schema(only=only, many=many)
-            scheme.method = method
-            if json:
-                return scheme.dumps(data)
-            return scheme.dump(data)
-        return data, {}
-
-    def loads(self, data, only=(), method=None, many=False, strict=True):
-        return self.load(data, only, method, many, strict, json=True)
-
-    def dumps(self, data, only=(), method=None, many=False):
-        return self.dump(data, only, method, many, json=True)
-
-
 class APIIndexResource(index.IndexResource, EndpointResource):
     """
     A base traversal resource used to define API indexes for Pyramid's
@@ -128,7 +59,7 @@ def _get_params(query, params):
 
 
 class APIDocumentResource(
-        mongo.DocumentResource, SerializableResource, EndpointResource):
+        mongo.DocumentResource, EndpointResource):
     """
     The API-level traversal resource.
     """
@@ -160,7 +91,7 @@ class APIDocumentResource(
 
 
 class APICollectionResource(
-        mongo.CollectionResource, SerializableResource, EndpointResource):
+        mongo.CollectionResource, EndpointResource):
     """
     The API-level traversal resource.
     """
@@ -172,8 +103,10 @@ class APICollectionResource(
     ]
 
     _VIEW_CLASS = views.APICollectionViews
-    _DOCUMENT_RESOURCE = APIDocumentResource
     _SCHEMA = schema.APICollectionSchema
+
+    _DOCUMENT_RESOURCE = APIDocumentResource
+    _DOCUMENT_SCHEMA = schema.APIDocumentSchema
 
     # TODO: Find a better pattern to inject custom raw queries
     def retrieve(self, query=None, fields=None, limit=100, skip=0):
@@ -183,6 +116,20 @@ class APICollectionResource(
 
     def _retrieve(self, query):
         pass
+
+    def schema(self, method=None, only=(), exclude=(), strict=None):
+        schm = self._SCHEMA(only=only, exclude=exclude, strict=strict)
+        schm.document_schema = self._DOCUMENT_SCHEMA
+        schm.method = method
+        return schm
+
+    def load(self, query, method=None, **kwargs):
+        schm = self.schema(method=method)
+        return schm.load(query, **kwargs)
+
+    def dump(self, data, method=None, **kwargs):
+        schm = self.schema(method=method)
+        return schm.dump(data, **kwargs)
 
     @staticmethod
     def get_params(query):
