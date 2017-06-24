@@ -32,6 +32,37 @@ class EndpointResource(object):
                 permission=attr)
 
 
+class SerializableResource(index.IndexResource):
+    """
+    An abstract class providing generalized serialization methods to API
+    endpoint resources.
+    """
+
+    _SCHEMA = NotImplemented
+
+    @property
+    def schema(self):
+        if self._SCHEMA is NotImplemented:
+            if self.parent:
+                return self.parent.schema
+            else:
+                raise NotImplementedError()
+        return self._SCHEMA
+
+    def _init_schema(self, method=None, only=(), exclude=(), strict=None):
+        schm = self.schema(only=only, exclude=exclude, strict=strict)
+        schm.method = method
+        return schm
+
+    def load(self, query, method=None, single=None, **kwargs):
+        schm = self._init_schema(method=method)
+        return schm.load(query, single, **kwargs)
+
+    def dump(self, data, method=None, single=None, **kwargs):
+        schm = self._init_schema(method=method)
+        return schm.dump(data, single, **kwargs)
+
+
 class APIIndexResource(index.IndexResource, EndpointResource):
     """
     A base traversal resource used to define API indexes for Pyramid's
@@ -59,7 +90,7 @@ def _get_params(query, params):
 
 
 class APIDocumentResource(
-        mongo.DocumentResource, EndpointResource):
+        mongo.DocumentResource, EndpointResource, SerializableResource):
     """
     The API-level traversal resource.
     """
@@ -71,7 +102,6 @@ class APIDocumentResource(
     ]
 
     _VIEW_CLASS = views.APIDocumentViews
-    _SCHEMA = schema.APIDocumentSchema
 
     @staticmethod
     def get_params(query):
@@ -91,7 +121,7 @@ class APIDocumentResource(
 
 
 class APICollectionResource(
-        mongo.CollectionResource, EndpointResource):
+        mongo.CollectionResource, EndpointResource, SerializableResource):
     """
     The API-level traversal resource.
     """
@@ -108,7 +138,7 @@ class APICollectionResource(
     _DOCUMENT_RESOURCE = APIDocumentResource
     _DOCUMENT_SCHEMA = schema.APIDocumentSchema
 
-    # TODO: Find a better pattern to inject custom raw queries
+    # TODO: Find a better pattern to inject custom raw queries (use schemas)
     def retrieve(self, query=None, fields=None, limit=100, skip=0):
         raw_query = self._raw_query(query)
         self._retrieve(query)
@@ -117,19 +147,10 @@ class APICollectionResource(
     def _retrieve(self, query):
         pass
 
-    def schema(self, method=None, only=(), exclude=(), strict=None):
-        schm = self._SCHEMA(only=only, exclude=exclude, strict=strict)
+    def _init_schema(self, method=None, only=(), exclude=(), strict=None):
+        schm = super()._init_schema(only=only, exclude=exclude, strict=strict)
         schm.document_schema = self._DOCUMENT_SCHEMA
-        schm.method = method
         return schm
-
-    def load(self, query, method=None, **kwargs):
-        schm = self.schema(method=method)
-        return schm.load(query, **kwargs)
-
-    def dump(self, data, method=None, **kwargs):
-        schm = self.schema(method=method)
-        return schm.dump(data, **kwargs)
 
     @staticmethod
     def get_params(query):

@@ -12,7 +12,8 @@ _LOG = logging.getLogger(__name__)
 
 
 class ConfirmationResource(
-        resources.APIIndexResource, resources.SerializableResource):
+    resources.APIIndexResource,
+    resources.SerializableResource):
 
     _VIEW_CLASS = views.ConfirmationViews
 

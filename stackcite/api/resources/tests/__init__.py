@@ -28,3 +28,8 @@ class MockEndpointResource(_resources.EndpointResource):
                 'context': context})
 
     _VIEW_CLASS = MockViewClass
+
+
+class MockSerializableResource(_resources.SerializableResource):
+
+    _SCHEMA = _testing.mock.MockDocumentSchema
