@@ -33,26 +33,6 @@ class SerializableResourceTests(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             resource.schema
 
-    def test_undefined_parent_schema_raises_exception(self):
-        """SerializableResource.schema raises NotImplementedError if schema is not implemented in self or parent
-        """
-        from .. import SerializableResource
-        parent = SerializableResource()
-        child = SerializableResource(parent, 'child')
-        with self.assertRaises(NotImplementedError):
-            child.schema
-
-    def test_undefined_child_schema_returns_defined_parent_schema(self):
-        """SerializableResource.schema returns parent resource if child schema is not implemented
-        """
-        from . import MockSerializableResource
-        parent = MockSerializableResource()
-        from .. import SerializableResource
-        child = SerializableResource(parent, 'child')
-        expected = testing.mock.MockDocumentSchema
-        result = child.schema
-        self.assertEqual(expected, result)
-
     def test_load_raises_exception_if_schema_not_implemented(self):
         """SerializableResource.load() raises NotImplementedError if schema is not implemented
         """

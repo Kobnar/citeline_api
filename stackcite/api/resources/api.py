@@ -32,10 +32,10 @@ class EndpointResource(object):
                 permission=attr)
 
 
-class SerializableResource(index.IndexResource):
+class SerializableResource(object):
     """
-    An abstract class providing generalized serialization methods to API
-    endpoint resources.
+    An abstract class providing generalized serialization methods for an API
+    resource.
     """
 
     _SCHEMA = NotImplemented
@@ -43,10 +43,7 @@ class SerializableResource(index.IndexResource):
     @property
     def schema(self):
         if self._SCHEMA is NotImplemented:
-            if self.parent:
-                return self.parent.schema
-            else:
-                raise NotImplementedError()
+            raise NotImplementedError()
         return self._SCHEMA
 
     def _init_schema(self, method=None, only=(), exclude=(), strict=None):
@@ -103,6 +100,14 @@ class APIDocumentResource(
 
     _VIEW_CLASS = views.APIDocumentViews
 
+    # TODO: Need tests!
+    @property
+    def schema(self):
+        """
+        Returns the collection-level schema as its own.
+        """
+        return self.parent.schema
+
     @staticmethod
     def get_params(query):
         """
@@ -148,6 +153,9 @@ class APICollectionResource(
         pass
 
     def _init_schema(self, method=None, only=(), exclude=(), strict=None):
+        """
+        Injects a document schema class into the collection schema's context.
+        """
         schm = super()._init_schema(only=only, exclude=exclude, strict=strict)
         schm.document_schema = self._DOCUMENT_SCHEMA
         return schm
