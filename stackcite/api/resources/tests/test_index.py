@@ -177,6 +177,15 @@ class IndexResourceTestCase(unittest.TestCase):
         except TypeError:
             self.fail("Failed to set an instantiated instance of IndexResource")
 
+    def test_parent_returns_parent(self):
+        """IndexResource.parent returns the correct __parent__ resource
+        """
+        self.make_root()
+        from ..index import IndexResource
+        self.root['child'] = IndexResource
+        result = self.root['child'].parent
+        self.assertEqual(result, self.root)
+
     def test_name_returns_name(self):
         """IndexResource.name returns the correct __name__ string
         """
