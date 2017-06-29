@@ -15,10 +15,7 @@ class AuthResource(resources.APIIndexResource, resources.SerializableResource):
         sec.DENY_ALL
     ]
 
-    _DOCUMENT_SCHEMA = schema.AuthToken
-    _SCHEMA = {
-        'CREATE': schema.Authenticate
-    }
+    _SCHEMA = schema.AuthToken
 
     def create(self, data):
         """

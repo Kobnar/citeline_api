@@ -8,9 +8,7 @@ from . import schema
 class PersonDocument(resources.APIDocumentResource):
 
     _DOCUMENT_SCHEMA = schema.Person
-    _SCHEMA = {
-        'PUT': schema.UpdatePerson
-    }
+    _SCHEMA = schema.Person
 
 
 class PersonCollection(resources.APICollectionResource):
@@ -18,11 +16,7 @@ class PersonCollection(resources.APICollectionResource):
     _COLLECTION = db.Person
     _DOCUMENT_RESOURCE = PersonDocument
 
-    _DOCUMENT_SCHEMA = schema.Person
-    _SCHEMA = {
-        'POST': schema.CreatePerson,
-        'GET': schema.RetrievePeople
-    }
+    _SCHEMA = schema.Person
 
     def _retrieve(self, query):
         # TODO: It has been said this will lead to heat death at scale.
