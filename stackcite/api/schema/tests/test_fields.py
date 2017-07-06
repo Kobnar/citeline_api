@@ -5,6 +5,35 @@ from stackcite.api import testing
 from marshmallow import Schema
 
 
+class AuthTokenKeyFieldTests(unittest.TestCase):
+
+    layer = testing.layers.UnitTestLayer
+
+    def setUp(self):
+        from .. import fields
+        self.field = fields.AuthTokenKeyField()
+
+    def test_deserialize_does_not_raise_exception_for_valid_string(self):
+        """AuthTokenKeyField.deseriaize() does not raise ValidationError for a valid string
+        """
+        # A valid key contains 56 lowercase letters and numbers
+        valid_key = '01dbaff045b7259cf57cb2c2abc637efeadad416eb17544b9784f598'
+        from marshmallow import ValidationError
+        try:
+            self.field.deserialize(valid_key)
+        except ValidationError as err:
+            msg = 'Unexpected exception raised: {}'
+            self.fail(msg.format(err))
+
+    def test_deserialize_raises_exception_for_invalid_string(self):
+        """AuthTokenKeyField.deserialize() raises ValidationError for an invalid string
+        """
+        invalid_key = 'invalid_key'
+        from marshmallow import ValidationError
+        with self.assertRaises(ValidationError):
+            self.field.deserialize(invalid_key)
+
+
 class _MockObj(object):
     def __init__(self, object_id=None, password=None):
         from bson import ObjectId
