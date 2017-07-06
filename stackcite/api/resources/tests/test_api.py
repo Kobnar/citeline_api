@@ -26,28 +26,20 @@ class SerializableResourceTests(unittest.TestCase):
     layer = testing.layers.UnitTestLayer
 
     def test_undefined_schema_raises_exception(self):
-        """SerializableResource.schema raises NotImplementedError if schema is not implemented
+        """SerializableResource.schema() raises exception if no schema is set
         """
         from .. import SerializableResource
         resource = SerializableResource()
         with self.assertRaises(NotImplementedError):
-            resource.schema
+            resource.schema()
 
-    def test_load_raises_exception_if_schema_not_implemented(self):
-        """SerializableResource.load() raises NotImplementedError if schema is not implemented
+    def test_defined_schema_returns_schema_instance(self):
+        """SerializableResource.schema() returns a Schema instance
         """
-        from .. import SerializableResource
-        resource = SerializableResource()
-        with self.assertRaises(NotImplementedError):
-            resource.load({})
-
-    def test_dump_raises_exception_if_schema_not_implemented(self):
-        """SerializableResource.dump() raises NotImplementedError if schema is not implemented
-        """
-        from .. import SerializableResource
-        resource = SerializableResource()
-        with self.assertRaises(NotImplementedError):
-            resource.dump({})
+        resource = testing.mock.MockAPICollectionResource()
+        result = resource.schema()
+        from marshmallow import Schema
+        self.assertIsInstance(result, Schema)
 
 
 class APIResourceTests(unittest.TestCase):
@@ -61,8 +53,6 @@ class APIResourceTests(unittest.TestCase):
 
 
 class APIDocumentTests(APIResourceTests):
-
-    layer = testing.layers.MongoIntegrationTestLayer
 
     def setUp(self):
         super(APIDocumentTests, self).setUp()
@@ -138,10 +128,14 @@ class APIDocumentTests(APIResourceTests):
         with self.assertRaises(DoesNotExist):
             testing.mock.MockDocument.objects.get(id=self.doc.id)
 
+    def test_schema_returns_parent_schema_instance(self):
+        """APIDocument.schema() returns instance of parent schema
+        """
+        schm = self.doc_resource.schema()
+        self.assertIsInstance(schm, testing.mock.MockDocumentSchema)
+
 
 class APICollectionTests(APIResourceTests):
-
-    layer = testing.layers.MongoIntegrationTestLayer
 
     def test_create_returns_doc(self):
         """APICollection.create() returns document object

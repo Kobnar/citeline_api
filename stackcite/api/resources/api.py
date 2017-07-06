@@ -34,30 +34,19 @@ class EndpointResource(object):
 
 class SerializableResource(object):
     """
-    An abstract class providing generalized serialization methods for an API
-    resource.
+    An abstract class used to define a serializable resource.
     """
 
     _SCHEMA = NotImplemented
 
-    @property
-    def schema(self):
+    def schema(self, *args, **kwargs):
+        """
+        Instantiates a schema. Accepts the same arguments as
+        :class:`marshmallow.Schema`.
+        """
         if self._SCHEMA is NotImplemented:
             raise NotImplementedError()
-        return self._SCHEMA
-
-    def _init_schema(self, method=None, only=(), exclude=(), strict=None):
-        schm = self.schema(only=only, exclude=exclude, strict=strict)
-        schm.method = method
-        return schm
-
-    def load(self, query, method=None, single=None, **kwargs):
-        schm = self._init_schema(method=method)
-        return schm.load(query, single, **kwargs)
-
-    def dump(self, data, method=None, single=None, **kwargs):
-        schm = self._init_schema(method=method)
-        return schm.dump(data, single, **kwargs)
+        return self._SCHEMA(*args, **kwargs)
 
 
 class APIIndexResource(index.IndexResource, EndpointResource):
@@ -100,14 +89,6 @@ class APIDocumentResource(
 
     _VIEW_CLASS = views.APIDocumentViews
 
-    # TODO: Need tests!
-    @property
-    def schema(self):
-        """
-        Returns the collection-level schema as its own.
-        """
-        return self.parent.schema
-
     @staticmethod
     def get_params(query):
         """
@@ -124,6 +105,12 @@ class APIDocumentResource(
         }
         return _get_params(query, params)
 
+    def schema(self, *args, **kwargs):
+        """
+        Returns the schema defined by the parent resource (a collection).
+        """
+        return self.parent.schema(*args, **kwargs)
+
 
 class APICollectionResource(
         mongo.CollectionResource, EndpointResource, SerializableResource):
@@ -138,10 +125,10 @@ class APICollectionResource(
     ]
 
     _VIEW_CLASS = views.APICollectionViews
-    _SCHEMA = schema.APICollectionSchema
+    _SCHEMA = schema.APIDocumentSchema
 
     _DOCUMENT_RESOURCE = APIDocumentResource
-    _DOCUMENT_SCHEMA = schema.APIDocumentSchema
+    _DOCUMENT_SCHEMA = NotImplemented
 
     # TODO: Find a better pattern to inject custom raw queries (use schemas)
     def retrieve(self, query=None, fields=None, limit=100, skip=0):
@@ -151,14 +138,6 @@ class APICollectionResource(
 
     def _retrieve(self, query):
         pass
-
-    def _init_schema(self, method=None, only=(), exclude=(), strict=None):
-        """
-        Injects a document schema class into the collection schema's context.
-        """
-        schm = super()._init_schema(only=only, exclude=exclude, strict=strict)
-        schm.document_schema = self._DOCUMENT_SCHEMA
-        return schm
 
     @staticmethod
     def get_params(query):
