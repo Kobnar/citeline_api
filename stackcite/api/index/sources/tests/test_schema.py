@@ -5,7 +5,7 @@ from stackcite.api import testing
 
 class UpdateSourceTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..schema import UpdateSource
@@ -85,7 +85,7 @@ class UpdateSourceTests(unittest.TestCase):
 
 class CreateSourceTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..schema import CreateSource
@@ -127,7 +127,7 @@ class CreateSourceTests(unittest.TestCase):
 
 class RetrieveSourcesTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..schema import RetrieveSources

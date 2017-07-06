@@ -1,9 +1,9 @@
 from stackcite.api import testing
 
 
-class ConfirmationViewsTestCase(testing.views.ViewTestCase):
+class ConfirmationViewsTestCase(testing.views.BaseViewTestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     from ..resources import ConfirmationResource
     RESOURCE_CLASS = ConfirmationResource
@@ -23,7 +23,7 @@ class ConfirmationViewsCreateTestCase(ConfirmationViewsTestCase):
     def test_create_creates_confirmation_token(self):
         """ConfirmationViews.create() creates ConfirmationToken in database
         """
-        view = self.get_view()
+        view = self.make_view()
         email = 'test@email.com'
         password = 'T3stPa$$word'
         from stackcite import data as db
@@ -40,7 +40,7 @@ class ConfirmationViewsCreateTestCase(ConfirmationViewsTestCase):
     def test_strict_schema(self):
         """ConfirmationViews.create() enforces a strict validation schema
         """
-        view = self.get_view()
+        view = self.make_view()
         view.request.json_body = {'email': 'bad_email'}
         from stackcite.api import exceptions as exc
         with self.assertRaises(exc.APIValidationError):
@@ -58,7 +58,7 @@ class ConfirmationViewsUpdateTestCase(ConfirmationViewsTestCase):
     def test_update_deletes_confirmation_token(self):
         """ConfirmationViews.update() deletes ConfirmationToken in database
         """
-        view = self.get_view()
+        view = self.make_view()
         view.request.json_body = {'key': self.token.key}
         view.update()
         import mongoengine
@@ -69,7 +69,7 @@ class ConfirmationViewsUpdateTestCase(ConfirmationViewsTestCase):
     def test_update_confirms_user(self):
         """ConfirmationViews.update() confirms associated user
         """
-        view = self.get_view()
+        view = self.make_view()
         view.request.json_body = {'key': self.token.key}
         view.update()
         self.user.reload()
@@ -78,7 +78,7 @@ class ConfirmationViewsUpdateTestCase(ConfirmationViewsTestCase):
     def test_strict_schema(self):
         """ConfirmationViews.update() enforces a strict validation schema
         """
-        view = self.get_view()
+        view = self.make_view()
         view.request.json_body = {'email': 'bad_email'}
         from stackcite.api import exceptions as exc
         with self.assertRaises(exc.APIValidationError):

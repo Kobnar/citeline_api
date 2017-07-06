@@ -4,7 +4,7 @@ from stackcite.api import testing
 
 
 class BaseViewTests(unittest.TestCase):
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from pyramid import testing

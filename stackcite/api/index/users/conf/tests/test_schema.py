@@ -5,7 +5,7 @@ from stackcite.api import testing
 
 class CreateConfirmationTokenTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..schema import CreateConfirmationToken
@@ -20,7 +20,7 @@ class CreateConfirmationTokenTests(unittest.TestCase):
 
 class UpdateConfirmationTokenTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..schema import UpdateConfirmationToken

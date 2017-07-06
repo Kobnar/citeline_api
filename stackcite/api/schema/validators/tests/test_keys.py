@@ -5,7 +5,7 @@ from stackcite.api import testing
 
 class AuthTokenKeyValidatorTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..keys import AuthTokenKeyValidator

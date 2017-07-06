@@ -5,7 +5,7 @@ from stackcite.api import testing
 
 class MockAPIMongoResourceTestCase(unittest.TestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     def setUp(self):
         from ..models import MockDocument

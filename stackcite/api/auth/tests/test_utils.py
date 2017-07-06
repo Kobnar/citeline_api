@@ -5,7 +5,7 @@ from stackcite.api import testing
 
 class AuthUtilsBaseIntegrationTestCase(unittest.TestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     def setUp(self):
         from stackcite import data as db

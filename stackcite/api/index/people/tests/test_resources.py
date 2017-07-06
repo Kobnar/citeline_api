@@ -14,7 +14,7 @@ def make_person(data, save=False):
 
 class PersonCollectionIntegrationTestCase(unittest.TestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     def setUp(self):
         from stackcite.data import Person

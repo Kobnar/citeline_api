@@ -4,7 +4,7 @@ from stackcite.api import testing
 class PersonCollectionViewsIntegrationTestCase(
         testing.views.CollectionViewTestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     # Define resource and view classes
     from ..resources import PersonCollection
@@ -12,8 +12,8 @@ class PersonCollectionViewsIntegrationTestCase(
     RESOURCE_CLASS = PersonCollection
     VIEW_CLASS = APICollectionViews
 
-    def get_view(self, name='people'):
-        return super().get_view(name)
+    def make_view(self, name='people'):
+        return super().make_view(name)
 
     def setUp(self):
         from stackcite.data import Person
@@ -24,7 +24,7 @@ class PersonCollectionViewsIntegrationTestCase(
         """
         from stackcite.api.exceptions import APIBadRequest
         data = {'name': {'first': 'John', 'full': 'John Nobody Doe'}}
-        view = self.get_view()
+        view = self.make_view()
         view.request.json_body = data
         with self.assertRaises(APIBadRequest):
             view.create()
@@ -34,7 +34,7 @@ class PersonCollectionViewsIntegrationTestCase(
         """
         from stackcite.api.exceptions import APIBadRequest
         data = {'limit': -1}
-        view = self.get_view()
+        view = self.make_view()
         view.request.params = data
         with self.assertRaises(APIBadRequest):
             view.retrieve()
@@ -43,7 +43,7 @@ class PersonCollectionViewsIntegrationTestCase(
 class PersonDocumentViewsIntegrationTestCase(
         testing.views.DocumentViewTestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     # Define resource and view classes
     from ..resources import PersonCollection
@@ -63,14 +63,14 @@ class PersonDocumentViewsIntegrationTestCase(
         person = mk_prs(people[rand_idx], save)
         return person
 
-    def get_view(self, object_id=None, name='people'):
-        return super().get_view(object_id, name)
+    def make_view(self, object_id=None, name='people'):
+        return super().make_view(object_id, name)
 
     def test_retrieve_raises_exception_for_missing_person(self):
         """PersonDocumentViews.retrieve() raises APINotFound for missing person
         """
         from stackcite.api.exceptions import APINotFound
-        view = self.get_view()
+        view = self.make_view()
         with self.assertRaises(APINotFound):
             view.retrieve()
 
@@ -80,7 +80,7 @@ class PersonDocumentViewsIntegrationTestCase(
         from stackcite.api.exceptions import APIBadRequest
         data = {'name': {'first': 'John', 'full': 'John Nobody Doe'}}
         person = self.make_person(save=True)
-        view = self.get_view(person.id)
+        view = self.make_view(person.id)
         view.request.json_body = data
         with self.assertRaises(APIBadRequest):
             view.update()
@@ -90,7 +90,7 @@ class PersonDocumentViewsIntegrationTestCase(
         """
         from stackcite.api.exceptions import APINoContent
         person = self.make_person(save=True)
-        view = self.get_view(person.id)
+        view = self.make_view(person.id)
         with self.assertRaises(APINoContent):
             view.delete()
 
@@ -98,6 +98,6 @@ class PersonDocumentViewsIntegrationTestCase(
         """PersonDocumentViews.delete() raises APINotFound for missing person
         """
         from stackcite.api.exceptions import APINotFound
-        view = self.get_view()
+        view = self.make_view()
         with self.assertRaises(APINotFound):
             view.delete()

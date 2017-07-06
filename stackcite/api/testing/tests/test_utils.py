@@ -5,7 +5,7 @@ from stackcite.api import testing
 
 class CreateUserTestCase(unittest.TestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     def setUp(self):
         from stackcite import data as db
@@ -42,7 +42,7 @@ class CreateUserTestCase(unittest.TestCase):
 
 class CreateSourceTestCase(unittest.TestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     def setUp(self):
         from stackcite import data as db
@@ -80,7 +80,7 @@ class CreateSourceTestCase(unittest.TestCase):
 
 class CreateCitationTestCase(unittest.TestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     def setUp(self):
         from stackcite import data as db

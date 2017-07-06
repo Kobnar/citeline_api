@@ -5,7 +5,7 @@ from stackcite.api import testing
 
 class ISBN10ValidatorTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..isbns import ISBN10Validator
@@ -35,7 +35,7 @@ class ISBN10ValidatorTests(unittest.TestCase):
 
 class ISBN13ValidatorTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..isbns import ISBN13Validator

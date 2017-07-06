@@ -12,7 +12,7 @@ class UserResourceTestCase(unittest.TestCase):
 
 class UserDocumentTestCase(UserResourceTestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     def setUp(self):
         super().setUp()

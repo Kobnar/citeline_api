@@ -5,7 +5,7 @@ from stackcite.api import testing
 
 class AuthenticateTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..schema import Authenticate
@@ -26,7 +26,7 @@ class AuthenticateTests(unittest.TestCase):
 
 class AuthTokenTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..schema import AuthToken

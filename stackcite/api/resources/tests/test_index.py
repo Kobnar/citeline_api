@@ -8,7 +8,7 @@ class IndexResourceTestCase(unittest.TestCase):
     Unit tests for :class:`resources.IndexResource`.
     """
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def make_root(self):
         from ..index import IndexResource

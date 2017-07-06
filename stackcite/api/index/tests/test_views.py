@@ -1,9 +1,9 @@
 from stackcite.api import testing
 
 
-class APIIndexViewsTests(testing.views.ViewTestCase):
+class APIIndexViewsTests(testing.views.BaseViewTestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     # Define resource and view class under test
     from ..resources import APIIndex
@@ -11,12 +11,12 @@ class APIIndexViewsTests(testing.views.ViewTestCase):
     RESOURCE_CLASS = APIIndex
     VIEW_CLASS = APIIndexViews
 
-    def get_view(self, name='api_v1'):
-        return super().get_view(name)
+    def make_view(self, name='api_v1'):
+        return super().make_view(name)
 
     def test_returns_dict(self):
         """APIIndexViews.retrieve() returns a dictionary
         """
-        view = self.get_view()
+        view = self.make_view()
         result = view.retrieve()
         self.assertIsInstance(result, dict)

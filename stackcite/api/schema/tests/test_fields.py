@@ -7,7 +7,7 @@ from marshmallow import Schema
 
 class AuthTokenKeyFieldTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from .. import fields
@@ -49,7 +49,7 @@ class _MockSchema(Schema):
 
 class ObjectIdFieldTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..fields import ObjectIdField
@@ -84,7 +84,7 @@ class ObjectIdFieldTests(unittest.TestCase):
 
 class PasswordFieldTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..fields import PasswordField
@@ -121,7 +121,7 @@ class PasswordFieldTests(unittest.TestCase):
 
 class GroupFieldTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..fields import GroupField
@@ -147,7 +147,7 @@ class GroupFieldTests(unittest.TestCase):
 
 class UsernameFieldTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..fields import UsernameField
@@ -174,7 +174,7 @@ class UsernameFieldTests(unittest.TestCase):
 
 class ListFieldTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..fields import ListField
@@ -215,7 +215,7 @@ class ListFieldTests(unittest.TestCase):
 
 class FieldsFieldTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..fields import FieldsField

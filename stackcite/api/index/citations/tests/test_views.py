@@ -4,7 +4,7 @@ from stackcite.api import testing
 class CitationCollectionViewsIntegrationTestCase(
         testing.views.CollectionViewTestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     # Define resource and view classes
     from ..resources import CitationCollection
@@ -12,8 +12,8 @@ class CitationCollectionViewsIntegrationTestCase(
     RESOURCE_CLASS = CitationCollection
     VIEW_CLASS = APICollectionViews
 
-    def get_view(self, name='citation'):
-        return super().get_view(name)
+    def make_view(self, name='citation'):
+        return super().make_view(name)
 
     def setUp(self):
         from stackcite import data
@@ -33,7 +33,7 @@ class CitationCollectionViewsIntegrationTestCase(
             'source': str(source.id),
             'note': 'A test source.'}
 
-        view = self.get_view()
+        view = self.make_view()
         view.request.json_body = data
         try:
             view.create()
@@ -44,7 +44,7 @@ class CitationCollectionViewsIntegrationTestCase(
 class CitationDocumentViewsIntegrationTestCase(
         testing.views.DocumentViewTestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     # Define resource and view classes
     from ..resources import CitationCollection
@@ -57,5 +57,5 @@ class CitationDocumentViewsIntegrationTestCase(
         data.Source.drop_collection()
         data.Citation.drop_collection()
 
-    def get_view(self, object_id=None, name='citation'):
-        return super().get_view(object_id, name)
+    def make_view(self, object_id=None, name='citation'):
+        return super().make_view(object_id, name)

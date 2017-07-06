@@ -5,7 +5,7 @@ from stackcite.api import testing
 
 class NameSchemaTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..schema import Name
@@ -78,7 +78,7 @@ class NameSchemaUpdateTests(NameSchemaTests):
 
 class PersonSchemaTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..schema import Person

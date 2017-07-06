@@ -3,7 +3,7 @@ from stackcite.api import testing
 
 class APIExceptionViewsTestCase(testing.views.ExceptionViewTestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     from ..api import APIExceptionViews
     VIEW_CLASS = APIExceptionViews
@@ -32,7 +32,7 @@ class APINotFoundViewsTestCase(APIExceptionViewsTestCase):
         self.assertEqual(expected, result)
 
 
-class APIIndexViewsTestCase(testing.views.ViewTestCase):
+class APIIndexViewsTestCase(testing.views.BaseViewTestCase):
 
     from ..api import APIIndexViews
     VIEW_CLASS = APIIndexViews
@@ -44,7 +44,7 @@ class APIIndexViewsTestCase(testing.views.ViewTestCase):
         """APIIndexViews raises 204 NO CONTENT exception
         """
         from stackcite.api.exceptions import APINoContent
-        view = self.get_view()
+        view = self.make_view()
         with self.assertRaises(APINoContent):
             view.retrieve()
 
@@ -58,7 +58,7 @@ class APIViewsIntegrationTestCase(object):
     cases of multiple inheritance.
     """
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     RESOURCE_CLASS = testing.mock.MockAPICollectionResource
 
@@ -82,7 +82,7 @@ class APICollectionViewsCreateTestCase(APICollectionViewsIntegrationTestCase):
         """APICollectionViews.create() returns a valid ObjectId
         """
         docs = testing.mock.utils.create_mock_data()
-        view = self.get_view()
+        view = self.make_view()
         for doc in docs:
             expected = {
                 'id': doc.id,
@@ -104,7 +104,7 @@ class APICollectionViewsCreateTestCase(APICollectionViewsIntegrationTestCase):
         """APICollectionViews.create() returns a valid document dictionary
         """
         docs = testing.mock.utils.create_mock_data()
-        view = self.get_view()
+        view = self.make_view()
         for doc in docs:
             data = {
                 'name': doc.name,
@@ -120,7 +120,7 @@ class APICollectionViewsCreateTestCase(APICollectionViewsIntegrationTestCase):
         """APICollectionViews.create() saves a new MockDocument to the database
         """
         docs = testing.mock.utils.create_mock_data()
-        view = self.get_view()
+        view = self.make_view()
         from mongoengine import DoesNotExist, ValidationError
         for doc in docs:
             data = {
@@ -138,7 +138,7 @@ class APICollectionViewsCreateTestCase(APICollectionViewsIntegrationTestCase):
         """APICollectionViews.create() returns 201 CREATED if successful
         """
         docs = testing.mock.utils.create_mock_data()
-        view = self.get_view()
+        view = self.make_view()
         for doc in docs:
             data = {
                 'name': doc.name,
@@ -152,7 +152,7 @@ class APICollectionViewsCreateTestCase(APICollectionViewsIntegrationTestCase):
     def test_create_existing_raises_400_BAD_REQUEST(self):
         """APICollectionViews.create() raises 409 CONFLICT if the document exists
         """
-        view = self.get_view()
+        view = self.make_view()
         # Create an existing person:
         existing_doc = testing.mock.MockDocument()
         existing_doc.name = 'Mock Document'
@@ -167,7 +167,7 @@ class APICollectionViewsCreateTestCase(APICollectionViewsIntegrationTestCase):
     def test_create_invalid_data_raises_400_BAD_REQUEST(self):
         """APICollectionViews.create() raises 400 BAD REQUEST if data fails validation
         """
-        view = self.get_view()
+        view = self.make_view()
         invalid_data = {
             'name': 123,
             'number': 'cats',
@@ -184,7 +184,7 @@ class APICollectionViewsCreateTestCase(APICollectionViewsIntegrationTestCase):
             'name': 'Test Document',
             'number': 0,
             'fact': True}
-        view = self.get_view()
+        view = self.make_view()
         view.request.json_body = data
         result = view.create()
         data['id'] = result['id']
@@ -197,7 +197,7 @@ class APICollectionViewsRetrieveTestCase(APICollectionViewsIntegrationTestCase):
         """APICollectionViews.retrieve() returns all expected results
         """
         docs = testing.mock.utils.create_mock_data(save=True)
-        view = self.get_view()
+        view = self.make_view()
         view.request.params = {}
         results = view.retrieve()['items']
         results = [d['name'] for d in results]
@@ -209,7 +209,7 @@ class APICollectionViewsRetrieveTestCase(APICollectionViewsIntegrationTestCase):
         """APICollectionViews.retrieve() returned an id for each result
         """
         testing.mock.utils.create_mock_data(save=True)
-        view = self.get_view()
+        view = self.make_view()
         view.request.params = {}
         results = view.retrieve()['items']
         from bson import ObjectId
@@ -225,7 +225,7 @@ class APICollectionViewsRetrieveTestCase(APICollectionViewsIntegrationTestCase):
         """ APICollectionViews.retrieve() properly serializes each object
         """
         docs = testing.mock.utils.create_mock_data(save=True)
-        view = self.get_view()
+        view = self.make_view()
         view.request.params = {}
         results = view.retrieve()['items']
         for idx, result in enumerate(results):
@@ -237,7 +237,7 @@ class APICollectionViewsRetrieveTestCase(APICollectionViewsIntegrationTestCase):
         """APICollectionViews.retrieve() filters explicitly named fields
         """
         testing.mock.utils.create_mock_data(save=True)
-        view = self.get_view()
+        view = self.make_view()
         view.request.params = {'fields': 'id,number'}
         query_results = view.retrieve()['items']
         expected = ['id', 'number']
@@ -249,7 +249,7 @@ class APICollectionViewsRetrieveTestCase(APICollectionViewsIntegrationTestCase):
         """APICollectionViews.retrieve() returns 200 OK if documents exist
         """
         testing.mock.utils.create_mock_data(save=True)
-        view = self.get_view()
+        view = self.make_view()
         view.retrieve()
         result = view.request.response.status_code
         self.assertEqual(result, 200)
@@ -257,7 +257,7 @@ class APICollectionViewsRetrieveTestCase(APICollectionViewsIntegrationTestCase):
     def test_retrieve_returns_empty_list_if_no_results(self):
         """APICollectionViews.retrieve() returns an empty list if there are no results
         """
-        view = self.get_view()
+        view = self.make_view()
         view.request.params = {'name': 'John'}
         expected = []
         result = view.retrieve()['items']
@@ -266,7 +266,7 @@ class APICollectionViewsRetrieveTestCase(APICollectionViewsIntegrationTestCase):
     def test_retrieve_schema_invalidation_raises_400_BAD_REQUEST(self):
         """APICollectionViews.retrieve() raises 400 BAD REQUEST if data fails schema validation
         """
-        view = self.get_view()
+        view = self.make_view()
         invalid_query = {
             'name': 'Document',
             'number': 'some_string',
@@ -292,8 +292,8 @@ class APIDocumentViewsIntegrationTestCase(
         testing.mock.MockDocument.drop_collection()
         super().setUp()
 
-    def get_view(self, object_id=None, name='documents'):
-        return super().get_view(object_id, name)
+    def make_view(self, object_id=None, name='documents'):
+        return super().make_view(object_id, name)
 
 
 class APIDocumentViewsRetrieveTestCase(APIDocumentViewsIntegrationTestCase):
@@ -303,7 +303,7 @@ class APIDocumentViewsRetrieveTestCase(APIDocumentViewsIntegrationTestCase):
         """
         documents = testing.mock.utils.create_mock_data(save=True)
         for doc in documents:
-            view = self.get_view(doc.id)
+            view = self.make_view(doc.id)
             # Work around missing default schema:
             view.request.params = {}
             result = view.retrieve()
@@ -315,7 +315,7 @@ class APIDocumentViewsRetrieveTestCase(APIDocumentViewsIntegrationTestCase):
         documents = testing.mock.utils.create_mock_data(save=True)
         expected = ['id', 'number']
         for document in documents:
-            view = self.get_view(document.id)
+            view = self.make_view(document.id)
             view.request.params = {'fields': 'id,number'}
             query_result = view.retrieve()
             result = [x for x in query_result.keys()]
@@ -327,7 +327,7 @@ class APIDocumentViewsRetrieveTestCase(APIDocumentViewsIntegrationTestCase):
         documents = testing.mock.utils.create_mock_data(save=True)
         ids = [doc.id for doc in documents]
         for pid in ids:
-            view = self.get_view(pid)
+            view = self.make_view(pid)
             # Work around missing default schema:
             view.request.params = {}
             view.retrieve()
@@ -339,7 +339,7 @@ class APIDocumentViewsRetrieveTestCase(APIDocumentViewsIntegrationTestCase):
         """
         from bson import ObjectId
         pid = ObjectId()
-        view = self.get_view(pid)
+        view = self.make_view(pid)
         # Work around missing default schema:
         view.request.params = {}
         from stackcite.api.exceptions import APINotFound
@@ -356,7 +356,7 @@ class APIDocumentViewsUpdateTestCase(APIDocumentViewsIntegrationTestCase):
         documents = testing.mock.utils.create_mock_data(save=True)
         for doc in documents:
             # Build view:
-            view = self.get_view(doc.id)
+            view = self.make_view(doc.id)
             view.request.json_body = {'fact': not doc.fact}
             # Update and verify:
             result = view.update()
@@ -370,7 +370,7 @@ class APIDocumentViewsUpdateTestCase(APIDocumentViewsIntegrationTestCase):
         documents = testing.mock.utils.create_mock_data(save=True)
         for doc in documents:
             # Build view:
-            view = self.get_view(doc.id)
+            view = self.make_view(doc.id)
             view.request.json_body = {'fact': not doc.fact}
             # Update and compare to direct query:
             view_result = view.update()
@@ -385,7 +385,7 @@ class APIDocumentViewsUpdateTestCase(APIDocumentViewsIntegrationTestCase):
         # Select a random target and update its name:
         from random import randint
         target = documents.pop(randint(0, len(documents) - 1))
-        view = self.get_view(target.id)
+        view = self.make_view(target.id)
         view.request.json_body = {'name': 'Unique Document'}
         view.update()
         # Check that everybody else is the same with a direct query:
@@ -399,7 +399,7 @@ class APIDocumentViewsUpdateTestCase(APIDocumentViewsIntegrationTestCase):
         documents = testing.mock.utils.create_mock_data(save=True)
         pids = [doc.id for doc in documents]
         for pid in pids:
-            view = self.get_view(pid)
+            view = self.make_view(pid)
             view.request.json_body = {'fact': True}
             view.update()
             result = view.request.response.status_code
@@ -410,7 +410,7 @@ class APIDocumentViewsUpdateTestCase(APIDocumentViewsIntegrationTestCase):
         """
         from bson import ObjectId
         pid = ObjectId()
-        view = self.get_view(pid)
+        view = self.make_view(pid)
         view.request.json_body = {'fact': True}
         from stackcite.api.exceptions import APINotFound
         with self.assertRaises(APINotFound):
@@ -420,7 +420,7 @@ class APIDocumentViewsUpdateTestCase(APIDocumentViewsIntegrationTestCase):
         """APIDocumentViews.update() raises 400 BAD REQUEST if data fails validation
         """
         doc = testing.mock.utils.create_mock_data(1, save=True)[0]
-        view = self.get_view(doc.id)
+        view = self.make_view(doc.id)
         view.request.json_body = {'number': 'cats'}
         from stackcite.api.exceptions import APIBadRequest
         with self.assertRaises(APIBadRequest):
@@ -437,7 +437,7 @@ class APIDocumentViewsDeleteTestCase(APIDocumentViewsIntegrationTestCase):
         # Delete a random person:
         from random import randint
         target = documents.pop(randint(0, len(documents) - 1))
-        view = self.get_view(target.id)
+        view = self.make_view(target.id)
         from stackcite.api.exceptions import APINoContent
         try:
             view.delete()
@@ -455,7 +455,7 @@ class APIDocumentViewsDeleteTestCase(APIDocumentViewsIntegrationTestCase):
         # Delete a random person:
         from random import randint
         target = documents.pop(randint(0, len(documents) - 1))
-        view = self.get_view(target.id)
+        view = self.make_view(target.id)
         from stackcite.api.exceptions import APINoContent
         try:
             view.delete()
@@ -476,7 +476,7 @@ class APIDocumentViewsDeleteTestCase(APIDocumentViewsIntegrationTestCase):
         # Delete a random document:
         from random import randint
         target = documents.pop(randint(0, len(documents) - 1))
-        view = self.get_view(target.id)
+        view = self.make_view(target.id)
         from stackcite.api.exceptions import APINoContent
         with self.assertRaises(APINoContent):
             view.delete()
@@ -488,7 +488,7 @@ class APIDocumentViewsDeleteTestCase(APIDocumentViewsIntegrationTestCase):
         testing.mock.utils.create_mock_data(save=True)
         from bson import ObjectId
         pid = ObjectId()
-        view = self.get_view(pid)
+        view = self.make_view(pid)
         from stackcite.api.exceptions import APINotFound
         with self.assertRaises(APINotFound):
             view.delete()

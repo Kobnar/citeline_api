@@ -13,7 +13,7 @@ def _make_request(key):
 
 class AuthPolicyIntegrationTestCase(unittest.TestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     def setUp(self):
         from stackcite import data as db

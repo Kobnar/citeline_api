@@ -5,7 +5,7 @@ from stackcite.api import testing
 
 class EndpointResourceTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from . import MockEndpointResource
@@ -23,7 +23,7 @@ class EndpointResourceTests(unittest.TestCase):
 
 class SerializableResourceTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def test_undefined_schema_raises_exception(self):
         """SerializableResource.schema() raises exception if no schema is set
@@ -44,7 +44,7 @@ class SerializableResourceTests(unittest.TestCase):
 
 class APIResourceTests(unittest.TestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     def setUp(self):
         testing.mock.MockDocument.drop_collection()

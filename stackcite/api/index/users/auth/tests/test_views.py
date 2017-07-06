@@ -3,7 +3,7 @@ from stackcite.api import testing
 
 class AuthViewsTests(testing.views.CollectionViewTestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     # Define resource and view class under test
     from ..resources import AuthResource
@@ -17,8 +17,8 @@ class AuthViewsTests(testing.views.CollectionViewTestCase):
         db.User.drop_collection()
         super().setUp()
 
-    def get_view(self, name='api_v1'):
-        return super().get_view(name)
+    def make_view(self, name='api_v1'):
+        return super().make_view(name)
 
     @staticmethod
     def make_user(email, password, groups=(), save=False):
@@ -42,7 +42,7 @@ class AuthViewsCreateTests(AuthViewsTests):
             'email': 'test@email.com',
             'password': 'T3stPa$$word'}
         self.make_user(data['email'], data['password'], save=True)
-        view = self.get_view()
+        view = self.make_view()
         view.request.json_body = data
         view.create()
         result = view.request.response.status_code
@@ -56,7 +56,7 @@ class AuthViewsCreateTests(AuthViewsTests):
             'cats': 'Are evil.',
             'dogs': 'Are lovely.'}
         self.make_user('test@email.com', 'T3stPa$$word', save=True)
-        view = self.get_view()
+        view = self.make_view()
         view.request.json_body = data
         with(self.assertRaises(exc.APIValidationError)):
             view.create()
@@ -69,7 +69,7 @@ class AuthViewsCreateTests(AuthViewsTests):
             'email': 'wrong@email.com',
             'password': 'T3stPa$$word'}
         self.make_user('test@email.com', data['password'], save=True)
-        view = self.get_view()
+        view = self.make_view()
         view.request.json_body = data
         with(self.assertRaises(exc.APIAuthenticationFailed)):
             view.create()
@@ -82,7 +82,7 @@ class AuthViewsCreateTests(AuthViewsTests):
             'email': 'test@email.com',
             'password': 'T3stPa$$word'}
         self.make_user(data['email'], 'B4dPa$$word', save=True)
-        view = self.get_view()
+        view = self.make_view()
         view.request.json_body = data
         with(self.assertRaises(exc.APIAuthenticationFailed)):
             view.create()

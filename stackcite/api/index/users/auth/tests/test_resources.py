@@ -5,7 +5,7 @@ from stackcite.api import testing
 
 class AuthResourceIntegrationTestCase(unittest.TestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     def setUp(self):
         from stackcite.data import AuthToken, User

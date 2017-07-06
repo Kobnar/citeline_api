@@ -5,7 +5,7 @@ from stackcite.api import testing
 
 class MockResourceTestCase(unittest.TestCase):
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     # Define "mock" traversal resources:
     from ..mongo import CollectionResource
@@ -215,7 +215,7 @@ class DocumentResourceTestCase(MockResourceTestCase):
     Integration tests for :class:`resources.DocumentResource`.
     """
 
-    layer = testing.layers.MongoIntegrationTestLayer
+    layer = testing.layers.MongoTestLayer
 
     def setUp(self):
         super(DocumentResourceTestCase, self).setUp()

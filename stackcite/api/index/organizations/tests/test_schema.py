@@ -5,7 +5,7 @@ from stackcite.api import testing
 
 class UpdateOrganizationTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..schema import UpdateOrganization
@@ -21,7 +21,7 @@ class UpdateOrganizationTests(unittest.TestCase):
 
 class CreateOrganizationTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..schema import CreateOrganization
@@ -43,7 +43,7 @@ class CreateOrganizationTests(unittest.TestCase):
 
 class RetrieveOrganizationsTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..schema import RetrieveOrganizations
@@ -59,7 +59,7 @@ class RetrieveOrganizationsTests(unittest.TestCase):
 
 class UpdatePublisherTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..schema import UpdatePublisher
@@ -82,7 +82,7 @@ class UpdatePublisherTests(unittest.TestCase):
 
 class CreatePublisherTests(unittest.TestCase):
 
-    layer = testing.layers.UnitTestLayer
+    layer = testing.layers.BaseTestLayer
 
     def setUp(self):
         from ..schema import CreatePublisher
