@@ -163,22 +163,7 @@ class APICollectionSchemaLoadTests(APICollectionSchemaTests):
         """APICollectionSchema.load() returns fields from component schema
         """
         query = {'fields': 'id,name,number'}
-        data, errors = self.schema.load(query, single=True)
+        data, errors = self.schema.load(query)
         expected = ['id', 'name', 'number']
         result = data['fields']
         self.assertListEqual(expected, result)
-
-
-class APICollectionSchemaDumpTests(APICollectionSchemaTests):
-
-    @staticmethod
-    def make_docs(count=8):
-        return [testing.mock.MockDocument(
-                name='Document {}'.format(idx),
-                number=idx,
-                fact=bool(idx % 2)) for idx in range(count)]
-
-    # def test_many_returns_count(self):
-    #     docs = self.make_docs()
-    #     data, errors = self.schema.dump(docs)
-    #     self.assertIn('count', data)

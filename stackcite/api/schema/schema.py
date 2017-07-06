@@ -15,8 +15,9 @@ API_METHODS = (POST, GET, PUT, DELETE)
 
 class APISchema(Schema):
     """
-    Provides helper setters/getters for common schema contexts (e.g. request
-    method).
+    A sub-type of :class:`marshmallow.Schema` that provides a ``method``
+    context that can be used to enforce specific schema-wide validation rules
+    (e.g. :class:`~Person` requires a ``name`` if the HTTP method is ``POST``).
     """
 
     @property
@@ -33,8 +34,7 @@ class APISchema(Schema):
 
 class APIDocumentSchema(APISchema):
     """
-    A default validation schema to perform CRUD operations on a document
-    resource.
+    A base schema for validating queries and deserializing documents.
     """
 
     # Query request fields
@@ -46,14 +46,10 @@ class APIDocumentSchema(APISchema):
 
 class APICollectionSchema(APISchema):
     """
-    A schema designed to coordinate (de)serializing collections of documents,
-    based on the context of the request (e.g. method).
-
-    The `load` and `dump` methods of this schema are designed to handle the
-    data differently if it is a collection or a single document. If it is a
-    single document, both methods will bypass collection-level
-    (de)serialization.
+    A general schema for validating collection-level queries.
     """
+
+    # TODO: Encapsulate document serialization.
 
     # Query request fields
     q = mm_fields.String(load_only=True)
@@ -68,35 +64,7 @@ class APICollectionSchema(APISchema):
         load_only=True)
     fields = api_fields.FieldsField(load_only=True)
 
-    # Collection response fields
-    # count = mm_fields.Integer(
-    #     validate=mm_fields.validate.Range(min=0),
-    #     dump_only=True)
-
-    @property
-    def document_schema(self):
-        return self.context.get('document_schema')
-
-    @document_schema.setter
-    def document_schema(self, value):
-        if isinstance(value, Schema):
-            self.context['document_schema'] = value
-        else:
-            msg = 'Invalid schema: {}'.format(value)
-            raise TypeError(msg)
-
-    def load(self, query, single=None, **kwargs):
-        if single:
-            return self.document_schema.load(query)
-        else:
-            return super().load(query)
-
-    def dump(self, data, single=None, **kwargs):
-        if single:
-            return self.document_schema.dump(data)
-        else:
-            return super().dump(data)
-
 
 class RetrieveCollection(Schema):
+    # DEPRECIATED
     pass
