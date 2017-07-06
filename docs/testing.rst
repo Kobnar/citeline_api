@@ -3,6 +3,10 @@ Testing
 
 .. automodule:: testing
 
+.. toctree::
+
+    mock
+
 Attributes
 ----------
 

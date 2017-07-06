@@ -5,9 +5,14 @@ from stackcite.data import utils
 
 class MockDocument(utils.IDocument):
     """
-    A "mock" collection definition designed for integration testing.
-    """
+    Provides a very basic data model to perform integration tests with MongoDB.
+    This class can be sub-classed for specific test cases that require
+    additional fields or methods.
 
+    :cvar name: A unique string value.
+    :cvar number: An arbitrary integer value.
+    :cvar fact: An arbitrary boolean value.
+    """
     name = mongoengine.StringField(required=True, unique=True)
     number = mongoengine.IntField()
     fact = mongoengine.BooleanField()

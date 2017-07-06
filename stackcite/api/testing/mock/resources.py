@@ -1,3 +1,10 @@
+"""
+Because of the tight coupling between traversal resources and the underlying
+data model of the Stackcite API, the mock library provides a mock traversal
+resource for testing general API views and resources with
+:class:`~MockDocument`.
+"""
+
 from stackcite.api import resources
 
 from . import models, schema
