@@ -299,7 +299,7 @@ class APIDocumentViewsIntegrationTestCase(
 class APIDocumentViewsRetrieveTestCase(APIDocumentViewsIntegrationTestCase):
 
     def test_retrieve_returns_correct_person(self):
-        """APIDocumentViews.retrieve() returns correct Person data
+        """APIDocumentViews.retrieve() returns correct document data
         """
         documents = testing.mock.utils.create_mock_data(save=True)
         for doc in documents:
