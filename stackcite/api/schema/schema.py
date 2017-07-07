@@ -45,7 +45,7 @@ class APIDocumentSchema(APISchema):
     """
 
     # Query request fields
-    fields = api_fields.FieldsField(load_only=True)
+    fields = api_fields.FieldsListField(load_only=True)
 
     # Document response fields
     id = api_fields.ObjectIdField(dump_only=True)
@@ -71,7 +71,7 @@ class APICollectionSchema(APISchema):
         missing=0,
         validate=mm_fields.validate.Range(min=0),
         load_only=True)
-    fields = api_fields.FieldsField(load_only=True)
+    fields = api_fields.FieldsListField(load_only=True)
 
 
 class RetrieveCollection(Schema):

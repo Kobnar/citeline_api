@@ -154,16 +154,19 @@ class ListField(fields.List):
         return super()._deserialize(value, attr, data)
 
 
-class FieldsField(fields.Field):
+class FieldsListField(fields.List):
     """
     A field that converts an API signature list of field names (e.g.
     ``'person__name__first,person__birth'``) into a python list of field names,
     specified with dot-notation (e.g. ``['person.name.first',
     'person.birth']``).
     """
+    def __init__(self, **kwargs):
+        super().__init__(fields.String, **kwargs)
+
     def _deserialize(self, value, attr, data):
-        # TODO: Inherit from ListField?
         if not value:
-            return []
+            value = []
         else:
-            return value.replace('__', '.').split(',')
+            value = value.replace('__', '.').split(',')
+        return super()._deserialize(value, attr, data)

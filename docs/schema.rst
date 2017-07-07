@@ -33,7 +33,7 @@ Lists
 
         .. autoclass:: ListField
 
-        .. autoclass:: FieldsField
+        .. autoclass:: FieldsListField
 
 Schema
 ------

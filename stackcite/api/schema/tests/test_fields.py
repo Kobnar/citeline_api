@@ -218,8 +218,8 @@ class FieldsFieldTests(unittest.TestCase):
     layer = testing.layers.BaseTestLayer
 
     def setUp(self):
-        from ..fields import FieldsField
-        self.fields = FieldsField()
+        from ..fields import FieldsListField
+        self.fields = FieldsListField()
 
     def test_deserialize_list_items(self):
         """FieldsSchema.deserialize() parses a list string into a python list
