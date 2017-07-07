@@ -11,7 +11,7 @@ Welcome to Stackcite API's documentation!
    :caption: Contents:
 
    testing
-
+   schema
 
 
 Indices and tables

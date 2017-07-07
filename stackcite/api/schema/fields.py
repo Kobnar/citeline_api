@@ -5,7 +5,7 @@ from . import validators
 
 class AuthTokenKeyField(fields.String):
     """
-    A AuthToken key field that automatically validates its content.
+    A field that validates authentication tokens.
 
     :param args: The same positional arguments that
         :class:`marshmallow.fields.String` receives.
@@ -24,7 +24,7 @@ class AuthTokenKeyField(fields.String):
 
 class ObjectIdField(fields.String):
     """
-    An ObjectId field that automatically validates its content.
+    A field that validates :class:`bson.ObjectId` keys.
 
     :param args: The same positional arguments that
         :class:`marshmallow.fields.String` receives.
@@ -43,7 +43,7 @@ class ObjectIdField(fields.String):
 
 class UsernameField(fields.String):
     """
-    A Username field that automatically validates its content.
+    A field that validates username strings.
 
     :param args: The same positional arguments that
         :class:`marshmallow.fields.String` receives.
@@ -62,7 +62,7 @@ class UsernameField(fields.String):
 
 class PasswordField(fields.String):
     """
-    A Password field that automatically validates its content.
+    A field that validates secure passwords.
 
     :param args: The same positional arguments that
         :class:`marshmallow.fields.String` receives.
@@ -79,28 +79,9 @@ class PasswordField(fields.String):
             error=self.error_messages['invalid']))
 
 
-class ISBN10Field(fields.String):
-    """
-    An ISBN-10 field that automatically validates its content.
-
-    :param args: The same positional arguments that
-        :class:`marshmallow.fields.String` receives.
-    :param kwargs: The same keyword arguments that
-        :class:`marshmallow.fields.String` receives.
-    """
-    default_error_messages = {'invalid': 'Not a valid ISBN-10.'}
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(self, *args, **kwargs)
-        # Insert validation into self.validators so that multiple errors can be
-        # stored.
-        self.validators.insert(0, validators.isbns.ISBN10Validator(
-            error=self.error_messages['invalid']))
-
-
 class GroupField(fields.String):
     """
-    A user group name.
+    A field that validates group names.
 
     :param args: The same positional arguments that
         :class:`marshmallow.fields.String` receives.
@@ -117,9 +98,28 @@ class GroupField(fields.String):
             error=self.error_messages['invalid']))
 
 
+class ISBN10Field(fields.String):
+    """
+    A field that validates ISBN-10 values.
+
+    :param args: The same positional arguments that
+        :class:`marshmallow.fields.String` receives.
+    :param kwargs: The same keyword arguments that
+        :class:`marshmallow.fields.String` receives.
+    """
+    default_error_messages = {'invalid': 'Not a valid ISBN-10.'}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(self, *args, **kwargs)
+        # Insert validation into self.validators so that multiple errors can be
+        # stored.
+        self.validators.insert(0, validators.isbns.ISBN10Validator(
+            error=self.error_messages['invalid']))
+
+
 class ISBN13Field(fields.String):
     """
-    An ISBN-13 field that automatically validates its content.
+    A field that validates ISBN-13 values.
 
     :param args: The same positional arguments that
         :class:`marshmallow.fields.String` receives.
@@ -138,7 +138,13 @@ class ISBN13Field(fields.String):
 
 class ListField(fields.List):
     """
-    A list of values.
+    A field that converts an API signature list (e.g. ``'this,that'``) into a
+    python list (e.g. ``['this', 'that']``).
+
+    :param args: The same positional arguments that
+        :class:`marshmallow.fields.String` receives.
+    :param kwargs: The same keyword arguments that
+        :class:`marshmallow.fields.String` receives.
     """
     def _deserialize(self, value, attr, data):
         if not value:
@@ -150,12 +156,13 @@ class ListField(fields.List):
 
 class FieldsField(fields.Field):
     """
-    A list of field names.
-
-    NOTE: This schema will automatically convert underscore subfield notation
-    into dot notation so it works with back-end resources.
+    A field that converts an API signature list of field names (e.g.
+    ``'person__name__first,person__birth'``) into a python list of field names,
+    specified with dot-notation (e.g. ``['person.name.first',
+    'person.birth']``).
     """
     def _deserialize(self, value, attr, data):
+        # TODO: Inherit from ListField?
         if not value:
             return []
         else:

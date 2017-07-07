@@ -1,3 +1,8 @@
+"""
+Stackcite API relies on custom schemas to convert user-facing API input into
+database-layer queries and CRUD operations.
+"""
+
 from marshmallow import (
     Schema,
     fields as mm_fields
@@ -34,7 +39,9 @@ class APISchema(Schema):
 
 class APIDocumentSchema(APISchema):
     """
-    A base schema for validating queries and deserializing documents.
+    A base schema for (de)serializing documents. Each collection class should
+    have its own sub-class of :class:`~APIDocumentSchema` to (de)serialize data
+    and objects.
     """
 
     # Query request fields
@@ -46,7 +53,9 @@ class APIDocumentSchema(APISchema):
 
 class APICollectionSchema(APISchema):
     """
-    A general schema for validating collection-level queries.
+    A general schema for validating collection-level queries. These schemas
+    should match the fields in a :class:`~APIDocumentSchema` while
+    paradoxically maintaining DRY principals.
     """
 
     # TODO: Encapsulate document serialization.
