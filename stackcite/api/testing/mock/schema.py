@@ -3,7 +3,7 @@ from marshmallow import fields, validates_schema, ValidationError
 from stackcite.api import schema
 
 
-class MockDocumentSchema(schema.APIDocumentSchema):
+class MockDocumentSchema(schema.APICollectionSchema):
     """
     A (de)serialization schema for :class:`~MockDocument`, with matching field
     parameters.
@@ -13,7 +13,7 @@ class MockDocumentSchema(schema.APIDocumentSchema):
     :cvar fact: A boolean value.
     """
 
-    # TODO: Implement "__gt" and "__lt" query fields\
+    # TODO: Implement "__gt" and "__lt" query fields
     name = fields.String()
     number = fields.Integer()
     fact = fields.Boolean()

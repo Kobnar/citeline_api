@@ -10,8 +10,6 @@ class APISchemaTests(unittest.TestCase):
     def setUp(self):
         from .. import APISchema
         self.schema = APISchema()
-        document_schema = testing.mock.MockDocumentSchema
-        self.schema.context['document_schema'] = document_schema
 
     def test_invalid_method_raises_exception(self):
         """APICollectionSchema.method raises exception for an invalid method
@@ -91,13 +89,116 @@ class APICollectionSchemaTests(unittest.TestCase):
     layer = testing.layers.BaseTestLayer
 
     def setUp(self):
-        from .. import APICollectionSchema
-        self.schema = APICollectionSchema()
-        document_schema = testing.mock.MockDocumentSchema()
-        self.schema.context['document_schema'] = document_schema
+        self.schema = testing.mock.MockDocumentSchema()
+        from .. import schema
+        assert isinstance(self.schema, schema.APICollectionSchema)
 
 
 class APICollectionSchemaLoadTests(APICollectionSchemaTests):
+
+    def test_collection_load_q(self):
+        """APICollectionSchema.load() deserializes a query string (collection-level)
+        """
+        expected = 'some query'
+        query = {'q': expected}
+        data, errors = self.schema.load(query)
+        result = data['q']
+        self.assertEqual(result, expected)
+
+    def test_collection_load_ids(self):
+        """APICollectionSchema.load() deserializes a list of ids (collection-level)
+        """
+        from bson import ObjectId
+        expected = object_ids = [str(ObjectId()) for _ in range(3)]
+        query = {'ids': ','.join(object_ids)}
+        data, errors = self.schema.load(query)
+        result = data['ids']
+        self.assertEqual(result, expected)
+
+    def test_collection_load_limit(self):
+        """APICollectionSchema.load() deserializes a limit integer (collection-level)
+        """
+        expected = 52
+        query = {'limit': str(expected)}
+        data, errors = self.schema.load(query)
+        result = data['limit']
+        self.assertEqual(result, expected)
+
+    def test_collection_load_skip(self):
+        """APICollectionSchema.load() deserializes a skip integer (collection-level)
+        """
+        expected = 33
+        query = {'skip': str(expected)}
+        data, errors = self.schema.load(query)
+        result = data['skip']
+        self.assertEqual(result, expected)
+
+    def test_collection_load_fields(self):
+        """APICollectionSchema.load() deserializes a list of field names (collection-level)
+        """
+        expected = ['name.full', 'birth']
+        query = {'fields': ','.join([f.replace('.', '__') for f in expected])}
+        data, errors = self.schema.load(query)
+        result = data['fields']
+        self.assertEqual(result, expected)
+
+    def test_document_load_fields(self):
+        """APICollectionSchema.load() deserializes a list of field names (document-level)
+        """
+        expected = ['name.full', 'birth']
+        query = {'fields': ','.join([f.replace('.', '__') for f in expected])}
+        data, errors = self.schema.load(query)
+        result = data['fields']
+        self.assertEqual(result, expected)
+
+
+class APICollectionSchemaDumpTests(APICollectionSchemaTests):
+
+    def test_list_dumps_into_list(self):
+        """APICollectionSchema.dump() serializes a list of documents if many=True
+        """
+        expected = [
+            {
+                'id': None,
+                'name': 'Document 0',
+                'number': 0,
+                'fact': False
+            },
+            {
+                'id': None,
+                'name': 'Document 1',
+                'number': 1,
+                'fact': True
+            },
+            {
+                'id': None,
+                'name': 'Document 2',
+                'number': 2,
+                'fact': False
+            }
+        ]
+        docs = [testing.mock.MockDocument(
+                    name='Document {}'.format(n),
+                    number=n,
+                    fact=bool(n % 2))
+                for n in range(3)]
+        result, errors = self.schema.dump(docs, many=True)
+        self.assertEqual(result, expected)
+
+    def test_document_dumps_into_document(self):
+        """APICollectionSchema.dump() serializes a single document if many=False
+        """
+        expected = {
+            'id': None,
+            'name': 'Document',
+            'number': 42,
+            'fact': False}
+        doc = testing.mock.MockDocument(**expected)
+        result, errors = self.schema.dump(doc, many=False)
+        self.assertEqual(result, expected)
+
+
+class APICollectionSchemaLoadTestsLegacy(APICollectionSchemaTests):
 
     def test_returns_q(self):
         """APICollectionSchema.q loads a query string

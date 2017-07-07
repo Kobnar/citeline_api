@@ -53,14 +53,24 @@ class APIDocumentSchema(APISchema):
 
 class APICollectionSchema(APISchema):
     """
-    A general schema for validating collection-level queries. These schemas
-    should match the fields in a :class:`~APIDocumentSchema` while
-    paradoxically maintaining DRY principals.
+    A generalized schema for (de)serializing one or more documents.
+
+    *Note: Collection-level response metadata (e.g. limit, skip, and count)
+    must be compiled manually in the view method, because schemas are intended
+    to be database agnostic.*
+
+    :cvar q: An arbitrary query string (``load_only=True``)
+    :cvar ids: A comma-separated list of ids (``load_only=True``)
+    :cvar limit: The maximum number of documents returned (``load_only=True``)
+    :cvar skip: The total number of documents "skipped" (``load_only=True``)
+    :cvar count: The total number of documents found (``dump_only=True``)
+    :cvar items: A list containing documents matching query (``dump_only=True``)
+    :cvar fields: A comma-separated list of field names to include
+        (``load_only=True``)
+    :cvar id: An individual document id (``dump_only=True``)
     """
 
-    # TODO: Encapsulate document serialization.
-
-    # Query request fields
+    # Collection-only request fields
     q = mm_fields.String(load_only=True)
     ids = api_fields.ListField(api_fields.ObjectIdField, load_only=True)
     limit = mm_fields.Integer(
@@ -71,7 +81,12 @@ class APICollectionSchema(APISchema):
         missing=0,
         validate=mm_fields.validate.Range(min=0),
         load_only=True)
+
+    # Document/collection request fields
     fields = api_fields.FieldsListField(load_only=True)
+
+    # Document-only response fields
+    id = api_fields.ObjectIdField(dump_only=True)
 
 
 class RetrieveCollection(Schema):
